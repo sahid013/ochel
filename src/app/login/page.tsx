@@ -42,30 +42,55 @@ export default function LoginPage() {
       console.log('User logged in:', data.user.id);
       setLoginStatus('Checking restaurant...');
 
-      // Check if user has a restaurant
-      const { data: restaurant, error: restaurantError } = await supabase
+      // Check if user has a restaurant with timeout
+      const restaurantCheckPromise = supabase
         .from('restaurants')
         .select('id, name')
         .eq('owner_id', data.user.id)
         .maybeSingle();
 
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Restaurant check timed out. Please check your database connection.')), 10000)
+      );
+
+      const { data: restaurant, error: restaurantError } = await Promise.race([
+        restaurantCheckPromise,
+        timeoutPromise
+      ]) as any;
+
       console.log('Restaurant check:', { restaurant, restaurantError });
 
-      if (restaurantError) throw restaurantError;
+      if (restaurantError) {
+        console.error('Restaurant check error:', restaurantError);
+        throw new Error(`Failed to check restaurant: ${restaurantError.message || 'Unknown error'}`);
+      }
+
       if (!restaurant) {
         throw new Error('No restaurant found for this account. Please contact support.');
       }
 
-      console.log('Found restaurant:', restaurant.name);
+      console.log('Found restaurant:', restaurant.name, 'slug:', restaurant.slug);
       setLoginStatus('Redirecting to admin panel...');
-      console.log('Redirecting to /admin...');
+
+      // Get the full restaurant data to access slug
+      const { data: fullRestaurant } = await supabase
+        .from('restaurants')
+        .select('slug')
+        .eq('id', restaurant.id)
+        .single();
+
+      const adminUrl = fullRestaurant?.slug
+        ? `/${fullRestaurant.slug}/admin`
+        : '/admin';
+
+      console.log('Redirecting to:', adminUrl);
 
       // Small delay to ensure session is saved
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Force redirect using window.location if router.push doesn't work
-      console.log('Attempting navigation to /admin');
-      window.location.href = '/admin';
+      // Force redirect using window.location
+      console.log('Attempting navigation to', adminUrl);
+      window.location.href = adminUrl;
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'An error occurred during login');

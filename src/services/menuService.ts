@@ -587,24 +587,31 @@ export const menuService = {
     };
   },
 
-  async getActiveCategories(): Promise<Category[]> {
-    const { data, error } = await supabase
+  async getActiveCategories(restaurantId?: string): Promise<Category[]> {
+    let query = supabase
       .from('categories')
       .select('*')
-      .eq('status', 'active')
-      .order('order', { ascending: true });
+      .eq('status', 'active');
+
+    if (restaurantId) {
+      query = query.eq('restaurant_id', restaurantId);
+    }
+
+    query = query.order('order', { ascending: true });
+
+    const { data, error } = await query;
 
     if (error) throw error;
     return data || [];
   },
 
-  async getAllMenuData(): Promise<Map<number, MenuData>> {
+  async getAllMenuData(restaurantId?: string): Promise<Map<number, MenuData>> {
     // Fetch all data in one go
     const [categories, subcategories, menuItems, addons] = await Promise.all([
-      this.getActiveCategories(),
-      subcategoryService.getAll(),
-      menuItemService.getAll(),
-      addonService.getAll(),
+      this.getActiveCategories(restaurantId),
+      subcategoryService.getAll(restaurantId),
+      menuItemService.getAll(restaurantId),
+      addonService.getAll(restaurantId),
     ]);
 
     // Build a map of category ID to menu data

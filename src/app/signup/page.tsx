@@ -52,16 +52,28 @@ export default function SignupPage() {
 
       // Step 1: Check if slug is already taken
       console.log('Checking if slug exists...');
-      const { data: existingRestaurant, error: checkError } = await supabase
+
+      // Add timeout to prevent indefinite hanging
+      const slugCheckPromise = supabase
         .from('restaurants')
         .select('slug')
         .eq('slug', slug)
         .maybeSingle();
 
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Database query timed out. Please check your connection and try again.')), 10000)
+      );
+
+      const { data: existingRestaurant, error: checkError } = await Promise.race([
+        slugCheckPromise,
+        timeoutPromise
+      ]) as any;
+
       console.log('Slug check result:', { existingRestaurant, checkError });
 
       if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
+        console.error('Slug check error:', checkError);
+        throw new Error(`Database error: ${checkError.message || 'Failed to check restaurant name availability'}`);
       }
 
       if (existingRestaurant) {
@@ -119,8 +131,9 @@ export default function SignupPage() {
       // Success!
       setSuccess(true);
       setTimeout(() => {
-        console.log('Redirecting to /admin...');
-        router.push('/admin');
+        const adminUrl = `/${slug}/admin`;
+        console.log('Redirecting to', adminUrl);
+        window.location.href = adminUrl;
       }, 2000);
 
     } catch (err: any) {

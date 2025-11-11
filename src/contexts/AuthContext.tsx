@@ -101,19 +101,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('Setting user from session:', supabaseUser.id);
 
-      // Check if user owns a restaurant
-      const { data: restaurant, error } = await supabase
+      // Check if user owns a restaurant with timeout
+      console.log('Querying restaurants table for owner_id:', supabaseUser.id);
+
+      const restaurantPromise = supabase
         .from('restaurants')
         .select('id, name')
         .eq('owner_id', supabaseUser.id)
         .maybeSingle();
 
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => {
+          console.warn('Restaurant query timed out after 5 seconds (retrying via auth state change)');
+          reject(new Error('Restaurant query timed out'));
+        }, 5000)
+      );
+
+      const { data: restaurant, error } = await Promise.race([
+        restaurantPromise,
+        timeoutPromise
+      ]) as any;
+
       console.log('Restaurant check result:', { restaurant, error: error || null });
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Database error checking restaurant:', error);
-        setUser(null);
-        return;
+      if (error) {
+        // If it's a timeout, just return silently - auth state change will retry
+        if (error.message === 'Restaurant query timed out') {
+          console.log('Query timed out, will retry on auth state change');
+          return;
+        }
+
+        // For other errors (not PGRST116 which is "no rows"), set user to null
+        if (error.code !== 'PGRST116') {
+          console.error('Database error checking restaurant:', error);
+          setUser(null);
+          return;
+        }
       }
 
       // Set user (restaurant owners are considered admins)
@@ -136,6 +159,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
       }
     } catch (error) {
+      // Silently handle timeout errors - auth state change will retry
+      if (error instanceof Error && error.message === 'Restaurant query timed out') {
+        console.log('Query timed out in catch block, ignoring (will retry)');
+        return;
+      }
       console.error('Unexpected error in setUserFromSession:', error);
       setUser(null);
     }

@@ -11,6 +11,7 @@ export interface Restaurant {
   logo_url?: string | null;
   primary_color: string;
   is_active: boolean;
+  template: 'template1' | 'template2' | 'template3' | 'template4';
   created_at: string;
   updated_at: string;
 }
