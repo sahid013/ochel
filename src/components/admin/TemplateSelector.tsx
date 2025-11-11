@@ -93,10 +93,6 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
           >
             View your public menu →
           </a>
-          <span className="text-gray-400">|</span>
-          <p className="text-gray-500">
-            💡 Tip: Click "Preview Live" to test templates in a new tab
-          </p>
         </div>
       </div>
 
