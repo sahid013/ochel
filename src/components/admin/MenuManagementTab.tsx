@@ -14,7 +14,11 @@ const menuTabs = [
   { id: 'addons', label: 'Add-ons', icon: '➕' },
 ];
 
-export function MenuManagementTab() {
+interface MenuManagementTabProps {
+  restaurantId: string;
+}
+
+export function MenuManagementTab({ restaurantId }: MenuManagementTabProps) {
   const [activeTab, setActiveTab] = useState('categories');
 
   return (
@@ -70,10 +74,10 @@ export function MenuManagementTab() {
 
       {/* Tab Content */}
       <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-        {activeTab === 'categories' && <CategoriesManagement />}
-        {activeTab === 'subcategories' && <SubcategoriesManagement />}
-        {activeTab === 'items' && <MenuItemsManagement />}
-        {activeTab === 'addons' && <AddonsManagement />}
+        {activeTab === 'categories' && <CategoriesManagement restaurantId={restaurantId} />}
+        {activeTab === 'subcategories' && <SubcategoriesManagement restaurantId={restaurantId} />}
+        {activeTab === 'items' && <MenuItemsManagement restaurantId={restaurantId} />}
+        {activeTab === 'addons' && <AddonsManagement restaurantId={restaurantId} />}
       </div>
     </div>
   );
