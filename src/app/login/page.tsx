@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
+  const [loginStatus, setLoginStatus] = useState('');
 
   const [formData, setFormData] = useState({
     email: '',
@@ -21,10 +22,12 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoginStatus('');
     setLoading(true);
 
     try {
       console.log('Attempting login with:', formData.email);
+      setLoginStatus('Signing in...');
 
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -37,6 +40,7 @@ export default function LoginPage() {
       if (!data.user) throw new Error('Failed to login');
 
       console.log('User logged in:', data.user.id);
+      setLoginStatus('Checking restaurant...');
 
       // Check if user has a restaurant
       const { data: restaurant, error: restaurantError } = await supabase
@@ -53,16 +57,19 @@ export default function LoginPage() {
       }
 
       console.log('Found restaurant:', restaurant.name);
+      setLoginStatus('Redirecting to admin panel...');
       console.log('Redirecting to /admin...');
 
       // Small delay to ensure session is saved
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Redirect to admin
-      router.push('/admin');
+      // Force redirect using window.location if router.push doesn't work
+      console.log('Attempting navigation to /admin');
+      window.location.href = '/admin';
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'An error occurred during login');
+      setLoginStatus('');
     } finally {
       setLoading(false);
     }
@@ -100,6 +107,12 @@ export default function LoginPage() {
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        {loginStatus && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-600">{loginStatus}</p>
           </div>
         )}
 
