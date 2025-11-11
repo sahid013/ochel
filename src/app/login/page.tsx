@@ -20,28 +20,44 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      console.log('Attempting login with:', formData.email);
+
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
       });
 
+      console.log('Login response:', { data, error: signInError });
+
       if (signInError) throw signInError;
       if (!data.user) throw new Error('Failed to login');
 
-      // Check if user has a restaurant
-      const { data: restaurant } = await supabase
-        .from('restaurants')
-        .select('id')
-        .eq('owner_id', data.user.id)
-        .single();
+      console.log('User logged in:', data.user.id);
 
+      // Check if user has a restaurant
+      const { data: restaurant, error: restaurantError } = await supabase
+        .from('restaurants')
+        .select('id, name')
+        .eq('owner_id', data.user.id)
+        .maybeSingle();
+
+      console.log('Restaurant check:', { restaurant, restaurantError });
+
+      if (restaurantError) throw restaurantError;
       if (!restaurant) {
-        throw new Error('No restaurant found for this account');
+        throw new Error('No restaurant found for this account. Please contact support.');
       }
+
+      console.log('Found restaurant:', restaurant.name);
+      console.log('Redirecting to /admin...');
+
+      // Small delay to ensure session is saved
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect to admin
       router.push('/admin');
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.message || 'An error occurred during login');
     } finally {
       setLoading(false);

@@ -9,11 +9,18 @@ import { Alert } from '@/components/ui/Alert';
 export default function AdminPage() {
   const { restaurant, loading, error } = useRestaurant();
 
+  console.log('AdminPage - Restaurant:', restaurant);
+  console.log('AdminPage - Loading:', loading);
+  console.log('AdminPage - Error:', error);
+
   if (loading) {
     return (
       <PageLayout showHeader={false} showFooter={false}>
         <div className="min-h-screen bg-gray-50 md:bg-white font-forum flex items-center justify-center">
-          <LoadingSpinner size="lg" />
+          <div className="text-center">
+            <LoadingSpinner size="lg" />
+            <p className="mt-4 text-gray-600">Loading restaurant data...</p>
+          </div>
         </div>
       </PageLayout>
     );
@@ -23,10 +30,20 @@ export default function AdminPage() {
     return (
       <PageLayout showHeader={false} showFooter={false}>
         <div className="min-h-screen bg-gray-50 md:bg-white font-forum flex items-center justify-center p-4">
-          <Alert variant="destructive" className="max-w-md">
-            <h3 className="font-semibold mb-2">Erreur de chargement</h3>
-            <p>{error || 'Restaurant non trouvé. Veuillez vous reconnecter.'}</p>
-          </Alert>
+          <div className="max-w-md w-full">
+            <Alert variant="destructive" className="mb-4">
+              <h3 className="font-semibold mb-2">Error Loading Restaurant</h3>
+              <p className="text-sm">{error || 'Restaurant not found. Please log in again.'}</p>
+            </Alert>
+            <div className="text-center">
+              <a
+                href="/login"
+                className="inline-block bg-[#F34A23] text-white py-2 px-6 rounded-lg font-medium hover:bg-[#d63d1a] transition-colors"
+              >
+                Go to Login
+              </a>
+            </div>
+          </div>
         </div>
       </PageLayout>
     );
