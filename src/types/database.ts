@@ -199,6 +199,7 @@ export interface Database {
           text_es: string | null
           order: number
           status: 'active' | 'inactive'
+          restaurant_id: string | null
           created_at: string
           updated_at: string
           created_by: number | null
@@ -216,6 +217,7 @@ export interface Database {
           text_es?: string | null
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -233,12 +235,20 @@ export interface Database {
           text_es?: string | null
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
           updated_by?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "categories_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       subcategories: {
         Row: {
@@ -254,6 +264,7 @@ export interface Database {
           text_es: string | null
           order: number
           status: 'active' | 'inactive'
+          restaurant_id: string | null
           created_at: string
           updated_at: string
           created_by: number | null
@@ -272,6 +283,7 @@ export interface Database {
           text_es?: string | null
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -290,6 +302,7 @@ export interface Database {
           text_es?: string | null
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -300,6 +313,12 @@ export interface Database {
             foreignKeyName: "subcategories_category_id_fkey"
             columns: ["category_id"]
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subcategories_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            referencedRelation: "restaurants"
             referencedColumns: ["id"]
           }
         ]
@@ -328,6 +347,7 @@ export interface Database {
           subcategory_id: number
           order: number
           status: 'active' | 'inactive'
+          restaurant_id: string | null
           created_at: string
           updated_at: string
           created_by: number | null
@@ -356,6 +376,7 @@ export interface Database {
           subcategory_id: number
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -384,6 +405,7 @@ export interface Database {
           subcategory_id?: number
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -394,6 +416,12 @@ export interface Database {
             foreignKeyName: "menu_items_subcategory_id_fkey"
             columns: ["subcategory_id"]
             referencedRelation: "subcategories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            referencedRelation: "restaurants"
             referencedColumns: ["id"]
           }
         ]
@@ -415,6 +443,7 @@ export interface Database {
           subcategory_id: number | null
           order: number
           status: 'active' | 'inactive'
+          restaurant_id: string | null
           created_at: string
           updated_at: string
           created_by: number | null
@@ -436,6 +465,7 @@ export interface Database {
           subcategory_id?: number | null
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -457,6 +487,7 @@ export interface Database {
           subcategory_id?: number | null
           order?: number
           status?: 'active' | 'inactive'
+          restaurant_id?: string | null
           created_at?: string
           updated_at?: string
           created_by?: number | null
@@ -473,6 +504,12 @@ export interface Database {
             foreignKeyName: "addons_subcategory_id_fkey"
             columns: ["subcategory_id"]
             referencedRelation: "subcategories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "addons_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            referencedRelation: "restaurants"
             referencedColumns: ["id"]
           }
         ]
