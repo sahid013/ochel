@@ -32,6 +32,8 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      console.log('Starting signup process...');
+
       // Validation
       if (formData.password !== formData.confirmPassword) {
         throw new Error('Passwords do not match');
@@ -42,23 +44,32 @@ export default function SignupPage() {
       }
 
       const slug = generateSlug(formData.restaurantName);
+      console.log('Generated slug:', slug);
 
       if (!slug) {
         throw new Error('Please enter a valid restaurant name');
       }
 
       // Step 1: Check if slug is already taken
-      const { data: existingRestaurant } = await supabase
+      console.log('Checking if slug exists...');
+      const { data: existingRestaurant, error: checkError } = await supabase
         .from('restaurants')
         .select('slug')
         .eq('slug', slug)
-        .single();
+        .maybeSingle();
+
+      console.log('Slug check result:', { existingRestaurant, checkError });
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
 
       if (existingRestaurant) {
         throw new Error('Restaurant name is already taken. Please choose a different name.');
       }
 
       // Step 2: Create Supabase Auth user
+      console.log('Creating auth user...');
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -69,6 +80,8 @@ export default function SignupPage() {
         }
       });
 
+      console.log('Auth signup result:', { user: authData?.user?.id, session: !!authData?.session, error: authError });
+
       if (authError) throw authError;
       if (!authData.user) throw new Error('Failed to create user account');
 
@@ -78,29 +91,40 @@ export default function SignupPage() {
       }
 
       // Step 3: Create restaurant entry
-      const { error: restaurantError } = await supabase
+      console.log('Creating restaurant entry...');
+      const restaurantData = {
+        name: formData.restaurantName,
+        slug: slug,
+        email: formData.email,
+        phone: formData.phone,
+        owner_id: authData.user.id
+      };
+      console.log('Restaurant data:', restaurantData);
+
+      const { data: newRestaurant, error: restaurantError } = await supabase
         .from('restaurants')
-        .insert({
-          name: formData.restaurantName,
-          slug: slug,
-          email: formData.email,
-          phone: formData.phone,
-          owner_id: authData.user.id
-        });
+        .insert(restaurantData)
+        .select()
+        .single();
+
+      console.log('Restaurant insert result:', { newRestaurant, restaurantError });
 
       if (restaurantError) {
-        // If restaurant creation fails, we should ideally delete the auth user
-        // But for now, just show the error
-        throw restaurantError;
+        console.error('Restaurant creation error:', restaurantError);
+        throw new Error(`Failed to create restaurant: ${restaurantError.message}`);
       }
+
+      console.log('Signup successful! Restaurant created:', newRestaurant);
 
       // Success!
       setSuccess(true);
       setTimeout(() => {
+        console.log('Redirecting to /admin...');
         router.push('/admin');
       }, 2000);
 
     } catch (err: any) {
+      console.error('Signup error:', err);
       setError(err.message || 'An error occurred during signup');
     } finally {
       setLoading(false);
