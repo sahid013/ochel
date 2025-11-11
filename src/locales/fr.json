@@ -1,0 +1,333 @@
+{
+  "nav": {
+    "menu": "Menu",
+    "reservation": "Reservation",
+    "delivery": "Livraison",
+    "certifications": "Certifications halal",
+    "specialties": "Nos Spécialités",
+    "reviews": "Avis",
+    "backToTop": "Retour en haut",
+    "location": "Localisation"
+  },
+  "home": {
+    "hero": {
+      "title": "BIENVENUE CHEZ\n MAGNIFIKO"
+    },
+    "experience": {
+      "subtitle": "Notre Histoire",
+      "title": "UNE EXPÉRIENCE UNIQUE AU CŒUR D'IVRY-SUR-SEINE",
+      "description": "Magnifiko est né d'un rêve : créer un lieu où l'authenticité de l'Italie rencontre le respect des règles halal, dans un cadre moderne, familial et chaleureux. Nous sommes bien plus qu'un restaurant : nous sommes une référence de la cuisine italienne halal en Île-de-France, un espace de partage pour les amateurs de pâtes à l'italienne, de pizzas artisanales Napolitaine, de desserts traditionnels et de produits 100% halal et certifiés."
+    },
+    "menu": {
+      "subtitle": "Notre Menu",
+      "title": "LUNCH",
+      "pasta": {
+        "title": "NOS PASTA",
+        "description": "Nos pâtes importées d'Italie sont sublimées par les sauces maison préparées par notre chef.",
+        "note": "✓ Sans gluten disponible avec toutes nos pâtes"
+      },
+      "pizza": {
+        "title": "PIZZAS NAPOLITAINES",
+        "description": "Pizzas napolitaines cuites à la pierre, avec des farines italiennes de qualité supérieure et notre mozzarella fior di latte."
+      },
+      "desserts": {
+        "title": "DESSERTS ITALIENS",
+        "description": "Découvrez nos desserts traditionnels italiens, des fraises à la crème aux panna cotta artisanales, préparés avec amour."
+      },
+      "button": "Voir notre menu complet"
+    },
+    "hours": {
+      "subtitle": "On vous attend",
+      "title": "TOUS LES JOURS",
+      "hours": "11H - MINUIT",
+      "note": "(Sauf Vendredi: 14h - Minuit)"
+    },
+    "secrets": {
+      "subtitle": "Notre Histoire",
+      "title": "SECRETS DE SAVEUR",
+      "paragraph1": "Nous croyons que le secret des bonnes pâtes réside aussi dans la sauce, c'est pourquoi toutes nos sauces sont préparées sur place en utilisant uniquement les meilleurs ingrédients. Que vous préfériez une Amatriciana classique, une carbonara crémeuse ou une délicieuse bolognaise, nous avons une sauce qui saura satisfaire vos papilles.",
+      "paragraph2": "Dans notre restaurant, nous proposons une variété de formes et de tailles de pâtes artisanales, chacune avec sa propre texture et saveur unique. Que vous préfériez de simples spaghettis ou de copieux tonnarelli, notre sélection de plats de pâtes saura vous plaire."
+    },
+    "testimonials": {
+      "subtitle": "Nos Spécialités",
+      "title": "Des saveurs authentiques"
+    }
+  },
+  "reservation": {
+    "button": "Réserver une table",
+    "header": {
+      "text1": "Bienvenue au Magnifiko",
+      "text2": "Réservez votre table en quelques clics (sans réservation après 20h)",
+      "text3": "Pour toute demande particulière, contactez-nous au 01 49 59 00 94"
+    },
+    "lookup": {
+      "title": "Trouvez vos réservations",
+      "subtitle": "Entrez votre email pour voir les réservations existantes"
+    },
+    "error": {
+      "formLoad": "Une erreur s'est produite lors du chargement du formulaire. Veuillez fermer et rouvrir le popup.",
+      "reload": "Recharger"
+    },
+    "form": {
+      "step1": {
+        "guests": "Nombre d'invités",
+        "date": "Date",
+        "time": "Heure",
+        "loading": "Chargement...",
+        "enterGuests": "Entrez le nombre d'invités",
+        "quickSelect": "Sélection rapide",
+        "guestCount": "invité",
+        "guestCountPlural": "invités",
+        "closed": "Restaurant fermé ce jour-là",
+        "noSlots": "Aucun créneau disponible pour cette date",
+        "button": "Réserver"
+      },
+      "step2": {
+        "title": "Civilité",
+        "mrs": "Madame",
+        "mr": "Monsieur",
+        "mx": "Mx.",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "phone": "Téléphone",
+        "email": "Email",
+        "comments": "Commentaires, préférences ou restrictions alimentaires (facultatif)",
+        "commentsPlaceholder": "Allergies, célébration, préférences de siège...",
+        "saveInfo": "Sauvegardez les informations pour mes prochaines réservations.",
+        "acceptTerms": "J'accepte les conditions générales d'utilisation du service.",
+        "emailOffers": "Envoyez-moi des offres et actualités par e-mail.",
+        "smsOffers": "Envoyez-moi des offres et actualités par SMS.",
+        "validFormat": "✓ Format valide",
+        "yourReservation": "Votre réservation",
+        "serviceNotice": "Notre premier service commence à 19h30.",
+        "tableNotice": "Merci de respecter votre horaire de réservation. La table devra être libérée à 21h30 pour l'arrivée du second service.",
+        "privacyNotice": "Les informations que vous nous transmettez dans le cadre de votre réservation sont collectées par le restaurant et traitées via l'outil de réservation mis à disposition par Ochel. Elles sont utilisées uniquement pour gérer votre demande (confirmation, modification, annulation) et pour assurer le suivi de votre venue (notifications par email ou SMS liées à votre réservation). Ces données peuvent également être utilisées par le restaurant afin d'améliorer votre expérience et, si vous y avez consenti, pour vous adresser des communications personnalisées (actualités, offres spéciales, campagnes de fidélisation). Conformément à la réglementation applicable (RGPD), vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données, ainsi que d'un droit d'opposition ou de limitation de leur traitement. Vous pouvez exercer ces droits directement auprès du restaurant.",
+        "confirmButton": "Confirmer la réservation",
+        "submitting": "Création de la réservation..."
+      },
+      "poweredBy": "propulsé par"
+    },
+    "success": {
+      "confirmed": "Réservation confirmée !",
+      "registered": "Réservation enregistrée !",
+      "thankYou": "Merci, {{name}} ! Votre table pour {{guests}} a été réservée pour le {{date}} à {{time}}.",
+      "pending": "Votre demande sera confirmée par notre équipe dans les plus brefs délais.",
+      "makeAnother": "Faire une autre réservation"
+    },
+    "calendar": {
+      "months": [
+        "Janvier",
+        "Février",
+        "Mars",
+        "Avril",
+        "Mai",
+        "Juin",
+        "Juillet",
+        "Août",
+        "Septembre",
+        "Octobre",
+        "Novembre",
+        "Décembre"
+      ],
+      "days": [
+        "Dim",
+        "Lun",
+        "Mar",
+        "Mer",
+        "Jeu",
+        "Ven",
+        "Sam"
+      ],
+      "closedTooltip": "Restaurant fermé"
+    }
+  },
+  "menu": {
+    "noCategories": "Aucune catégorie de menu disponible pour le moment.",
+    "noItems": "Aucun article disponible dans cette catégorie.",
+    "specials": "Magnifiko Specials",
+    "supplements": "Supplements",
+    "viewOnTable": "Voir sur la table"
+  },
+  "footer": {
+    "description": "Restaurant gastronomique situé au cœur d'Ivry-sur-Seine, proposant une cuisine d'exception dans un cadre élégant et raffiné.",
+    "quickLinks": "Liens Rapides",
+    "information": "Information",
+    "hours": "Horaires",
+    "home": "Accueil",
+    "menu": "Menu",
+    "about": "À Propos",
+    "contact": "Contact",
+    "openDaily": "Ouvert tous les jours",
+    "hours1": "11h - Minuit",
+    "friday": "Vendredi",
+    "hours2": "14h - Minuit",
+    "copyright": "© 2025 Magnifiko. Tous droits réservés"
+  },
+  "delivery": {
+    "title": "COMMANDEZ EN LIGNE",
+    "description": "Savourez nos délicieux plats italiens halal directement chez vous grâce à nos partenaires de livraison."
+  },
+  "certifications": {
+    "subtitle": "Nos Certifications",
+    "title": "CERTIFICATIONS HALAL",
+    "description1": "Chez Magnifiko, nous nous engageons à respecter les plus hauts standards de certification halal. Tous nos ingrédients sont soigneusement sélectionnés et certifiés par des organismes reconnus pour garantir leur conformité aux règles islamiques.",
+    "description2": "Notre restaurant est certifié par Achahada, l'un des organismes de certification halal les plus respectés en France. Cette certification couvre l'ensemble de notre chaîne d'approvisionnement, de la sélection des fournisseurs à la préparation des plats.",
+    "publication": "Publication Achahada"
+  },
+  "menuPage": {
+    "title": "NOTRE MENU"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "required": "Ce champ est requis",
+    "invalidEmail": "Format d'email invalide",
+    "invalidPhone": "Numéro de téléphone invalide",
+    "selectDate": "Veuillez sélectionner une date",
+    "selectTime": "Veuillez sélectionner une heure",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier"
+  },
+  "metadata": {
+    "title": "Magnifiko - Restaurant Italien Halal à Ivry-sur-Seine",
+    "description": "Magnifiko - La référence de la cuisine italienne halal en Île-de-France, certifiée Achahada. Pizzas, pâtes fraîches et desserts traditionnels."
+  },
+  "admin": {
+    "header": {
+      "title": "Magnifiko",
+      "subtitle": "Admin Dashboard",
+      "logout": "Déconnexion"
+    },
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "overviewMobile": "Aperçu",
+      "settings": "Paramètres",
+      "settingsMobile": "Paramètres",
+      "manage": "Gestion des Réservations",
+      "manageMobile": "Gestion",
+      "menu": "Gestion du Menu",
+      "menuMobile": "Menu"
+    },
+    "stats": {
+      "total": "Total",
+      "totalSubtitle": "réservations",
+      "confirmed": "Confirmées",
+      "confirmedSubtitle": "réservations actives",
+      "pending": "En attente",
+      "pendingSubtitle": "à confirmer",
+      "completed": "Terminées",
+      "completedSubtitle": "repas terminés",
+      "cancelled": "Annulées",
+      "cancelledSubtitle": "réservations annulées",
+      "totalGuests": "Total Invités",
+      "totalGuestsSubtitle": "attendus"
+    },
+    "overview": {
+      "bulkDelete": "Supprimer par email",
+      "bulkDeleting": "Suppression...",
+      "bulkDeleteByDate": "Supprimer par date",
+      "bulkDeletingByDate": "Suppression...",
+      "today": "Aujourd'hui",
+      "next7days": "7 prochains jours",
+      "all": "Tout",
+      "resultsFound": "réservation(s) trouvée(s) sur",
+      "resultsTotal": "au total",
+      "deleteModal": {
+        "title": "Supprimer les réservations",
+        "description": "Cette action supprimera définitivement toutes les réservations associées à l'adresse email spécifiée. Cette action ne peut pas être annulée.",
+        "emailLabel": "Adresse email",
+        "emailPlaceholder": "Entrez l'adresse email",
+        "emailRequired": "L'adresse email est requise.",
+        "invalidEmail": "Format d'email invalide.",
+        "cancel": "Annuler",
+        "proceed": "Continuer",
+        "delete": "Supprimer",
+        "deleting": "Suppression..."
+      },
+      "confirmModal": {
+        "title": "Confirmer la suppression",
+        "description": "Êtes-vous sûr de vouloir supprimer toutes les réservations pour",
+        "warning": "Cette action est irréversible. Toutes les données seront définitivement supprimées.",
+        "back": "Retour",
+        "confirm": "Confirmer la suppression",
+        "deleting": "Suppression..."
+      },
+      "successModal": {
+        "title": "Suppression réussie",
+        "description": "Suppression réussie de",
+        "reservations": "réservation(s) pour",
+        "close": "Fermer"
+      },
+      "errorModal": {
+        "title": "Erreur",
+        "close": "Fermer"
+      },
+      "deleteDateModal": {
+        "title": "Supprimer par date",
+        "description": "Sélectionnez une date ou une plage de dates pour supprimer les réservations. Seules les dates passées et la date du jour sont autorisées.",
+        "startDateLabel": "Date de début",
+        "endDateLabel": "Date de fin",
+        "optional": "facultatif",
+        "startDateRequired": "La date de début est requise.",
+        "futureDate": "Les dates futures ne sont pas autorisées.",
+        "endBeforeStart": "La date de fin doit être après la date de début.",
+        "hint": "Astuce : Laissez la date de fin vide pour supprimer uniquement les réservations d'une date spécifique.",
+        "cancel": "Annuler",
+        "proceed": "Continuer",
+        "to": "au"
+      },
+      "confirmDateModal": {
+        "title": "Confirmer la suppression",
+        "descriptionRange": "Êtes-vous sûr de vouloir supprimer toutes les réservations entre",
+        "descriptionSingle": "Êtes-vous sûr de vouloir supprimer toutes les réservations du",
+        "warning": "Cette action est irréversible. Toutes les réservations dans cette plage de dates seront définitivement supprimées.",
+        "back": "Retour",
+        "confirm": "Confirmer la suppression",
+        "deleting": "Suppression..."
+      },
+      "successDateModal": {
+        "title": "Suppression réussie",
+        "description": "Suppression réussie de",
+        "reservations": "réservation(s)",
+        "between": "entre",
+        "on": "du",
+        "close": "Fermer"
+      },
+      "errorDateModal": {
+        "title": "Erreur",
+        "close": "Fermer"
+      },
+      "export": {
+        "noReservations": "Aucune réservation à exporter.",
+        "success": "réservations exportées avec succès!",
+        "error": "Erreur lors de l'export. Veuillez réessayer.",
+        "csvHeaders": {
+          "id": "ID",
+          "name": "Nom",
+          "email": "Email",
+          "phone": "Téléphone",
+          "date": "Date de réservation",
+          "time": "Heure",
+          "guests": "Nombre d'invités",
+          "status": "Statut",
+          "requests": "Demandes spéciales",
+          "autoConfirmed": "Confirmé automatiquement",
+          "created": "Date de création",
+          "updated": "Dernière mise à jour"
+        }
+      },
+      "toast": {
+        "noReservationsFound": "Aucune réservation trouvée pour l'email:",
+        "reservationsDeleted": "réservation(s) supprimée(s) pour",
+        "deleteError": "Erreur lors de la suppression. Veuillez réessayer.",
+        "validEmail": "Veuillez entrer une adresse email valide.",
+        "noReservationsInRange": "Aucune réservation trouvée entre",
+        "noReservationsOnDate": "Aucune réservation trouvée pour le"
+      }
+    }
+  }
+}

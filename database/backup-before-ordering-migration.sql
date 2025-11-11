@@ -1,0 +1,123 @@
+-- ============================================================================
+-- DATABASE BACKUP - Before Ordering Migration
+-- Created: 2025-01-20
+-- Purpose: Backup current schema and data before adding 'order' columns
+-- ============================================================================
+
+-- This file should be generated using pg_dump or Supabase backup tools
+-- Run one of the following commands to create the backup:
+
+-- Option 1: Using pg_dump (if you have direct PostgreSQL access)
+-- pg_dump -h [HOST] -U [USER] -d [DATABASE] -F c -b -v -f backup-before-ordering-migration.dump
+
+-- Option 2: Using Supabase CLI
+-- supabase db dump -f backup-before-ordering-migration.sql
+
+-- Option 3: Manual backup via Supabase Dashboard
+-- 1. Go to https://supabase.com/dashboard/project/[PROJECT_ID]/database/backups
+-- 2. Create a new backup
+-- 3. Download the backup file
+
+-- ============================================================================
+-- BACKUP VERIFICATION CHECKLIST
+-- ============================================================================
+-- [ ] Backup file created successfully
+-- [ ] Backup file size is reasonable (not 0 bytes)
+-- [ ] Backup includes all tables: categories, subcategories, menu_items, addons
+-- [ ] Backup timestamp recorded: _____________________
+-- [ ] Backup stored in safe location
+
+-- ============================================================================
+-- ROLLBACK INSTRUCTIONS (if migration fails)
+-- ============================================================================
+-- 1. Drop the added 'order' columns:
+--    ALTER TABLE categories DROP COLUMN IF EXISTS "order";
+--    ALTER TABLE subcategories DROP COLUMN IF EXISTS "order";
+--    ALTER TABLE menu_items DROP COLUMN IF EXISTS "order";
+--    ALTER TABLE addons DROP COLUMN IF EXISTS "order";
+--
+-- 2. Or restore from backup:
+--    pg_restore -h [HOST] -U [USER] -d [DATABASE] backup-before-ordering-migration.dump
+--
+-- 3. Or use Supabase Dashboard to restore from backup point
+
+-- ============================================================================
+-- CURRENT SCHEMA SNAPSHOT (for reference)
+-- ============================================================================
+
+-- Categories table current structure:
+-- id (bigint, primary key)
+-- title (text)
+-- text (text, nullable)
+-- title_en (text, nullable)
+-- text_en (text, nullable)
+-- title_it (text, nullable)
+-- text_it (text, nullable)
+-- title_es (text, nullable)
+-- text_es (text, nullable)
+-- status (text, default 'active')
+-- created_at (timestamp with time zone)
+-- updated_at (timestamp with time zone)
+-- created_by (uuid, nullable)
+-- updated_by (uuid, nullable)
+
+-- Subcategories table current structure:
+-- id (bigint, primary key)
+-- category_id (bigint, foreign key -> categories.id)
+-- title (text)
+-- text (text, nullable)
+-- title_en (text, nullable)
+-- text_en (text, nullable)
+-- title_it (text, nullable)
+-- text_it (text, nullable)
+-- title_es (text, nullable)
+-- text_es (text, nullable)
+-- status (text, default 'active')
+-- created_at (timestamp with time zone)
+-- updated_at (timestamp with time zone)
+-- created_by (uuid, nullable)
+-- updated_by (uuid, nullable)
+
+-- Menu Items table current structure:
+-- id (bigint, primary key)
+-- subcategory_id (bigint, foreign key -> subcategories.id)
+-- title (text)
+-- text (text, nullable)
+-- description (text, nullable)
+-- title_en (text, nullable)
+-- text_en (text, nullable)
+-- description_en (text, nullable)
+-- title_it (text, nullable)
+-- text_it (text, nullable)
+-- description_it (text, nullable)
+-- title_es (text, nullable)
+-- text_es (text, nullable)
+-- description_es (text, nullable)
+-- price (numeric)
+-- image_path (text, nullable)
+-- model_3d_url (text, nullable)
+-- redirect_3d_url (text, nullable)
+-- is_special (boolean, default false)
+-- status (text, default 'active')
+-- created_at (timestamp with time zone)
+-- updated_at (timestamp with time zone)
+-- created_by (uuid, nullable)
+-- updated_by (uuid, nullable)
+
+-- Addons table current structure:
+-- id (bigint, primary key)
+-- subcategory_id (bigint, foreign key -> subcategories.id)
+-- title (text)
+-- title_en (text, nullable)
+-- title_it (text, nullable)
+-- title_es (text, nullable)
+-- price (numeric)
+-- status (text, default 'active')
+-- created_at (timestamp with time zone)
+-- updated_at (timestamp with time zone)
+-- created_by (uuid, nullable)
+-- updated_by (uuid, nullable)
+
+-- ============================================================================
+-- END OF BACKUP REFERENCE
+-- ============================================================================

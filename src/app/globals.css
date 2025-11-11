@@ -1,0 +1,229 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f9f9f9;
+  --foreground: #ffffffe3;
+  --card: #fcfcfc;
+  --card-foreground: #202020;
+  --popover: #191919;
+  --popover-foreground: #eeeeee;
+  --primary: #644a40;
+  --primary-foreground: #EFE7D2;
+  --secondary: #ffdfb5;
+  --secondary-foreground: #582d1d;
+  --muted: #efefef;
+  --muted-foreground: #646464;
+  --accent: #e8e8e8;
+  --accent-foreground: #202020;
+  --destructive: #e54d2e;
+  --destructive-foreground: #EFE7D2;
+  --border: #ffffff15;
+  --input: #484848;
+  --ring: #644a40;
+  --chart-1: #644a40;
+  --chart-2: #ffdfb5;
+  --chart-3: #e8e8e8;
+  --chart-4: #ffe6c4;
+  --chart-5: #66493e;
+  --sidebar: #fbfbfb;
+  --sidebar-foreground: #252525;
+  --sidebar-primary: #343434;
+  --sidebar-primary-foreground: #fbfbfb;
+  --sidebar-accent: #f7f7f7;
+  --sidebar-accent-foreground: #343434;
+  --sidebar-border: #ebebeb;
+  --sidebar-ring: #b5b5b5;
+  --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: var(--font-eb-garamond), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #eeeeee;
+  --card: #191919;
+  --card-foreground: #eeeeee;
+  --popover: #191919;
+  --popover-foreground: #eeeeee;
+  --primary: #6bf167;
+  --primary-foreground: #000000;
+  --secondary: #1b3d1a;
+  --secondary-foreground: #e8e3de;
+  --muted: #222222;
+  --muted-foreground: #b4b4b4;
+  --accent: #2a2a2a;
+  --accent-foreground: #eeeeee;
+  --destructive: #e54d2e;
+  --destructive-foreground: #EFE7D2;
+  --border: #201e18;
+  --input: #484848;
+  --ring: #ffe0c2;
+  --chart-1: #ffe0c2;
+  --chart-2: #393028;
+  --chart-3: #2a2a2a;
+  --chart-4: #42382e;
+  --chart-5: #ffe0c1;
+  --sidebar: #18181b;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-primary: #1d4ed8;
+  --sidebar-primary-foreground: #EFE7D2;
+  --sidebar-accent: #27272a;
+  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #d4d4d8;
+  --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-serif: var(--font-eb-garamond), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+}
+
+/* Base styles for proper theming */
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* Enhanced smooth scrolling */
+html, body {
+  scroll-behavior: smooth;
+}
+
+/* Webkit browsers smooth scrolling enhancement */
+* {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
+  }
+}
+
+/* Custom scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1612;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a3f35;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}
+
+html, body {
+  background-color: transparent !important;
+  color: var(--foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* Prevent horizontal scroll and white space */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure no horizontal overflow */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100vw;
+}
+
+/* Font family utilities */
+@layer utilities {
+  .font-eb-garamond {
+    font-family: var(--font-eb-garamond), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  }
+
+  .font-satoshi {
+    font-family: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .font-forum {
+    font-family: var(--font-forum), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  }
+
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Shimmer animation for skeleton loading */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+  }
+}
+
+/* Custom radio button styling */
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-radius: 50%;
+  border: 2px solid rgba(239, 230, 210, 0.3);
+  background-color: rgba(239, 230, 210, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+input[type="radio"]:checked {
+  background-color: #F34A23;
+  border-color: #EFE6D2;
+  box-shadow: inset 0 0 0 3px rgba(239, 230, 210, 0.3);
+}

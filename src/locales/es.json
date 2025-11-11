@@ -1,0 +1,269 @@
+{
+  "nav": {
+    "menu": "Menú",
+    "reservation": "Reservación",
+    "delivery": "Entrega",
+    "certifications": "Certificaciones Halal"
+  },
+  "home": {
+    "hero": {
+      "title": "BIENVENIDO A\n MAGNIFIKO"
+    },
+    "experience": {
+      "subtitle": "Nuestra Historia",
+      "title": "UNA EXPERIENCIA ÚNICA EN EL CORAZÓN DE IVRY-SUR-SEINE",
+      "description": "Magnifiko nació de un sueño: crear un lugar donde la autenticidad de Italia se encuentra con el respeto de las normas halal, en un entorno moderno, familiar y acogedor. Somos mucho más que un restaurante: somos una referencia de la cocina italiana halal en Île-de-France, un espacio para compartir para los amantes de la pasta italiana, las pizzas artesanales napolitanas, los postres tradicionales y los productos 100% halal y certificados."
+    },
+    "menu": {
+      "subtitle": "Nuestro Menú",
+      "title": "ALMUERZO",
+      "pasta": {
+        "title": "NUESTRAS PASTAS",
+        "description": "Nuestras pastas importadas de Italia se realzan con las salsas caseras preparadas por nuestro chef.",
+        "note": "✓ Sin gluten disponible con todas nuestras pastas"
+      },
+      "pizza": {
+        "title": "PIZZAS NAPOLITANAS",
+        "description": "Pizzas napolitanas cocidas en horno de piedra, con harinas italianas de calidad superior y nuestra mozzarella fior di latte."
+      },
+      "desserts": {
+        "title": "POSTRES ITALIANOS",
+        "description": "Descubra nuestros postres tradicionales italianos, desde fresas con crema hasta panna cottas artesanales, preparados con amor."
+      },
+      "button": "Ver nuestro menú completo"
+    },
+    "hours": {
+      "subtitle": "Te esperamos",
+      "title": "TODOS LOS DÍAS",
+      "hours": "11:00 - MEDIANOCHE",
+      "note": "(Excepto viernes: 14:00 - Medianoche)"
+    },
+    "secrets": {
+      "subtitle": "Nuestra Historia",
+      "title": "SECRETOS DE SABOR",
+      "paragraph1": "Creemos que el secreto de una buena pasta también reside en la salsa, por eso todas nuestras salsas se preparan en el lugar utilizando solo los mejores ingredientes. Ya sea que prefiera una Amatriciana clásica, una carbonara cremosa o una deliciosa boloñesa, tenemos una salsa que satisfará su paladar.",
+      "paragraph2": "En nuestro restaurante, ofrecemos una variedad de formas y tamaños de pasta artesanal, cada una con su propia textura y sabor únicos. Ya sea que prefiera espaguetis simples o abundantes tonnarelli, nuestra selección de platos de pasta le encantará."
+    },
+    "testimonials": {
+      "subtitle": "Nuestras Especialidades",
+      "title": "Sabores auténticos"
+    }
+  },
+  "reservation": {
+    "button": "Reservar una mesa",
+    "header": {
+      "text1": "Bienvenido au Magnifiko",
+      "text2": "Reserve su mesa en pocos clics (sin reservación después de las 20h)",
+      "text3": "Para cualquier solicitud especial, contáctenos al 01 49 59 00 94"
+    },
+    "lookup": {
+      "title": "Encuentra tus reservaciones",
+      "subtitle": "Ingrese su correo electrónico para ver las reservaciones existentes"
+    },
+    "error": {
+      "formLoad": "Ocurrió un error al cargar el formulario. Por favor cierre y vuelva a abrir la ventana.",
+      "reload": "Recargar"
+    },
+    "form": {
+      "step1": {
+        "guests": "Número de invitados",
+        "date": "Fecha",
+        "time": "Hora",
+        "loading": "Cargando...",
+        "enterGuests": "Ingrese el número de invitados",
+        "quickSelect": "Selección rápida",
+        "guestCount": "invitado",
+        "guestCountPlural": "invitados",
+        "closed": "Restaurante cerrado este día",
+        "noSlots": "No hay franjas horarias disponibles para esta fecha",
+        "button": "Reservar"
+      },
+      "step2": {
+        "title": "Título",
+        "mrs": "Sra.",
+        "mr": "Sr.",
+        "mx": "Mx.",
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "phone": "Teléfono",
+        "email": "Email",
+        "comments": "Comentarios, preferencias o restricciones dietéticas (opcional)",
+        "commentsPlaceholder": "Alergias, celebración, preferencias de asiento...",
+        "saveInfo": "Guardar información para mis próximas reservaciones.",
+        "acceptTerms": "Acepto los términos y condiciones del servicio.",
+        "emailOffers": "Envíenme ofertas y noticias por correo electrónico.",
+        "smsOffers": "Envíenme ofertas y noticias por SMS.",
+        "validFormat": "✓ Formato válido",
+        "yourReservation": "Su reservación",
+        "serviceNotice": "Nuestro primer servicio comienza a las 19:30.",
+        "tableNotice": "Por favor respete su horario de reservación. La mesa debe estar desocupada a las 21:30 para la llegada del segundo servicio.",
+        "privacyNotice": "La información que nos proporciona como parte de su reservación es recopilada por el restaurante y procesada a través de la herramienta de reserva proporcionada por Ochel. Se utiliza únicamente para gestionar su solicitud (confirmación, modificación, cancelación) y para dar seguimiento a su visita (notificaciones por correo electrónico o SMS relacionadas con su reservación). Estos datos también pueden ser utilizados por el restaurante para mejorar su experiencia y, si ha dado su consentimiento, para enviarle comunicaciones personalizadas (noticias, ofertas especiales, campañas de fidelización). De acuerdo con las regulaciones aplicables (GDPR), tiene derecho a acceder, rectificar, eliminar y portar sus datos, así como el derecho a oponerse o limitar su procesamiento. Puede ejercer estos derechos directamente con el restaurante.",
+        "confirmButton": "Confirmar reservación",
+        "submitting": "Creando reservación..."
+      },
+      "poweredBy": "powered by"
+    },
+    "success": {
+      "confirmed": "¡Reservación confirmada!",
+      "registered": "¡Reservación registrada!",
+      "thankYou": "¡Gracias, {{name}}! Su mesa para {{guests}} ha sido reservada para el {{date}} a las {{time}}.",
+      "pending": "Su solicitud será confirmada por nuestro equipo lo antes posible.",
+      "makeAnother": "Hacer otra reservación"
+    },
+    "calendar": {
+      "months": [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre"
+      ],
+      "days": [
+        "Dom",
+        "Lun",
+        "Mar",
+        "Mié",
+        "Jue",
+        "Vie",
+        "Sáb"
+      ],
+      "closedTooltip": "Restaurante cerrado"
+    }
+  },
+  "menu": {
+    "noCategories": "No hay categorías de menú disponibles en este momento.",
+    "noItems": "No hay artículos disponibles en esta categoría.",
+    "specials": "Especialidades Magnifiko",
+    "supplements": "Suplementos",
+    "viewOnTable": "Ver en la mesa"
+  },
+  "footer": {
+    "description": "Restaurante gastronómico situado en el corazón de Ivry-sur-Seine, que ofrece cocina excepcional en un entorno elegante y refinado.",
+    "quickLinks": "Enlaces Rápidos",
+    "information": "Información",
+    "hours": "Horarios",
+    "home": "Inicio",
+    "menu": "Menú",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "openDaily": "Abierto todos los días",
+    "hours1": "11:00 - Medianoche",
+    "friday": "Viernes",
+    "hours2": "14:00 - Medianoche",
+    "copyright": "© 2025 Magnifiko. Todos los derechos reservados"
+  },
+  "delivery": {
+    "title": "PEDIR EN LÍNEA",
+    "description": "Disfrute de nuestros deliciosos platos italianos halal directamente en casa a través de nuestros socios de entrega."
+  },
+  "certifications": {
+    "subtitle": "Nuestras Certificaciones",
+    "title": "CERTIFICACIONES HALAL",
+    "description1": "En Magnifiko, nos comprometemos a respetar los más altos estándares de certificación halal. Todos nuestros ingredientes son cuidadosamente seleccionados y certificados por organizaciones reconocidas para garantizar su cumplimiento con las normas islámicas.",
+    "description2": "Nuestro restaurante está certificado por Achahada, uno de los organismos de certificación halal más respetados en Francia. Esta certificación cubre toda nuestra cadena de suministro, desde la selección de proveedores hasta la preparación de platos.",
+    "publication": "Publicación Achahada"
+  },
+  "menuPage": {
+    "title": "NUESTRO MENÚ"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Formato de email inválido",
+    "invalidPhone": "Número de teléfono inválido",
+    "selectDate": "Por favor seleccione una fecha",
+    "selectTime": "Por favor seleccione una hora",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar"
+  },
+  "metadata": {
+    "title": "Magnifiko - Restaurante Italiano Halal en Ivry-sur-Seine",
+    "description": "Magnifiko - La referencia de la cocina italiana halal en Île-de-France, certificado Achahada. Pizzas, pastas frescas y postres tradicionales."
+  },
+  "admin": {
+    "header": {
+      "title": "Magnifiko",
+      "subtitle": "Panel de Administración",
+      "logout": "Cerrar sesión"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "overviewMobile": "Resumen",
+      "settings": "Configuración",
+      "settingsMobile": "Configuración",
+      "manage": "Gestión de Reservas",
+      "manageMobile": "Gestión",
+      "menu": "Gestión de Menú",
+      "menuMobile": "Menú"
+    },
+    "stats": {
+      "total": "Total",
+      "totalSubtitle": "reservaciones",
+      "confirmed": "Confirmadas",
+      "confirmedSubtitle": "reservaciones activas",
+      "pending": "Pendientes",
+      "pendingSubtitle": "por confirmar",
+      "completed": "Completadas",
+      "completedSubtitle": "comidas terminadas",
+      "cancelled": "Canceladas",
+      "cancelledSubtitle": "reservaciones canceladas",
+      "totalGuests": "Total de Invitados",
+      "totalGuestsSubtitle": "esperados"
+    },
+    "overview": {
+      "bulkDelete": "Eliminar por email",
+      "bulkDeleting": "Eliminando...",
+      "today": "Hoy",
+      "next7days": "Próximos 7 días",
+      "all": "Todo",
+      "resultsFound": "reservación(es) encontrada(s) de",
+      "resultsTotal": "en total",
+      "deleteModal": {
+        "title": "Eliminar reservaciones",
+        "description": "Esta acción eliminará permanentemente todas las reservaciones asociadas a la dirección de correo especificada. Esta acción no se puede deshacer.",
+        "emailLabel": "Dirección de correo",
+        "emailPlaceholder": "Ingrese la dirección de correo",
+        "cancel": "Cancelar",
+        "delete": "Eliminar",
+        "deleting": "Eliminando..."
+      },
+      "export": {
+        "noReservations": "No hay reservaciones para exportar.",
+        "success": "reservaciones exportadas con éxito!",
+        "error": "Error durante la exportación. Por favor, intente de nuevo.",
+        "csvHeaders": {
+          "id": "ID",
+          "name": "Nombre",
+          "email": "Email",
+          "phone": "Teléfono",
+          "date": "Fecha de reservación",
+          "time": "Hora",
+          "guests": "Número de invitados",
+          "status": "Estado",
+          "requests": "Solicitudes especiales",
+          "autoConfirmed": "Confirmado automáticamente",
+          "created": "Fecha de creación",
+          "updated": "Última actualización"
+        }
+      },
+      "toast": {
+        "noReservationsFound": "No se encontraron reservaciones para el email:",
+        "reservationsDeleted": "reservación(es) eliminada(s) para",
+        "deleteError": "Error durante la eliminación. Por favor, intente de nuevo.",
+        "validEmail": "Por favor ingrese una dirección de correo válida."
+      }
+    }
+  }
+}
