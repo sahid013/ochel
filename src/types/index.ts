@@ -1,5 +1,30 @@
 // Core types for the restaurant reservation system
 
+// Restaurant types for multi-tenant platform
+export interface Restaurant {
+  id: string;
+  name: string;
+  slug: string;
+  email: string;
+  phone: string;
+  owner_id: string;
+  logo_url?: string | null;
+  primary_color: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateRestaurantData {
+  name: string;
+  slug: string;
+  email: string;
+  phone: string;
+  owner_id: string;
+  logo_url?: string | null;
+  primary_color?: string;
+}
+
 export interface Reservation {
   id?: string;
   name: string;

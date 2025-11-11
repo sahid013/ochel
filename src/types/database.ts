@@ -33,6 +33,48 @@ export interface Database {
         }
         Relationships: []
       }
+      restaurants: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          email: string
+          phone: string
+          owner_id: string
+          logo_url: string | null
+          primary_color: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          slug: string
+          email: string
+          phone: string
+          owner_id: string
+          logo_url?: string | null
+          primary_color?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          slug?: string
+          email?: string
+          phone?: string
+          owner_id?: string
+          logo_url?: string | null
+          primary_color?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       closed_dates: {
         Row: {
           id: string
