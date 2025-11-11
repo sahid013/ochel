@@ -44,8 +44,8 @@ const forum = Forum({
 });
 
 export const metadata: Metadata = {
-  title: "Magnifiko - Restaurant Italien Halal à Ivry-sur-Seine",
-  description: "Magnifiko - La référence de la cuisine italienne halal en Île-de-France, certifiée Achahada. Pizzas, pâtes fraîches et desserts traditionnels.",
+  title: "",
+  description: "",
 };
 
 export default function RootLayout({

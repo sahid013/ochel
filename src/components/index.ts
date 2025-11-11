@@ -1,6 +1,3 @@
-// Main component exports
-export { ErrorBoundary } from './ErrorBoundary';
-
 // UI components
 export * from './ui';
 
