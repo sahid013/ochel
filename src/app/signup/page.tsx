@@ -72,6 +72,11 @@ export default function SignupPage() {
       if (authError) throw authError;
       if (!authData.user) throw new Error('Failed to create user account');
 
+      // Check if session was created (email confirmation might be required)
+      if (!authData.session) {
+        throw new Error('Please check your email to confirm your account before proceeding.');
+      }
+
       // Step 3: Create restaurant entry
       const { error: restaurantError } = await supabase
         .from('restaurants')
