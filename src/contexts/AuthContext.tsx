@@ -99,58 +99,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const setUserFromSession = async (supabaseUser: SupabaseUser) => {
     try {
-      console.log('Checking admin role for user:', supabaseUser.id);
-      
-      // First, check if this is the default admin user
-      if (supabaseUser.email === 'admin@restaurant.com') {
-        console.log('Default admin user detected, setting admin role');
-        setUser({
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          username: 'admin',
-          role: 'super_admin'
-        });
+      console.log('Setting user from session:', supabaseUser.id);
+
+      // Check if user owns a restaurant
+      const { data: restaurant, error } = await supabase
+        .from('restaurants')
+        .select('id, name')
+        .eq('owner_id', supabaseUser.id)
+        .maybeSingle();
+
+      console.log('Restaurant check result:', { restaurant, error: error || null });
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Database error checking restaurant:', error);
+        setUser(null);
         return;
       }
-      
-      // Check if user has admin role
-      const { data: adminRole, error } = await supabase
-        .from('admin_roles')
-        .select('role')
-        .eq('user_id', supabaseUser.id)
-        .single();
 
-      console.log('Admin role query result:', { data: adminRole, error: error || null });
-
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // No rows returned - user is not an admin
-          console.log('User is not an admin, signing out');
-          setUser(null);
-          await supabase.auth.signOut();
-          return;
-        } else {
-          // Other error occurred - log it properly
-          console.error('Database error checking admin role:', error);
-          setUser(null);
-          return;
-        }
-      }
-
-      // Only set user if they have an admin role
-      if (adminRole?.role) {
-        console.log('Setting admin user with role:', adminRole.role);
+      // Set user (restaurant owners are considered admins)
+      if (restaurant) {
+        console.log('Setting restaurant owner user:', restaurant.name);
         setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || '',
-          username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'Admin',
-          role: adminRole.role
+          username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
+          role: 'restaurant_owner'
         });
       } else {
-        // This shouldn't happen if query succeeds, but just in case
-        console.log('Admin role query succeeded but no valid role found');
-        setUser(null);
-        await supabase.auth.signOut();
+        console.log('User has no restaurant, setting basic user');
+        // User is authenticated but not a restaurant owner - still set user
+        setUser({
+          id: supabaseUser.id,
+          email: supabaseUser.email || '',
+          username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
+          role: 'user'
+        });
       }
     } catch (error) {
       console.error('Unexpected error in setUserFromSession:', error);
