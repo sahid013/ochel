@@ -4,12 +4,14 @@ export interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   text?: string;
+  variant?: 'dots' | 'pulse' | 'spinner';
 }
 
-export function LoadingSpinner({ 
-  size = 'md', 
+export function LoadingSpinner({
+  size = 'md',
   className,
-  text 
+  text,
+  variant = 'dots'
 }: LoadingSpinnerProps) {
   const sizes = {
     sm: 'h-4 w-4',
@@ -18,11 +20,68 @@ export function LoadingSpinner({
     xl: 'h-32 w-32'
   };
 
+  const dotSizes = {
+    sm: 'h-2 w-2',
+    md: 'h-3 w-3',
+    lg: 'h-4 w-4',
+    xl: 'h-6 w-6'
+  };
+
+  if (variant === 'dots') {
+    return (
+      <div className={cn('flex flex-col items-center justify-center gap-4', className)}>
+        <div className="flex items-center gap-2">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={cn(
+                'rounded-full bg-[#F34A23] animate-bounce-dot',
+                dotSizes[size]
+              )}
+              style={{
+                animationDelay: `${i * 0.16}s`
+              }}
+            />
+          ))}
+        </div>
+        {text && (
+          <p className="text-sm text-muted-foreground animate-pulse">{text}</p>
+        )}
+      </div>
+    );
+  }
+
+  if (variant === 'pulse') {
+    return (
+      <div className={cn('flex flex-col items-center justify-center gap-4', className)}>
+        <div className="relative">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={cn(
+                'absolute inset-0 rounded-full bg-[#F34A23] animate-pulse-ring',
+                sizes[size]
+              )}
+              style={{
+                animationDelay: `${i * 0.5}s`
+              }}
+            />
+          ))}
+          <div className={cn('rounded-full bg-[#F34A23]', sizes[size])} />
+        </div>
+        {text && (
+          <p className="text-sm text-muted-foreground animate-pulse">{text}</p>
+        )}
+      </div>
+    );
+  }
+
+  // Default spinner variant
   return (
     <div className={cn('flex flex-col items-center justify-center', className)}>
       <svg
         className={cn(
-          'animate-spin text-primary',
+          'animate-spin text-[#F34A23]',
           sizes[size]
         )}
         xmlns="http://www.w3.org/2000/svg"
@@ -50,10 +109,10 @@ export function LoadingSpinner({
   );
 }
 
-export function PageLoadingSpinner() {
+export function PageLoadingSpinner({ variant = 'pulse' }: { variant?: 'dots' | 'pulse' | 'spinner' }) {
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-      <LoadingSpinner size="xl" text="Loading..." />
+    <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+      <LoadingSpinner size="xl" variant={variant} />
     </div>
   );
 }
