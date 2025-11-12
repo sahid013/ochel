@@ -19,7 +19,7 @@ export default function Navigation({
   return (
     <>
       {/* Fixed Navigation Bar */}
-      <nav className={`fixed top-4 right-4 z-50 px-4 w-[356px] md:w-auto ${className}`}>
+      <nav className={`fixed bottom-[24px] right-[24px] z-50 px-4 w-[356px] md:w-auto ${className}`}>
         <div className="border border-[#4a3f35] shadow-lg" style={{ display: 'flex', padding: '0.375rem', justifyContent: 'center', alignItems: 'center', borderRadius: '3.75rem', background: '#1F1F1F', backdropFilter: 'blur(5px)' }}>
             {/* Language Switcher */}
             <div className="flex items-center">
