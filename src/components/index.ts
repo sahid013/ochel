@@ -9,3 +9,6 @@ export * from './admin';
 
 // Providers
 export * from './providers';
+
+// Templates
+export * from './templates';
