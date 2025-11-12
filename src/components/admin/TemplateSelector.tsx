@@ -45,12 +45,10 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const handleSelectTemplate = async (templateId: string) => {
     setSelectedTemplate(templateId);
     setError(null);
-    setSuccess(false);
     setSaving(true);
 
     try {
@@ -62,13 +60,9 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
 
       if (updateError) throw updateError;
 
-      setSuccess(true);
       if (onTemplateChange) {
         onTemplateChange(templateId);
       }
-
-      // Hide success message after 3 seconds
-      setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       console.error('Error saving template:', err);
       setError(err.message || 'Failed to save template');
@@ -99,12 +93,6 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
       {error && (
         <Alert variant="destructive">
           <p className="text-sm">{error}</p>
-        </Alert>
-      )}
-
-      {success && (
-        <Alert variant="default" className="bg-green-50 border-green-200">
-          <p className="text-sm text-green-800">✓ Template updated successfully!</p>
         </Alert>
       )}
 
