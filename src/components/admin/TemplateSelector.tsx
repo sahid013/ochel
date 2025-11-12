@@ -79,21 +79,21 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Menu Template</h2>
-        <p className="text-gray-600 mb-2">
-          Select the template that best represents your restaurant's style. Use "Preview Live" to test each template before activating it.
-        </p>
-        <div className="flex gap-4 text-sm">
-          <a
-            href={`/${restaurant.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#F34A23] hover:underline"
-          >
-            View your public menu →
-          </a>
+      <div className="flex justify-between items-start gap-6">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Menu Template</h2>
+          <p className="text-gray-600">
+            Select the template that best represents your restaurant's style. Use "Preview Live" to test each template before activating it.
+          </p>
         </div>
+        <a
+          href={`/${restaurant.slug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-shrink-0 px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
+        >
+          View Public Menu →
+        </a>
       </div>
 
       {error && (
