@@ -79,17 +79,16 @@ export default function RestaurantMenuPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-        <div className="relative h-32 w-32">
+        <div className="flex items-center gap-3">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="absolute inset-0 rounded-full bg-[#F34A23] animate-pulse-ring"
+              className="rounded-full bg-[#F34A23] h-6 w-6 animate-bounce-dot"
               style={{
-                animationDelay: `${i * 0.5}s`
+                animationDelay: `${i * 0.16}s`
               }}
             />
           ))}
-          <div className="rounded-full bg-[#F34A23] h-32 w-32" />
         </div>
       </div>
     );

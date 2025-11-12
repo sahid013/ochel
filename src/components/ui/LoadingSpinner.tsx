@@ -109,7 +109,7 @@ export function LoadingSpinner({
   );
 }
 
-export function PageLoadingSpinner({ variant = 'pulse' }: { variant?: 'dots' | 'pulse' | 'spinner' }) {
+export function PageLoadingSpinner({ variant = 'dots' }: { variant?: 'dots' | 'pulse' | 'spinner' }) {
   return (
     <div className="min-h-screen bg-[#000000] flex items-center justify-center">
       <LoadingSpinner size="xl" variant={variant} />

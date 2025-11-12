@@ -6,7 +6,6 @@ import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
-import MenuItemSkeleton from '@/components/menu/MenuItemSkeleton';
 
 interface Template1Props {
   restaurant: Restaurant;
@@ -121,10 +120,18 @@ export default function Template1({ restaurant }: Template1Props) {
 
               {/* Loading State */}
               {loading && (
-                <div className="space-y-4">
-                  {[...Array(6)].map((_, index) => (
-                    <MenuItemSkeleton key={index} />
-                  ))}
+                <div className="flex items-center justify-center py-12">
+                  <div className="flex items-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="rounded-full bg-[#FFD65A] h-4 w-4 animate-bounce-dot"
+                        style={{
+                          animationDelay: `${i * 0.16}s`
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 
