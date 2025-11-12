@@ -19,7 +19,7 @@ export default function Navigation({
   return (
     <>
       {/* Fixed Navigation Bar */}
-      <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-4 w-[356px] md:w-auto ${className}`}>
+      <nav className={`fixed top-4 right-4 z-50 px-4 w-[356px] md:w-auto ${className}`}>
         <div className="border border-[#4a3f35] shadow-lg" style={{ display: 'flex', padding: '0.375rem', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', borderRadius: '3.75rem', background: '#1F1F1F', backdropFilter: 'blur(5px)' }}>
             {/* Left side: Hamburger */}
             <div className="flex items-center gap-4">
