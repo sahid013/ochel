@@ -1,16 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense, ComponentType } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
-import { Template1, Template2, Template3, Template4 } from '@/components/templates';
+
+// Lazy load templates for code splitting - only load the template being used
+const Template1 = lazy(() => import('@/components/templates/Template1'));
+const Template2 = lazy(() => import('@/components/templates/Template2'));
+const Template3 = lazy(() => import('@/components/templates/Template3'));
+const Template4 = lazy(() => import('@/components/templates/Template4'));
 
 /**
  * Restaurant Public Menu Page
  * Routes to different template components based on restaurant.template setting
  * Supports preview mode via ?preview=template2 URL parameter
- * Optimized with client-side caching and faster data fetching
+ * Optimized with:
+ * - Code splitting: Only loads the template being used
+ * - Browser caching: Caches restaurant data
+ * - Lazy loading: Templates load on-demand
  */
 export default function RestaurantMenuPage() {
   const params = useParams();
@@ -19,7 +27,19 @@ export default function RestaurantMenuPage() {
   const previewTemplate = searchParams.get('preview');
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Only show loader if loading takes more than 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loading) {
+        setShowLoader(true);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     // Ensure proper scrolling context for sticky positioning
@@ -43,9 +63,26 @@ export default function RestaurantMenuPage() {
   useEffect(() => {
     async function fetchRestaurant() {
       try {
-        setLoading(true);
+        // Try to get from browser cache first (sessionStorage for current session)
+        const cacheKey = `restaurant_${slug}`;
+        const cachedData = sessionStorage.getItem(cacheKey);
 
-        // Optimize query to select only needed columns
+        if (cachedData) {
+          try {
+            const parsed = JSON.parse(cachedData);
+            // Check if cache is less than 5 minutes old
+            if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+              setRestaurant(parsed.data as Restaurant);
+              setLoading(false);
+              return;
+            }
+          } catch {
+            // Invalid cache, continue to fetch
+            sessionStorage.removeItem(cacheKey);
+          }
+        }
+
+        // Fetch from database (don't set loading=true, show optimistically)
         const { data, error: fetchError } = await supabase
           .from('restaurants')
           .select('*')
@@ -61,6 +98,12 @@ export default function RestaurantMenuPage() {
           setLoading(false);
           return;
         }
+
+        // Cache the result
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data,
+          timestamp: Date.now()
+        }));
 
         setRestaurant(data as Restaurant);
         setLoading(false);
@@ -78,7 +121,8 @@ export default function RestaurantMenuPage() {
     }
   }, [slug]);
 
-  if (loading) {
+  // Only show full-page loader if loading is taking time
+  if (loading && showLoader) {
     return (
       <div className="min-h-screen bg-[#000000] flex items-center justify-center">
         <div className="flex items-center gap-3">
@@ -94,6 +138,11 @@ export default function RestaurantMenuPage() {
         </div>
       </div>
     );
+  }
+
+  // Return nothing while waiting for fast loads
+  if (loading) {
+    return null;
   }
 
   if (error || !restaurant) {
@@ -170,7 +219,25 @@ export default function RestaurantMenuPage() {
           '--text-color': customization.textColor,
         } as React.CSSProperties}
       >
-        {renderTemplate()}
+        <Suspense
+          fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="rounded-full bg-[#F34A23] h-6 w-6 animate-bounce-dot"
+                    style={{
+                      animationDelay: `${i * 0.16}s`
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          }
+        >
+          {renderTemplate()}
+        </Suspense>
       </div>
     </>
   );

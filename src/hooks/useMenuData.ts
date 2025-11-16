@@ -56,8 +56,43 @@ export function useMenuData(restaurantId?: string) {
         setLoading(true);
         setError(null);
 
+        // Try browser cache first for faster loading
+        const cacheKey = `menu_data_${restaurantId || 'default'}`;
+        const cachedMenu = sessionStorage.getItem(cacheKey);
+
+        if (cachedMenu) {
+          try {
+            const parsed = JSON.parse(cachedMenu);
+            // Cache for 5 minutes
+            if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+              // Reconstruct Map from cached array
+              const cachedMap = new Map(parsed.data);
+              setMenuDataCache(cachedMap);
+
+              const cats = Array.from(cachedMap.values()).map(data => data.category);
+              setCategories(cats);
+
+              if (cats.length > 0) {
+                setCurrentCategory(cats[0]);
+              }
+
+              setLoading(false);
+              return;
+            }
+          } catch {
+            // Invalid cache, continue to fetch
+            sessionStorage.removeItem(cacheKey);
+          }
+        }
+
         // Fetch fresh data from Supabase
         const allMenuData = await menuService.getAllMenuData(restaurantId);
+
+        // Cache the result
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data: Array.from(allMenuData.entries()),
+          timestamp: Date.now()
+        }));
 
         setMenuDataCache(allMenuData);
 

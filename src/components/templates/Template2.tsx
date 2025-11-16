@@ -8,6 +8,7 @@ import { useMenuData } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { getTranslatedField as getFieldTranslation } from '@/services/menuService';
+import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
 
 interface Template2Props {
   restaurant: Restaurant;
@@ -126,20 +127,10 @@ export default function Template2({ restaurant }: Template2Props) {
 
           {/* Right Content Area */}
           <div className="lg:ml-64 px-4 md:px-6 lg:px-8 py-12">
-            {/* Loading State */}
+            {/* Loading State - Skeleton */}
             {loading && (
-              <div className="flex items-center justify-center py-12">
-                <div className="flex items-center gap-2">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="rounded-full bg-[#FFD65A] h-4 w-4 animate-bounce-dot"
-                      style={{
-                        animationDelay: `${i * 0.16}s`
-                      }}
-                    />
-                  ))}
-                </div>
+              <div className="py-6">
+                <MenuSkeleton />
               </div>
             )}
 
