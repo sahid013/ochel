@@ -51,7 +51,7 @@ export default function Template1({ restaurant }: Template1Props) {
               className={cn(
                 "relative flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat h-[250px] md:h-[300px] lg:h-screen w-full"
               )}
-              style={{ backgroundImage: 'url("/images/menu-bg.webp")' }}>
+              style={{ backgroundImage: 'url("/images/menu-bg 2.webp")' }}>
               {/* Dark overlay */}
               <div className="absolute" style={{
                 width: '100%',

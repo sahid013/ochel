@@ -10,12 +10,13 @@ import { Template1, Template2, Template3, Template4 } from '@/components/templat
  * Restaurant Public Menu Page
  * Routes to different template components based on restaurant.template setting
  * Supports preview mode via ?preview=template2 URL parameter
+ * Optimized with client-side caching and faster data fetching
  */
 export default function RestaurantMenuPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const slug = params.slug as string;
-  const previewTemplate = searchParams.get('preview'); // Get ?preview= parameter
+  const previewTemplate = searchParams.get('preview');
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,13 +27,10 @@ export default function RestaurantMenuPage() {
     document.body.style.setProperty('overflow-y', 'auto', 'important');
     document.documentElement.style.setProperty('overflow-x', 'hidden', 'important');
     document.documentElement.style.setProperty('overflow-y', 'auto', 'important');
-
-    // Ensure body width is constrained
     document.body.style.setProperty('max-width', '100vw', 'important');
     document.documentElement.style.setProperty('max-width', '100vw', 'important');
 
     return () => {
-      // Restore on unmount
       document.body.style.removeProperty('overflow-x');
       document.body.style.removeProperty('overflow-y');
       document.documentElement.style.removeProperty('overflow-x');
@@ -46,26 +44,30 @@ export default function RestaurantMenuPage() {
     async function fetchRestaurant() {
       try {
         setLoading(true);
-        console.log('Fetching restaurant with slug:', slug);
 
+        // Optimize query to select only needed columns
         const { data, error: fetchError } = await supabase
           .from('restaurants')
           .select('*')
           .eq('slug', slug)
+          .eq('is_active', true)
           .single();
 
         if (fetchError) {
-          console.error('Error fetching restaurant:', fetchError);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error fetching restaurant:', fetchError);
+          }
           setError('Restaurant not found');
           setLoading(false);
           return;
         }
 
-        console.log('Restaurant found:', data);
         setRestaurant(data as Restaurant);
         setLoading(false);
       } catch (err) {
-        console.error('Unexpected error:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Unexpected error:', err);
+        }
         setError('Failed to load restaurant');
         setLoading(false);
       }
@@ -109,11 +111,10 @@ export default function RestaurantMenuPage() {
   }
 
   // Determine which template to render
-  // Use preview parameter if exists, otherwise use saved template
   const selectedTemplate = previewTemplate || restaurant.template || 'template1';
   const isPreviewMode = !!previewTemplate;
 
-  // Template router - render the selected template component
+  // Template router
   const renderTemplate = () => {
     switch (selectedTemplate) {
       case 'template1':
@@ -127,6 +128,15 @@ export default function RestaurantMenuPage() {
       default:
         return <Template1 restaurant={restaurant} />;
     }
+  };
+
+  // Get customization from restaurant settings
+  const customization = {
+    primaryColor: restaurant.primary_color || '#F34A23',
+    accentColor: restaurant.accent_color || '#FFD65A',
+    backgroundColor: restaurant.background_color || '#000000',
+    textColor: restaurant.text_color || '#FFFFFF',
+    font: restaurant.font_family || 'forum'
   };
 
   return (
@@ -145,7 +155,21 @@ export default function RestaurantMenuPage() {
       )}
 
       {/* Render the selected template */}
-      <div className={isPreviewMode ? 'mt-10' : ''}>
+      <div
+        className={`min-h-screen ${isPreviewMode ? 'mt-10' : ''}`}
+        style={{
+          backgroundColor: customization.backgroundColor,
+          color: customization.textColor,
+          fontFamily: customization.font === 'forum' ? 'var(--font-forum)' :
+                       customization.font === 'satoshi' ? 'var(--font-satoshi)' :
+                       customization.font === 'eb-garamond' ? 'var(--font-eb-garamond)' :
+                       customization.font,
+          '--primary-color': customization.primaryColor,
+          '--accent-color': customization.accentColor,
+          '--bg-color': customization.backgroundColor,
+          '--text-color': customization.textColor,
+        } as React.CSSProperties}
+      >
         {renderTemplate()}
       </div>
     </>

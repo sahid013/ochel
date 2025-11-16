@@ -10,6 +10,10 @@ export interface Restaurant {
   owner_id: string;
   logo_url?: string | null;
   primary_color: string;
+  accent_color?: string;
+  background_color?: string;
+  text_color?: string;
+  font_family?: string;
   is_active: boolean;
   template: 'template1' | 'template2' | 'template3' | 'template4';
   created_at: string;

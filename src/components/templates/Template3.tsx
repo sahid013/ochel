@@ -43,7 +43,7 @@ export default function Template3({ restaurant }: Template3Props) {
       />
 
       {/* Main Layout - Boutique Elegant Theme */}
-      <div className="bg-[#FAF8F3] text-gray-900 font-serif min-h-screen">
+      <div className="bg-[#FAF8F3] text-gray-900 font-forum min-h-screen">
         {/* Elegant Header */}
         <div className="relative bg-[#2C2416] text-[#F5E6D3] py-20">
           <div className="max-w-4xl mx-auto px-6 text-center">

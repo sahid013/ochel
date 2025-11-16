@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/layout';
-import { AdminHeader, MenuManagementTab, TemplateSelector } from '@/components/admin';
+import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab } from '@/components/admin';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 
-type AdminTab = 'menu' | 'template';
+type AdminTab = 'menu' | 'template' | 'customize';
 
 export default function RestaurantAdminPage() {
   const params = useParams();
@@ -144,6 +144,16 @@ export default function RestaurantAdminPage() {
               >
                 Template Settings
               </button>
+              <button
+                onClick={() => setActiveTab('customize')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'customize'
+                    ? 'border-[#F34A23] text-[#F34A23]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Customize
+              </button>
             </nav>
           </div>
         </div>
@@ -162,6 +172,10 @@ export default function RestaurantAdminPage() {
                 setRestaurant({ ...restaurant, template: template as any });
               }}
             />
+          )}
+
+          {activeTab === 'customize' && (
+            <CustomizeTab restaurant={restaurant} />
           )}
         </div>
       </div>

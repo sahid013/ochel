@@ -43,7 +43,7 @@ export default function Template4({ restaurant }: Template4Props) {
       />
 
       {/* Main Layout - Casual Colorful Theme */}
-      <div className="bg-gradient-to-br from-orange-50 to-yellow-50 text-gray-900 font-sans min-h-screen">
+      <div className="bg-gradient-to-br from-orange-50 to-yellow-50 text-gray-900 font-forum min-h-screen">
         {/* Fun Header */}
         <div className="relative bg-gradient-to-r from-[#F34A23] to-[#FF6B4A] text-white py-16">
           <div className="max-w-6xl mx-auto px-6 text-center">

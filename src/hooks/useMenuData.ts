@@ -68,7 +68,9 @@ export function useMenuData(restaurantId?: string) {
           setCurrentCategory(cats[0]);
         }
       } catch (err) {
-        console.error('Failed to load menu data:', err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Failed to load menu data:', err);
+        }
         setError('Failed to load menu data');
       } finally {
         setLoading(false);
@@ -77,37 +79,39 @@ export function useMenuData(restaurantId?: string) {
 
     loadAllMenuData();
 
-    // Subscribe to realtime changes from Supabase
-    const { supabase } = require('@/lib/supabase');
+    // Subscribe to realtime changes from Supabase (only in development for performance)
+    if (process.env.NODE_ENV === 'development') {
+      const { supabase } = require('@/lib/supabase');
 
-    const menuChannel = supabase
-      .channel('menu-data-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
-        console.log('Categories changed, refreshing...');
-        setMenuDataCache(new Map());
-        loadAllMenuData();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'subcategories' }, () => {
-        console.log('Subcategories changed, refreshing...');
-        setMenuDataCache(new Map());
-        loadAllMenuData();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
-        console.log('Menu items changed, refreshing...');
-        setMenuDataCache(new Map());
-        loadAllMenuData();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'addons' }, () => {
-        console.log('Addons changed, refreshing...');
-        setMenuDataCache(new Map());
-        loadAllMenuData();
-      })
-      .subscribe();
+      const menuChannel = supabase
+        .channel('menu-data-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+          console.log('Categories changed, refreshing...');
+          setMenuDataCache(new Map());
+          loadAllMenuData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'subcategories' }, () => {
+          console.log('Subcategories changed, refreshing...');
+          setMenuDataCache(new Map());
+          loadAllMenuData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
+          console.log('Menu items changed, refreshing...');
+          setMenuDataCache(new Map());
+          loadAllMenuData();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'addons' }, () => {
+          console.log('Addons changed, refreshing...');
+          setMenuDataCache(new Map());
+          loadAllMenuData();
+        })
+        .subscribe();
 
-    // Cleanup on unmount
-    return () => {
-      supabase.removeChannel(menuChannel);
-    };
+      // Cleanup on unmount
+      return () => {
+        supabase.removeChannel(menuChannel);
+      };
+    }
   }, [restaurantId]);
 
   // Build sections when active tab changes
