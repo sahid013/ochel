@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
-import { addonService, categoryService, subcategoryService, Addon, Category, Subcategory } from '@/services/menuService';
+import { addonService, categoryService, subcategoryService, Addon, Category, Subcategory } from '@/services';
 import { ImageUpload } from './ImageUpload';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LanguageTabs } from './translation/LanguageTabs';
@@ -33,11 +33,12 @@ interface AddonModalProps {
   addon?: Addon | null;
   categories: Category[];
   subcategories: Subcategory[];
+  restaurantId: string;
   onSave: (addon: Omit<Addon, 'id' | 'created_at' | 'updated_at' | 'order'>) => Promise<void>;
   onClose: () => void;
 }
 
-function AddonModal({ addon, categories, subcategories, onSave, onClose }: AddonModalProps) {
+function AddonModal({ addon, categories, subcategories, restaurantId, onSave, onClose }: AddonModalProps) {
   // French (source)
   const [title, setTitle] = useState(addon?.title || '');
   const [description, setDescription] = useState(addon?.description || '');
@@ -395,6 +396,7 @@ function AddonModal({ addon, categories, subcategories, onSave, onClose }: Addon
             value={imagePath}
             onChange={setImagePath}
             folder="add-ons"
+            restaurantId={restaurantId}
             label="Image de l'add-on"
           />
 
@@ -533,11 +535,10 @@ function SortableAddonRow({
         <div className="text-sm font-medium text-gray-900">{addon.price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €</div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap hidden sm:table-cell">
-        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-          addon.status === 'active'
+        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${addon.status === 'active'
             ? 'bg-green-100 text-green-800'
             : 'bg-gray-100 text-gray-800'
-        }`}>
+          }`}>
           {addon.status === 'active' ? 'Actif' : 'Inactif'}
         </span>
       </td>
@@ -566,7 +567,11 @@ function SortableAddonRow({
   );
 }
 
-export function AddonsManagement() {
+interface AddonsManagementProps {
+  restaurantId: string;
+}
+
+export function AddonsManagement({ restaurantId }: AddonsManagementProps) {
   const [addons, setAddons] = useState<Addon[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
@@ -592,9 +597,9 @@ export function AddonsManagement() {
       setLoading(true);
       setError(null);
       const [addonsData, catsData, subcatsData] = await Promise.all([
-        addonService.getAll(),
-        categoryService.getAll(),
-        subcategoryService.getAll(),
+        addonService.getAll(restaurantId),
+        categoryService.getAll(restaurantId),
+        subcategoryService.getAll(restaurantId),
       ]);
       setAddons(addonsData);
       setCategories(catsData);
@@ -608,7 +613,7 @@ export function AddonsManagement() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [restaurantId]);
 
   // Filter subcategories based on selected category (excluding General)
   const availableSubcategories = useMemo(() => {
@@ -692,7 +697,7 @@ export function AddonsManagement() {
 
   const handleSave = async (addonData: Omit<Addon, 'id' | 'created_at' | 'updated_at' | 'order'>) => {
     if (editingAddon) {
-      await addonService.update(editingAddon.id, addonData);
+      await addonService.update(editingAddon.id, addonData, restaurantId);
     } else {
       await addonService.create(addonData);
     }
@@ -710,7 +715,7 @@ export function AddonsManagement() {
     try {
       setDeletingId(addonToDelete.id);
       setError(null);
-      await addonService.delete(addonToDelete.id);
+      await addonService.delete(addonToDelete.id, restaurantId);
       await loadData();
       setShowDeleteModal(false);
       setAddonToDelete(null);
@@ -1080,6 +1085,7 @@ export function AddonsManagement() {
           addon={editingAddon}
           categories={categories}
           subcategories={subcategories}
+          restaurantId={restaurantId}
           onSave={handleSave}
           onClose={() => {
             setShowModal(false);

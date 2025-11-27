@@ -32,8 +32,8 @@ export default function RestaurantAdminPage() {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
-          setError('You must be logged in to access the admin panel');
-          setLoading(false);
+          // Redirect to landing page if not logged in
+          window.location.href = '/';
           return;
         }
 

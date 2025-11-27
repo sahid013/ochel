@@ -3,13 +3,14 @@
 import { cn } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
-import { useMenuData } from '@/hooks/useMenuData';
+import { useMenuData, DemoItem } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
 
 interface Template1Props {
   restaurant: Restaurant;
+  demoItem?: DemoItem | null;
 }
 
 /**
@@ -17,7 +18,7 @@ interface Template1Props {
  * Elegant dark theme with split layout - perfect for fine dining
  * Features: Dark background, split-screen design, image gallery support, 3D model integration
  */
-export default function Template1({ restaurant }: Template1Props) {
+export default function Template1({ restaurant, demoItem }: Template1Props) {
   const { t, locale } = useTranslation();
   const {
     categories,
@@ -29,12 +30,13 @@ export default function Template1({ restaurant }: Template1Props) {
     error,
     isFading,
     getTranslatedField,
-  } = useMenuData(restaurant.id);
+  } = useMenuData(restaurant.id, demoItem);
 
   return (
     <>
       {/* Navigation */}
       <Navigation
+        showLanguageSwitcher={false}
         logo={{
           src: "/icons/MagnifikoLogo.png",
           alt: restaurant.name,
@@ -43,41 +45,37 @@ export default function Template1({ restaurant }: Template1Props) {
         }}
       />
 
-      {/* Main Layout - Two Equal Sections */}
-      <div className="bg-[#000000] text-white font-forum">
-        <div className="flex flex-col lg:flex-row relative">
-          {/* Image Section - Left on desktop, Top on mobile/tablet */}
-          <div className='w-full lg:w-1/2 lg:sticky lg:top-0 lg:h-screen flex-shrink-0'>
-            <div
-              className={cn(
-                "relative flex flex-col justify-center items-center bg-cover bg-center bg-no-repeat h-[250px] md:h-[300px] lg:h-screen w-full"
-              )}
-              style={{ backgroundImage: 'url("/images/menu-bg 2.webp")' }}>
-              {/* Dark overlay */}
-              <div className="absolute" style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                top: 0,
-                left: 0
-              }}></div>
+      {/* Main Layout - Single Column */}
+      <div className="bg-[#fff5f0] text-[#3D1F00] font-oswald">
+        <div className="flex flex-col relative">
+          {/* Hero Section - Top (Full Width) */}
+          <div className='w-full flex-shrink-0 bg-white'>
+            <div className="relative flex flex-col justify-center items-center h-[400px] w-full px-4">
 
-              {/* NOTRE MENU text in the middle */}
-              <div className="text-center px-4 pt-16 lg:pt-0 relative z-10">
-                <h1 className="text-[2.5rem] md:text-[3rem] font-normal tracking-normal text-white" suppressHydrationWarning>
-                  {t('menuPage.title')}
-                </h1>
+              {/* Center Content */}
+              <div className="text-center relative z-10 max-w-4xl mx-auto">
+                {/* Main Heading */}
+                <div className="mb-6">
+                  <h1 className="text-[3rem] md:text-[4.5rem] lg:text-[6rem] font-bold tracking-tight text-[#3D1F00] uppercase leading-none">
+                    OUR MENU
+                  </h1>
+                </div>
+
+                {/* Subtitle */}
+                <p className="text-[14px] md:text-[16px] lg:text-[18px] text-[#3D1F00] max-w-3xl mx-auto leading-relaxed font-normal">
+                  Explore a menu full of handcrafted dishes, rich flavors, and fresh ingredients. From light bites to hearty meals, there for everyone.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Content Section - Right on desktop, Bottom on mobile/tablet */}
-          <div className="w-full lg:w-1/2 bg-[#000000] pt-[100px] min-h-screen">
+          {/* Content Section - Bottom (Full Width) */}
+          <div className="w-full bg-[#fff5f0] pt-8 min-h-screen">
             <div className="w-full p-4 md:p-6 lg:p-8 pb-8">
               {/* Tab Bar Container */}
-              <div className="bg-[#101010] border border-white/30 rounded-[8px] p-[6px] mb-6">
-                <div className="overflow-x-auto scrollbar-hide md:overflow-x-visible">
-                  <div className="flex md:grid md:grid-cols-3 lg:grid-cols-6 gap-1 md:gap-1">
+              <div className="mb-8">
+                <div className="overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-3 md:gap-4">
                     {categories.map((category, index) => (
                       <button
                         key={category.id}
@@ -91,11 +89,11 @@ export default function Template1({ restaurant }: Template1Props) {
                         }}
                         id={`tab-${index}`}
                         className={cn(
-                          "text-[14px] text-center rounded-[6px] cursor-pointer transition-all duration-200 py-2 px-4",
-                          "min-h-[40px] flex items-center justify-center whitespace-nowrap flex-shrink-0",
+                          "text-[13px] md:text-[14px] font-bold text-center rounded-lg cursor-pointer transition-all duration-200 py-3 px-6 uppercase tracking-wide",
+                          "min-h-[44px] flex items-center justify-center whitespace-nowrap flex-shrink-0",
                           activeTab === index
-                            ? "text-[#FFD65A] bg-[#FFD65A]/10"
-                            : "text-white bg-white/10 hover:text-[#FFD65A]"
+                            ? "text-white bg-[#C8102E] border-2 border-[#C8102E]"
+                            : "text-[#C8102E] bg-white border-2 border-[#C8102E] hover:bg-[#C8102E] hover:text-white"
                         )}
                       >
                         {getTranslatedField(category, 'title')}
@@ -107,12 +105,12 @@ export default function Template1({ restaurant }: Template1Props) {
 
               {/* Category Title and Description */}
               {currentCategory && (
-                <div className="mb-6">
-                  <h2 className="text-[28px] md:text-[32px] font-forum text-[#FFF2CC] font-medium capitalize">
+                <div className="mb-8">
+                  <h2 className="text-[28px] md:text-[32px] font-oswald text-[#3D1F00] font-bold capitalize">
                     {getTranslatedField(currentCategory, 'title')}
                   </h2>
                   {getTranslatedField(currentCategory, 'text') && (
-                    <p className="text-[14px] md:text-[16px] font-forum text-[#FFD65A]/80 mt-2">
+                    <p className="text-[14px] md:text-[16px] font-oswald text-[#3D1F00]/70 mt-2">
                       {getTranslatedField(currentCategory, 'text')}
                     </p>
                   )}
@@ -129,7 +127,7 @@ export default function Template1({ restaurant }: Template1Props) {
               {/* Error State */}
               {error && (
                 <div className="flex items-center justify-center py-12">
-                  <div className="text-red-400">{error}</div>
+                  <div className="text-[#C8102E]">{error}</div>
                 </div>
               )}
 
@@ -138,46 +136,65 @@ export default function Template1({ restaurant }: Template1Props) {
                 <div className={`w-full transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                   {sections.length === 0 && categories.length > 0 ? (
                     <div className="text-center py-12">
-                      <p className="text-white/60">{t('menu.noItems')}</p>
+                      <p className="text-[#3D1F00]/60">{t('menu.noItems')}</p>
                     </div>
                   ) : sections.length > 0 ? (
                     sections.map((section, sectionIndex) => (
-                      <div key={sectionIndex} className="mb-8">
+                      <div key={sectionIndex} className="mb-12">
                         {/* Section Title - Only show if title is not empty */}
                         {section.title && (
-                          <div className="mb-4">
-                            <h3 className="text-[24px] font-forum text-[#FFF2CC] font-medium capitalize">
+                          <div className="mb-6">
+                            <h3 className="text-[24px] font-oswald text-[#3D1F00] font-bold capitalize">
                               {section.title}
                             </h3>
                             {section.subtitle && (
-                              <p className="text-[14px] font-forum text-[#FFD65A] mt-1">
-                                ({section.subtitle})
+                              <p className="text-[14px] font-oswald text-[#3D1F00]/70 mt-1">
+                                {section.subtitle}
                               </p>
                             )}
                           </div>
                         )}
 
-                        {/* Menu Items */}
-                        <div className="space-y-4">
+                        {/* Menu Items Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {section.items.map((item) => (
-                            <MenuItemCard
-                              key={item.id}
-                              image={item.image}
-                              title={item.title}
-                              subtitle={item.subtitle}
-                              price={item.price}
-                              has3D={item.has3D}
-                              model3DGlbUrl={item.model3DGlbUrl}
-                              model3DUsdzUrl={item.model3DUsdzUrl}
-                              variant={section.isSpecial ? 'special' : 'regular'}
-                            />
+                            <div key={item.id} className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                              {/* Image */}
+                              <div className="relative w-full h-[300px] bg-gray-200">
+                                {item.image && (
+                                  <img
+                                    src={item.image}
+                                    alt={item.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
+                                {/* Price Badge */}
+                                {item.price && (
+                                  <div className="absolute bottom-4 left-4 bg-white rounded-lg px-4 py-2 shadow-md">
+                                    <p className="text-[#C8102E] font-bold text-[16px]">{item.price}</p>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Content */}
+                              <div className="p-5">
+                                <h4 className="text-[20px] md:text-[22px] font-oswald font-bold text-[#3D1F00] uppercase mb-2 leading-tight">
+                                  {item.title}
+                                </h4>
+                                {item.subtitle && (
+                                  <p className="text-[14px] text-[#3D1F00]/70 line-clamp-2">
+                                    {item.subtitle}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
                     ))
                   ) : (
                     <div className="text-center py-12">
-                      <p className="text-white/60">{t('menu.noCategories')}</p>
+                      <p className="text-[#3D1F00]/60">{t('menu.noCategories')}</p>
                     </div>
                   )}
                 </div>

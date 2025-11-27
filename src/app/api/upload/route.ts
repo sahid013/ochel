@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const folder = formData.get('folder') as string;
+    const restaurantId = formData.get('restaurantId') as string;
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -15,6 +16,10 @@ export async function POST(request: NextRequest) {
 
     if (!folder || !['menu-item', 'add-ons'].includes(folder)) {
       return NextResponse.json({ error: 'Invalid folder' }, { status: 400 });
+    }
+
+    if (!restaurantId) {
+      return NextResponse.json({ error: 'Restaurant ID is required' }, { status: 400 });
     }
 
     // Validate file type
@@ -45,10 +50,10 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Create a unique filename
+    // Create a unique filename with restaurant ID to prevent cross-account access
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = `${folder}/${fileName}`;
+    const filePath = `${restaurantId}/${folder}/${fileName}`;
 
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage

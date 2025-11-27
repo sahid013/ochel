@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
-import { subcategoryService, categoryService, Subcategory, Category } from '@/services/menuService';
+import { subcategoryService, categoryService, Subcategory, Category } from '@/services';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LanguageTabs } from './translation/LanguageTabs';
 import { TranslationField } from './translation/TranslationField';
@@ -382,11 +382,10 @@ function SortableSubcategoryRow({
         </div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap">
-        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-          subcategory.status === 'active'
+        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${subcategory.status === 'active'
             ? 'bg-green-100 text-green-800'
             : 'bg-gray-100 text-gray-800'
-        }`}>
+          }`}>
           {subcategory.status === 'active' ? 'Actif' : 'Inactif'}
         </span>
       </td>
@@ -415,7 +414,11 @@ function SortableSubcategoryRow({
   );
 }
 
-export function SubcategoriesManagement() {
+interface SubcategoriesManagementProps {
+  restaurantId: string;
+}
+
+export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagementProps) {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -437,8 +440,8 @@ export function SubcategoriesManagement() {
       setLoading(true);
       setError(null);
       const [subcatsData, catsData] = await Promise.all([
-        subcategoryService.getAll(),
-        categoryService.getAll(),
+        subcategoryService.getAll(restaurantId),
+        categoryService.getAll(restaurantId),
       ]);
       setSubcategories(subcatsData);
       setCategories(catsData);
@@ -451,7 +454,7 @@ export function SubcategoriesManagement() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [restaurantId]);
 
   // Helper function to get category name
   const getCategoryName = (categoryId: number): string => {
@@ -508,7 +511,7 @@ export function SubcategoriesManagement() {
 
   const handleSave = async (subcategoryData: Omit<Subcategory, 'id' | 'created_at' | 'updated_at' | 'order'>) => {
     if (editingSubcategory) {
-      await subcategoryService.update(editingSubcategory.id, subcategoryData);
+      await subcategoryService.update(editingSubcategory.id, subcategoryData, restaurantId);
     } else {
       await subcategoryService.create(subcategoryData);
     }
@@ -530,7 +533,7 @@ export function SubcategoriesManagement() {
     try {
       setDeletingId(subcategoryToDelete.id);
       setError(null);
-      await subcategoryService.delete(subcategoryToDelete.id);
+      await subcategoryService.delete(subcategoryToDelete.id, restaurantId);
       // Notify all tabs that menu data has changed
       const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
       menuUpdateChannel.postMessage('invalidate');

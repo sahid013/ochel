@@ -9,7 +9,7 @@ import {
   type MenuItem,
   type Addon,
   type Subcategory
-} from '@/services/menuService';
+} from '@/services';
 
 export interface MenuSection {
   title: string;
@@ -34,11 +34,25 @@ interface MenuData {
   addons: Addon[];
 }
 
+export interface DemoItem {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  category: string;
+  subcategory: string;
+  image?: string;
+  model3dGlbUrl?: string;
+  model3dUsdzUrl?: string;
+}
+
 /**
  * Custom hook for fetching and managing menu data from Supabase
  * Shared across all templates to ensure consistent data access
+ * @param restaurantId - The restaurant ID to fetch data for
+ * @param demoItem - Optional demo item for preview mode
  */
-export function useMenuData(restaurantId?: string) {
+export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
   const { t, locale } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState(0);
@@ -56,6 +70,55 @@ export function useMenuData(restaurantId?: string) {
         setLoading(true);
         setError(null);
 
+        // Handle demo restaurant with demo item
+        if (restaurantId === 'demo-restaurant' || !restaurantId) {
+          if (demoItem) {
+            // Create a mock category from demo item
+            const mockCategory: Category = {
+              id: 1,
+              restaurant_id: 'demo-restaurant',
+              title: demoItem.category,
+              title_en: demoItem.category,
+              title_fr: demoItem.category,
+              text: '',
+              text_en: '',
+              text_fr: '',
+              order: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              status: 'active',
+            };
+
+            setCategories([mockCategory]);
+            setCurrentCategory(mockCategory);
+
+            // Create a section with the demo item
+            const demoSection: MenuSection = {
+              title: demoItem.subcategory || '',
+              subtitle: null,
+              items: [{
+                id: parseInt(demoItem.id),
+                image: demoItem.image,
+                title: demoItem.title,
+                subtitle: demoItem.description,
+                price: `${demoItem.price} €`,
+                has3D: !!(demoItem.model3dGlbUrl || demoItem.model3dUsdzUrl),
+                model3DGlbUrl: demoItem.model3dGlbUrl,
+                model3DUsdzUrl: demoItem.model3dUsdzUrl,
+              }]
+            };
+
+            setSections([demoSection]);
+          } else {
+            // No demo item, show empty state
+            setCategories([]);
+            setCurrentCategory(null);
+            setSections([]);
+          }
+          setLoading(false);
+          return;
+        }
+
         // Try browser cache first for faster loading
         const cacheKey = `menu_data_${restaurantId || 'default'}`;
         const cachedMenu = sessionStorage.getItem(cacheKey);
@@ -66,7 +129,7 @@ export function useMenuData(restaurantId?: string) {
             // Cache for 5 minutes
             if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
               // Reconstruct Map from cached array
-              const cachedMap = new Map(parsed.data);
+              const cachedMap = new Map(parsed.data) as Map<number, MenuData>;
               setMenuDataCache(cachedMap);
 
               const cats = Array.from(cachedMap.values()).map(data => data.category);
@@ -147,7 +210,7 @@ export function useMenuData(restaurantId?: string) {
         supabase.removeChannel(menuChannel);
       };
     }
-  }, [restaurantId]);
+  }, [restaurantId, demoItem]);
 
   // Build sections when active tab changes
   useEffect(() => {

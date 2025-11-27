@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { ReservationStatus } from '@/types';
+
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: 'default' | 'secondary' | 'destructive' | 'success' | 'warning';
@@ -39,50 +39,5 @@ export function Badge({
     >
       {children}
     </span>
-  );
-}
-
-interface StatusBadgeProps {
-  status: ReservationStatus | undefined;
-  className?: string;
-}
-
-export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const statusText = status || 'confirmed';
-
-  const getVariant = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'success';
-      case 'pending':
-        return 'warning';
-      case 'cancelled':
-        return 'destructive';
-      case 'completed':
-        return 'secondary';
-      default:
-        return 'default';
-    }
-  };
-
-  const translateStatus = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'Confirmée';
-      case 'pending':
-        return 'En attente';
-      case 'cancelled':
-        return 'Annulée';
-      case 'completed':
-        return 'Terminée';
-      default:
-        return status;
-    }
-  };
-
-  return (
-    <Badge variant={getVariant(statusText)} className={className}>
-      {translateStatus(statusText)}
-    </Badge>
   );
 }

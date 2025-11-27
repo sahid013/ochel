@@ -78,19 +78,16 @@ export default function MenuItemCard({
     <>
       <div
         onClick={handleCardClick}
-        className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg transition-opacity hover:opacity-90 ${
-          image ? 'cursor-pointer' : 'cursor-default'
-        } ${
-          isSpecial
+        className={`flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-lg transition-opacity hover:opacity-90 ${image ? 'cursor-pointer' : 'cursor-default'
+          } ${isSpecial
             ? 'bg-[#EFE6D2] text-black'
             : 'bg-[#101010] border border-white/10 text-white'
-        }`}
+          }`}
       >
         {/* Image - Only render if image exists */}
         {image && (
-          <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex-shrink-0 ${
-            isSpecial ? 'border-[3px] border-[#FFD65A]' : 'border-2 border-white/30'
-          }`}>
+          <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex-shrink-0 ${isSpecial ? 'border-[3px] border-[#FFD65A]' : 'border-2 border-white/30'
+            }`}>
             <Image
               src={image}
               alt={title}
@@ -104,17 +101,15 @@ export default function MenuItemCard({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-2 mb-1">
-            <h3 className={`text-base sm:text-lg font-medium font-forum capitalize ${
-              isSpecial ? 'text-black' : 'text-white'
-            }`}>{title}</h3>
+            <h3 className={`text-base sm:text-lg font-medium font-forum capitalize ${isSpecial ? 'text-black' : 'text-white'
+              }`}>{title}</h3>
 
             {/* Icons */}
             {has3D && (
               <button
                 onClick={handle3DClick}
-                className={`w-5 h-5 sm:w-6 sm:h-6 opacity-70 hover:opacity-100 transition-opacity cursor-pointer ml-1 sm:ml-2 ${
-                  isSpecial ? 'invert' : ''
-                }`}
+                className={`w-5 h-5 sm:w-6 sm:h-6 opacity-70 hover:opacity-100 transition-opacity cursor-pointer ml-1 sm:ml-2 ${isSpecial ? 'invert' : ''
+                  }`}
               >
                 <Image
                   src="/icons/3d.svg"
@@ -128,9 +123,8 @@ export default function MenuItemCard({
           </div>
 
           {subtitle && subtitle.trim() && (
-            <p className={`text-sm mb-2 font-forum ${
-              isSpecial ? 'text-black/70' : 'text-gray-400'
-            }`}>{subtitle}</p>
+            <p className={`text-sm mb-2 font-forum ${isSpecial ? 'text-black/70' : 'text-gray-400'
+              }`}>{subtitle}</p>
           )}
         </div>
 
@@ -168,6 +162,7 @@ export default function MenuItemCard({
               <>
                 {/* 3D Model Viewer with rounded corners */}
                 <div className="flex-1 rounded-xl overflow-hidden mb-4">
+                  {/* @ts-ignore */}
                   <model-viewer
                     src={model3DGlbUrl || ''}
                     ios-src={model3DUsdzUrl || ''}

@@ -191,6 +191,10 @@ body {
     font-family: var(--font-forum), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   }
 
+  .font-oswald {
+    font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
+  }
+
   /* Hide scrollbar utility */
   .scrollbar-hide {
     -ms-overflow-style: none;

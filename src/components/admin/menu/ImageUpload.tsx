@@ -7,10 +7,11 @@ interface ImageUploadProps {
   value: string | null;
   onChange: (path: string) => void;
   folder: 'menu-item' | 'add-ons';
+  restaurantId: string;
   label?: string;
 }
 
-export function ImageUpload({ value, onChange, folder, label = 'Image' }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, folder, restaurantId, label = 'Image' }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(value);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -35,6 +36,7 @@ export function ImageUpload({ value, onChange, folder, label = 'Image' }: ImageU
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', folder);
+      formData.append('restaurantId', restaurantId);
 
       const response = await fetch('/api/upload', {
         method: 'POST',

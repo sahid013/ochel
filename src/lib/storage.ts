@@ -13,17 +13,24 @@ interface UploadResult {
  * Upload a file to Supabase Storage
  * @param file - The file to upload
  * @param folder - The folder to upload to ('menu-item' or 'add-ons')
+ * @param restaurantId - The restaurant ID to organize images by owner
  * @returns The storage path and public URL
  */
 export async function uploadImage(
   file: File,
-  folder: StorageFolder
+  folder: StorageFolder,
+  restaurantId: string
 ): Promise<UploadResult> {
   try {
+    if (!restaurantId) {
+      throw new Error('Restaurant ID is required for image upload');
+    }
+
     // Create a unique filename
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = `${folder}/${fileName}`;
+    // Include restaurant ID in path to prevent cross-account access
+    const filePath = `${restaurantId}/${folder}/${fileName}`;
 
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage
@@ -91,16 +98,18 @@ export async function deleteImage(path: string): Promise<void> {
  * @param oldPath - The storage path of the old image to delete
  * @param newFile - The new file to upload
  * @param folder - The folder to upload to
+ * @param restaurantId - The restaurant ID to organize images by owner
  * @returns The new storage path and public URL
  */
 export async function replaceImage(
   oldPath: string | null,
   newFile: File,
-  folder: StorageFolder
+  folder: StorageFolder,
+  restaurantId: string
 ): Promise<UploadResult> {
   try {
     // Upload new image first
-    const result = await uploadImage(newFile, folder);
+    const result = await uploadImage(newFile, folder, restaurantId);
 
     // Delete old image if it exists (don't wait for it)
     if (oldPath) {

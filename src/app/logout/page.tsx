@@ -9,6 +9,9 @@ export default function LogoutPage() {
 
   useEffect(() => {
     async function signOut() {
+      // Notify the auth error handler that this is an intentional logout
+      window.dispatchEvent(new Event('logout-initiated'));
+
       await supabase.auth.signOut();
       // Clear all local storage
       localStorage.clear();

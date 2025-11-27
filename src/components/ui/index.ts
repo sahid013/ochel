@@ -6,7 +6,7 @@ export { Textarea } from './Textarea';
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
 export { Alert } from './Alert';
 export { LoadingSpinner, PageLoadingSpinner } from './LoadingSpinner';
-export { Badge, StatusBadge } from './Badge';
+export { Badge } from './Badge';
 
 export type { ButtonProps } from './Button';
 export type { InputProps } from './Input';

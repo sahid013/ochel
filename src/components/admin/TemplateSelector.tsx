@@ -55,7 +55,7 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
       // Update restaurant template in database
       const { error: updateError } = await supabase
         .from('restaurants')
-        .update({ template: templateId })
+        .update({ template: templateId } as any)
         .eq('id', restaurant.id);
 
       if (updateError) throw updateError;
@@ -100,11 +100,10 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
         {templates.map((template) => (
           <div
             key={template.id}
-            className={`relative border-2 rounded-lg overflow-hidden transition-all cursor-pointer ${
-              selectedTemplate === template.id
+            className={`relative border-2 rounded-lg overflow-hidden transition-all cursor-pointer ${selectedTemplate === template.id
                 ? 'border-[#F34A23] shadow-lg'
                 : 'border-gray-200 hover:border-gray-300'
-            }`}
+              }`}
             onClick={() => handleSelectTemplate(template.id)}
           >
             {/* Preview Image Placeholder */}
@@ -165,17 +164,16 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
                     handleSelectTemplate(template.id);
                   }}
                   disabled={saving && selectedTemplate === template.id}
-                  className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                    selectedTemplate === template.id
+                  className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${selectedTemplate === template.id
                       ? 'bg-[#F34A23] text-white hover:bg-[#d63d1a]'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   {saving && selectedTemplate === template.id
                     ? 'Saving...'
                     : selectedTemplate === template.id
-                    ? 'Current Template'
-                    : 'Activate Template'}
+                      ? 'Current Template'
+                      : 'Activate Template'}
                 </button>
               </div>
             </div>

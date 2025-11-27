@@ -3,13 +3,14 @@
 import { cn } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
-import { useMenuData } from '@/hooks/useMenuData';
+import { useMenuData, DemoItem } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
 
 interface Template4Props {
   restaurant: Restaurant;
+  demoItem?: DemoItem | null;
 }
 
 /**
@@ -17,7 +18,7 @@ interface Template4Props {
  * Friendly, approachable design for casual restaurants
  * Features: Colorful accents, grid layout, photo-focused, social media integration
  */
-export default function Template4({ restaurant }: Template4Props) {
+export default function Template4({ restaurant, demoItem }: Template4Props) {
   const { t } = useTranslation();
   const {
     categories,
@@ -29,12 +30,13 @@ export default function Template4({ restaurant }: Template4Props) {
     error,
     isFading,
     getTranslatedField,
-  } = useMenuData(restaurant.id);
+  } = useMenuData(restaurant.id, demoItem);
 
   return (
     <>
       {/* Navigation */}
       <Navigation
+        showLanguageSwitcher={false}
         logo={{
           src: "/icons/MagnifikoLogo.png",
           alt: restaurant.name,

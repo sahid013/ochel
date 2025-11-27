@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
-import { STATUS_COLORS } from './constants';
-import type { ReservationStatus } from '@/types';
+
 
 // Utility function for conditional class names
 export function cn(...inputs: ClassValue[]) {
@@ -143,13 +142,7 @@ export function isDateInPast(dateString: string): boolean {
 }
 
 // Status utilities
-export function getStatusColor(status: ReservationStatus | undefined): string {
-  return STATUS_COLORS[status || 'confirmed'];
-}
 
-export function getStatusDisplayName(status: ReservationStatus | undefined): string {
-  return status || 'confirmed';
-}
 
 // Form utilities
 export function createFormData(data: Record<string, unknown>) {
@@ -177,12 +170,12 @@ export function getErrorMessage(error: unknown): string {
 export function formatPhoneNumber(phone: string): string {
   // Remove all non-digits
   const digits = phone.replace(/\D/g, '');
-  
+
   // Format as (XXX) XXX-XXXX for US numbers
   if (digits.length === 10) {
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
   }
-  
+
   // Return original if not a standard format
   return phone;
 }

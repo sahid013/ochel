@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { EB_Garamond, Forum } from "next/font/google";
+import { EB_Garamond, Forum, Oswald } from "next/font/google";
 import { ClientProviders } from "@/components/providers";
 import { DeliveryPopup } from "@/components/DeliveryPopup";
+import { AuthErrorHandler } from "@/components/AuthErrorHandler";
 import "./globals.css";
 
 const satoshi = localFont({
@@ -43,6 +44,12 @@ const forum = Forum({
   weight: ["400"],
 });
 
+const oswald = Oswald({
+  subsets: ["latin"],
+  variable: "--font-oswald",
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "",
   description: "",
@@ -59,9 +66,11 @@ export default function RootLayout({
         <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js" async></script>
       </head>
       <body
-        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} font-sans antialiased`}
+        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} font-sans antialiased`}
       >
         <ClientProviders>
+          {/* Global Auth Error Handler */}
+          <AuthErrorHandler />
           {children}
           {/* Global Delivery Popup - Available on all pages */}
           <DeliveryPopup />

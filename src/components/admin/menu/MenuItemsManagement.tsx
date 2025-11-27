@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
-import { menuItemService, categoryService, subcategoryService, MenuItem, Category, Subcategory } from '@/services/menuService';
+import { menuItemService, categoryService, subcategoryService, MenuItem, Category, Subcategory } from '@/services';
 import { ImageUpload } from './ImageUpload';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LanguageTabs } from './translation/LanguageTabs';
@@ -33,11 +33,12 @@ interface MenuItemModalProps {
   menuItem?: MenuItem | null;
   categories: Category[];
   subcategories: Subcategory[];
+  restaurantId: string;
   onSave: (menuItem: Omit<MenuItem, 'id' | 'created_at' | 'updated_at' | 'order'>) => Promise<void>;
   onClose: () => void;
 }
 
-function MenuItemModal({ menuItem, categories, subcategories, onSave, onClose }: MenuItemModalProps) {
+function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSave, onClose }: MenuItemModalProps) {
   // French (source)
   const [title, setTitle] = useState(menuItem?.title || '');
   const [text, setText] = useState(menuItem?.text || '');
@@ -183,7 +184,7 @@ function MenuItemModal({ menuItem, categories, subcategories, onSave, onClose }:
       await onSave({
         title: title.trim(),
         text: text.trim() || null,
-        description: description.trim() || null,
+        description: description.trim() || '',
         title_en: titleEn.trim() || null,
         text_en: textEn.trim() || null,
         description_en: descriptionEn.trim() || null,
@@ -457,6 +458,7 @@ function MenuItemModal({ menuItem, categories, subcategories, onSave, onClose }:
             value={imagePath}
             onChange={setImagePath}
             folder="menu-item"
+            restaurantId={restaurantId}
             label="Image principale"
           />
 
@@ -628,11 +630,10 @@ function SortableMenuItemRow({
         )}
       </td>
       <td className="px-4 py-4 whitespace-nowrap hidden sm:table-cell">
-        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-          item.status === 'active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-gray-100 text-gray-800'
-        }`}>
+        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${item.status === 'active'
+          ? 'bg-green-100 text-green-800'
+          : 'bg-gray-100 text-gray-800'
+          }`}>
           {item.status === 'active' ? 'Actif' : 'Inactif'}
         </span>
       </td>
@@ -661,7 +662,11 @@ function SortableMenuItemRow({
   );
 }
 
-export function MenuItemsManagement() {
+interface MenuItemsManagementProps {
+  restaurantId: string;
+}
+
+export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
@@ -687,9 +692,9 @@ export function MenuItemsManagement() {
       setLoading(true);
       setError(null);
       const [itemsData, catsData, subcatsData] = await Promise.all([
-        menuItemService.getAll(),
-        categoryService.getAll(),
-        subcategoryService.getAll(),
+        menuItemService.getAll(restaurantId),
+        categoryService.getAll(restaurantId),
+        subcategoryService.getAll(restaurantId),
       ]);
       setMenuItems(itemsData);
       setCategories(catsData);
@@ -703,7 +708,7 @@ export function MenuItemsManagement() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [restaurantId]);
 
   // Filter subcategories based on selected category (excluding General)
   const availableSubcategories = useMemo(() => {
@@ -793,7 +798,7 @@ export function MenuItemsManagement() {
 
   const handleSave = async (menuItemData: Omit<MenuItem, 'id' | 'created_at' | 'updated_at' | 'order'>) => {
     if (editingMenuItem) {
-      await menuItemService.update(editingMenuItem.id, menuItemData);
+      await menuItemService.update(editingMenuItem.id, menuItemData, restaurantId);
     } else {
       await menuItemService.create(menuItemData);
     }
@@ -815,7 +820,7 @@ export function MenuItemsManagement() {
     try {
       setDeletingId(menuItemToDelete.id);
       setError(null);
-      await menuItemService.delete(menuItemToDelete.id);
+      await menuItemService.delete(menuItemToDelete.id, restaurantId);
       // Notify all tabs that menu data has changed
       const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
       menuUpdateChannel.postMessage('invalidate');
@@ -1194,6 +1199,7 @@ export function MenuItemsManagement() {
           menuItem={editingMenuItem}
           categories={categories}
           subcategories={subcategories}
+          restaurantId={restaurantId}
           onSave={handleSave}
           onClose={() => {
             setShowModal(false);

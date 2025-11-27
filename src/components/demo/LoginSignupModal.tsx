@@ -84,7 +84,7 @@ export function LoginSignupModal({
               onClick={onNavigateToSignup}
               className="w-full px-6 py-3 bg-[#F34A23] text-white font-semibold rounded-lg hover:bg-[#d63d1a] transition-colors"
             >
-              Create Free Account
+              Create An Account
             </button>
             <button
               onClick={onNavigateToLogin}
@@ -93,10 +93,6 @@ export function LoginSignupModal({
               Already have an account? Login
             </button>
           </div>
-
-          <p className="text-xs text-gray-500 mt-4">
-            No credit card required • Free forever
-          </p>
         </div>
       </div>
     </div>

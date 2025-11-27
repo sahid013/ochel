@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { LandingLanguageSwitcher } from '@/components/layout/LandingLanguageSwitcher';
+import { LandingProfileDropdown } from '@/components/layout/LandingProfileDropdown';
 
 export default function SignupPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [formData, setFormData] = useState({
     restaurantName: '',
@@ -128,6 +131,87 @@ export default function SignupPage() {
 
       console.log('Signup successful! Restaurant created:', newRestaurant);
 
+      // Step 4: Check for demo item and transfer it to the new restaurant
+      const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
+      const cachedDemoItem = localStorage.getItem(DEMO_CACHE_KEY);
+
+      if (cachedDemoItem && newRestaurant) {
+        // Clear localStorage immediately to prevent reuse across accounts
+        localStorage.removeItem(DEMO_CACHE_KEY);
+        localStorage.removeItem('ochel_demo_template');
+
+        try {
+          console.log('Demo item found, transferring to new restaurant...');
+          const demoItem = JSON.parse(cachedDemoItem);
+
+          // Create category for the demo item
+          const { data: category, error: categoryError } = await supabase
+            .from('categories')
+            .insert({
+              restaurant_id: newRestaurant.id,
+              title: demoItem.category,
+              title_en: demoItem.category,
+              title_ar: demoItem.category,
+              title_fr: demoItem.category,
+              order: 0
+            })
+            .select()
+            .single();
+
+          if (categoryError) {
+            console.error('Error creating category:', categoryError);
+          } else if (category) {
+            // Create subcategory
+            const { data: subcategory, error: subcategoryError } = await supabase
+              .from('subcategories')
+              .insert({
+                category_id: category.id,
+                title: demoItem.subcategory || 'General',
+                title_en: demoItem.subcategory || 'General',
+                title_ar: demoItem.subcategory || 'General',
+                title_fr: demoItem.subcategory || 'General',
+                order: 0
+              })
+              .select()
+              .single();
+
+            if (subcategoryError) {
+              console.error('Error creating subcategory:', subcategoryError);
+            } else if (subcategory) {
+              // Create menu item (excluding image to prevent cross-account image leakage)
+              const { error: itemError } = await supabase
+                .from('menu_items')
+                .insert({
+                  category_id: category.id,
+                  subcategory_id: subcategory.id,
+                  title: demoItem.title,
+                  title_en: demoItem.title,
+                  title_ar: demoItem.title,
+                  title_fr: demoItem.title,
+                  description: demoItem.description,
+                  description_en: demoItem.description,
+                  description_ar: demoItem.description,
+                  description_fr: demoItem.description,
+                  price: parseFloat(demoItem.price) || 0,
+                  image_path: null, // Don't transfer images to prevent cross-account leakage
+                  model_3d_url: demoItem.model3dGlbUrl || null,
+                  redirect_3d_url: demoItem.model3dUsdzUrl || null,
+                  order: 0
+                });
+
+              if (itemError) {
+                console.error('Error creating menu item:', itemError);
+              } else {
+                console.log('Demo item successfully transferred!');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error transferring demo item:', error);
+          // Don't fail signup if demo item transfer fails
+        }
+      }
+
       // Success!
       setSuccess(true);
       setTimeout(() => {
@@ -146,14 +230,14 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Success!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 font-forum">Success!</h2>
           <p className="text-gray-600">Your restaurant account has been created. Redirecting to admin panel...</p>
         </div>
       </div>
@@ -161,121 +245,176 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Restaurant Account</h1>
-          <p className="text-gray-600">Sign up to manage your restaurant menu</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6]">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <a href="/" className="text-3xl font-bold text-gray-900 font-forum tracking-tight">
+              Ochel
+            </a>
+
+            {/* Language Switcher + Auth Buttons/Profile */}
+            <div className="flex items-center gap-4">
+              <LandingLanguageSwitcher />
+
+              {!loading && (
+                <>
+                  {isLoggedIn ? (
+                    <LandingProfileDropdown />
+                  ) : (
+                    <>
+                      <a
+                        href="/login"
+                        className="px-6 py-2.5 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                      >
+                        Login
+                      </a>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Two Column Layout */}
+      <div className="pt-20 min-h-screen grid lg:grid-cols-2">
+        {/* Left Column - Image */}
+        <div className="hidden lg:block relative bg-gradient-to-br from-[#F34A23] to-[#d63d1a]">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&q=80)' }}
+          ></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#F34A23]/80 to-[#d63d1a]/80"></div>
+          <div className="relative h-full flex flex-col justify-center items-center p-12 text-white">
+            <h2 className="text-5xl font-bold mb-6 font-forum">Start Your Journey</h2>
+            <p className="text-xl text-center max-w-md opacity-90">
+              Create your account and bring your restaurant menu to life in minutes.
+            </p>
+          </div>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+        {/* Right Column - Form */}
+        <div className="flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-forum">Create Account</h1>
+              <p className="text-gray-600">Sign up to manage your restaurant menu</p>
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Restaurant Name */}
-          <div>
-            <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700 mb-2">
-              Restaurant Name *
-            </label>
-            <input
-              id="restaurantName"
-              type="text"
-              required
-              value={formData.restaurantName}
-              onChange={(e) => setFormData({ ...formData, restaurantName: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="e.g., Magnifiko"
-            />
-            {formData.restaurantName && (
-              <p className="mt-1 text-xs text-gray-500">
-                Your URL will be: <span className="font-medium">/{generateSlug(formData.restaurantName)}</span>
-              </p>
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
             )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Restaurant Name */}
+              <div>
+                <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Restaurant Name *
+                </label>
+                <input
+                  id="restaurantName"
+                  type="text"
+                  required
+                  value={formData.restaurantName}
+                  onChange={(e) => setFormData({ ...formData, restaurantName: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="e.g., Magnifiko"
+                />
+                {formData.restaurantName && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Your URL will be: <span className="font-medium">/{generateSlug(formData.restaurantName)}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number *
+                </label>
+                <input
+                  id="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="+33 1 23 45 67 89"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Password *
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="At least 6 characters"
+                />
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm Password *
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="Re-enter your password"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20"
+              >
+                {loading ? 'Creating Account...' : 'Create Account'}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Already have an account?{' '}
+              <a href="/login" className="text-[#F34A23] hover:underline font-medium">
+                Sign in
+              </a>
+            </p>
           </div>
-
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="your@email.com"
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number *
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              required
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="+33 1 23 45 67 89"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password *
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="At least 6 characters"
-            />
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password *
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              required
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="Re-enter your password"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-lg font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <a href="/login" className="text-[#F34A23] hover:underline font-medium">
-            Sign in
-          </a>
-        </p>
+        </div>
       </div>
     </div>
   );

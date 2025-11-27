@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { LandingLanguageSwitcher } from '@/components/layout/LandingLanguageSwitcher';
+import { LandingProfileDropdown } from '@/components/layout/LandingProfileDropdown';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function LoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
   const [loginStatus, setLoginStatus] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -70,6 +73,89 @@ export default function LoginPage() {
       }
 
       console.log('Found restaurant:', restaurant.name, 'slug:', restaurant.slug);
+
+      // Check for demo item and transfer it to the restaurant
+      const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
+      const cachedDemoItem = localStorage.getItem(DEMO_CACHE_KEY);
+
+      if (cachedDemoItem && restaurant) {
+        // Clear localStorage immediately to prevent reuse across accounts
+        localStorage.removeItem(DEMO_CACHE_KEY);
+        localStorage.removeItem('ochel_demo_template');
+
+        try {
+          console.log('Demo item found, transferring to restaurant...');
+          setLoginStatus('Transferring your demo item...');
+          const demoItem = JSON.parse(cachedDemoItem);
+
+          // Create category for the demo item
+          const { data: category, error: categoryError } = await supabase
+            .from('categories')
+            .insert({
+              restaurant_id: restaurant.id,
+              title: demoItem.category,
+              title_en: demoItem.category,
+              title_ar: demoItem.category,
+              title_fr: demoItem.category,
+              order: 0
+            })
+            .select()
+            .single();
+
+          if (categoryError) {
+            console.error('Error creating category:', categoryError);
+          } else if (category) {
+            // Create subcategory
+            const { data: subcategory, error: subcategoryError } = await supabase
+              .from('subcategories')
+              .insert({
+                category_id: category.id,
+                title: demoItem.subcategory || 'General',
+                title_en: demoItem.subcategory || 'General',
+                title_ar: demoItem.subcategory || 'General',
+                title_fr: demoItem.subcategory || 'General',
+                order: 0
+              })
+              .select()
+              .single();
+
+            if (subcategoryError) {
+              console.error('Error creating subcategory:', subcategoryError);
+            } else if (subcategory) {
+              // Create menu item (excluding image to prevent cross-account image leakage)
+              const { error: itemError } = await supabase
+                .from('menu_items')
+                .insert({
+                  category_id: category.id,
+                  subcategory_id: subcategory.id,
+                  title: demoItem.title,
+                  title_en: demoItem.title,
+                  title_ar: demoItem.title,
+                  title_fr: demoItem.title,
+                  description: demoItem.description,
+                  description_en: demoItem.description,
+                  description_ar: demoItem.description,
+                  description_fr: demoItem.description,
+                  price: parseFloat(demoItem.price) || 0,
+                  image_path: null, // Don't transfer images to prevent cross-account leakage
+                  model_3d_url: demoItem.model3dGlbUrl || null,
+                  redirect_3d_url: demoItem.model3dUsdzUrl || null,
+                  order: 0
+                });
+
+              if (itemError) {
+                console.error('Error creating menu item:', itemError);
+              } else {
+                console.log('Demo item successfully transferred!');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error transferring demo item:', error);
+          // Don't fail login if demo item transfer fails
+        }
+      }
+
       setLoginStatus('Redirecting to admin panel...');
 
       // Get the full restaurant data to access slug
@@ -122,90 +208,145 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Restaurant Login</h1>
-          <p className="text-gray-600">Sign in to manage your restaurant</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6]">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <a href="/" className="text-3xl font-bold text-gray-900 font-forum tracking-tight">
+              Ochel
+            </a>
+
+            {/* Language Switcher + Auth Buttons/Profile */}
+            <div className="flex items-center gap-4">
+              <LandingLanguageSwitcher />
+
+              {!loading && (
+                <>
+                  {isLoggedIn ? (
+                    <LandingProfileDropdown />
+                  ) : (
+                    <>
+                      <a
+                        href="/signup"
+                        className="px-6 py-2.5 bg-[#F34A23] text-white font-medium rounded-xl hover:bg-[#d63d1a] transition-all shadow-lg shadow-orange-500/20"
+                      >
+                        Sign Up
+                      </a>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Two Column Layout */}
+      <div className="pt-20 min-h-screen grid lg:grid-cols-2">
+        {/* Left Column - Image */}
+        <div className="hidden lg:block relative bg-gradient-to-br from-[#F34A23] to-[#d63d1a]">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80)' }}
+          ></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#F34A23]/80 to-[#d63d1a]/80"></div>
+          <div className="relative h-full flex flex-col justify-center items-center p-12 text-white">
+            <h2 className="text-5xl font-bold mb-6 font-forum">Welcome Back</h2>
+            <p className="text-xl text-center max-w-md opacity-90">
+              Sign in to manage your restaurant menu and delight your customers.
+            </p>
+          </div>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        {loginStatus && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-600">{loginStatus}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email *
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="your@email.com"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password *
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowResetPassword(true)}
-                className="text-sm text-[#F34A23] hover:underline"
-              >
-                Forgot Password?
-              </button>
+        {/* Right Column - Form */}
+        <div className="flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-forum">Sign In</h1>
+              <p className="text-gray-600">Enter your credentials to access your account</p>
             </div>
-            <input
-              id="password"
-              type="password"
-              required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
-              placeholder="Your password"
-            />
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
+            {loginStatus && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <p className="text-sm text-blue-600">{loginStatus}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Password *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowResetPassword(true)}
+                    className="text-sm text-[#F34A23] hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  placeholder="Your password"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20"
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              Don't have an account?{' '}
+              <a href="/signup" className="text-[#F34A23] hover:underline font-medium">
+                Sign up
+              </a>
+            </p>
           </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-lg font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <a href="/signup" className="text-[#F34A23] hover:underline font-medium">
-            Sign up
-          </a>
-        </p>
+        </div>
       </div>
 
       {/* Reset Password Modal */}
       {showResetPassword && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset Password</h2>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 font-forum">Reset Password</h2>
             <p className="text-gray-600 mb-6">
               Enter your email address and we'll send you a link to reset your password.
             </p>
@@ -227,7 +368,7 @@ export default function LoginPage() {
                     setResetSuccess(false);
                     setResetEmail('');
                   }}
-                  className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-lg font-medium hover:bg-[#d63d1a] transition-colors"
+                  className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] transition-colors"
                 >
                   Close
                 </button>
@@ -244,7 +385,7 @@ export default function LoginPage() {
                     required
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -257,14 +398,14 @@ export default function LoginPage() {
                       setResetEmail('');
                       setError('');
                     }}
-                    className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                    className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-xl font-medium hover:bg-gray-300 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={resetLoading}
-                    className="flex-1 bg-[#F34A23] text-white py-3 px-6 rounded-lg font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
                     {resetLoading ? 'Sending...' : 'Send Reset Link'}
                   </button>

@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 import { cn } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
-import { useMenuData } from '@/hooks/useMenuData';
+import { useMenuData, DemoItem } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
-import { getTranslatedField as getFieldTranslation } from '@/services/menuService';
+import { getTranslatedField as getFieldTranslation } from '@/services';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
 
 interface Template2Props {
   restaurant: Restaurant;
+  demoItem?: DemoItem | null;
 }
 
 /**
@@ -19,7 +20,7 @@ interface Template2Props {
  * Clean, bright design with minimalist aesthetics
  * Features: Light background, card-based layout, mobile-optimized, fast loading
  */
-export default function Template2({ restaurant }: Template2Props) {
+export default function Template2({ restaurant, demoItem }: Template2Props) {
   const { t, locale } = useTranslation();
   const {
     categories,
@@ -28,7 +29,7 @@ export default function Template2({ restaurant }: Template2Props) {
     loading,
     error,
     getTranslatedField,
-  } = useMenuData(restaurant.id);
+  } = useMenuData(restaurant.id, demoItem);
 
   // State for all categories data
   const [allCategoriesData, setAllCategoriesData] = useState<Map<number, any>>(new Map());
@@ -39,7 +40,7 @@ export default function Template2({ restaurant }: Template2Props) {
       if (loading || categories.length === 0) return;
 
       try {
-        const { menuService } = await import('@/services/menuService');
+        const { menuService } = await import('@/services');
         const allData = await menuService.getAllMenuData(restaurant.id);
         setAllCategoriesData(allData);
       } catch (err) {
@@ -51,7 +52,7 @@ export default function Template2({ restaurant }: Template2Props) {
   }, [categories, loading, restaurant.id]);
 
   // Function to scroll to a specific category section
-  const scrollToCategory = (categoryId: string) => {
+  const scrollToCategory = (categoryId: string | number) => {
     const element = document.getElementById(`category-${categoryId}`);
     if (element) {
       const offset = 100; // Offset for sticky header
@@ -69,6 +70,7 @@ export default function Template2({ restaurant }: Template2Props) {
     <div className="bg-[#000000]">
       {/* Navigation */}
       <Navigation
+        showLanguageSwitcher={false}
         logo={{
           src: "/icons/MagnifikoLogo.png",
           alt: restaurant.name,
@@ -99,34 +101,39 @@ export default function Template2({ restaurant }: Template2Props) {
 
         {/* Two Column Layout - Tabs Left, Content Right */}
         <div className="relative">
-          {/* Left Sidebar - Vertical Tabs (Fixed on Desktop) */}
-          <div className="lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-64 bg-[#000000] border-r border-white/20 z-20 lg:overflow-y-auto">
-            <div className="p-4 lg:pt-8">
-              {/* Category Tabs - Vertical */}
-              <div className="space-y-2">
-                {categories.map((category, index) => (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      setActiveTab(index);
-                      scrollToCategory(category.id);
-                    }}
-                    className={cn(
-                      "w-full text-left font-medium rounded-xl py-4 px-4 transition-all duration-200",
-                      activeTab === index
-                        ? "bg-[#F34A23] text-white shadow-lg"
-                        : "bg-white/10 text-white hover:bg-white/20"
-                    )}
-                  >
-                    {getTranslatedField(category, 'title')}
-                  </button>
-                ))}
+          {/* Left Sidebar - Vertical Tabs (Fixed on Desktop) - Only show if there are categories */}
+          {categories.length > 0 && (
+            <div className="lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-64 bg-[#000000] border-r border-white/20 z-20 lg:overflow-y-auto">
+              <div className="p-4 lg:pt-8">
+                {/* Category Tabs - Vertical */}
+                <div className="space-y-2">
+                  {categories.map((category, index) => (
+                    <button
+                      key={category.id}
+                      onClick={() => {
+                        setActiveTab(index);
+                        scrollToCategory(category.id);
+                      }}
+                      className={cn(
+                        "w-full text-left font-medium rounded-xl py-4 px-4 transition-all duration-200",
+                        activeTab === index
+                          ? "bg-[#F34A23] text-white shadow-lg"
+                          : "bg-white/10 text-white hover:bg-white/20"
+                      )}
+                    >
+                      {getTranslatedField(category, 'title')}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Right Content Area */}
-          <div className="lg:ml-64 px-4 md:px-6 lg:px-8 py-12">
+          <div className={cn(
+            "px-4 md:px-6 lg:px-8 py-12",
+            categories.length > 0 ? "lg:ml-64" : ""
+          )}>
             {/* Loading State - Skeleton */}
             {loading && (
               <div className="py-6">

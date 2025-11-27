@@ -43,7 +43,7 @@ async function translateWithAPI(text: string, sourceLang: string, targetLang: st
  * @param targetLang - Target language code ('en', 'it', 'es')
  * @returns Translated text
  */
-export async function translateText(text: string, targetLang: 'en' | 'it' | 'es'): Promise<string> {
+export async function translateText(text: string, targetLang: 'en' | 'it' | 'es' | 'fr'): Promise<string> {
   if (!text || !text.trim()) {
     return text;
   }

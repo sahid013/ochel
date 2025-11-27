@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
-import { categoryService, subcategoryService, Category } from '@/services/menuService';
+import { categoryService, subcategoryService, Category } from '@/services';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LanguageTabs } from './translation/LanguageTabs';
 import { TranslationField } from './translation/TranslationField';
@@ -346,11 +346,10 @@ function SortableCategoryRow({
         </div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap">
-        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-          category.status === 'active'
+        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status === 'active'
             ? 'bg-green-100 text-green-800'
             : 'bg-gray-100 text-gray-800'
-        }`}>
+          }`}>
           {category.status === 'active' ? 'Actif' : 'Inactif'}
         </span>
       </td>
@@ -450,7 +449,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
 
   const handleSave = async (categoryData: Omit<Category, 'id' | 'created_at' | 'updated_at' | 'order'>) => {
     if (editingCategory) {
-      await categoryService.update(editingCategory.id, categoryData);
+      await categoryService.update(editingCategory.id, categoryData, restaurantId);
     } else {
       // Create the category with restaurant_id
       const newCategory = await categoryService.create({
@@ -492,7 +491,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
     try {
       setDeletingId(categoryToDelete.id);
       setError(null);
-      await categoryService.delete(categoryToDelete.id);
+      await categoryService.delete(categoryToDelete.id, restaurantId);
       // Notify all tabs that menu data has changed
       const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
       menuUpdateChannel.postMessage('invalidate');

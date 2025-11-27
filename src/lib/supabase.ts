@@ -39,7 +39,4 @@ try {
 export { supabase };
 
 // Re-export types from the centralized types file
-export type { Reservation, ReservationStatus, CreateReservationData } from '@/types';
-
-
-
+export type { Restaurant } from '@/types';

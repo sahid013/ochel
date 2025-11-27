@@ -201,6 +201,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = async (): Promise<void> => {
     try {
+      // Notify the auth error handler that this is an intentional logout
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('logout-initiated'));
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
