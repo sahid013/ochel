@@ -8,7 +8,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <a href="/" className="text-2xl font-bold text-gray-900 font-forum">
+            <a href="/" className="text-3xl font-bold text-gray-900 font-forum tracking-tight">
               Ochel
             </a>
 
@@ -38,7 +38,7 @@ export default function Home() {
 
       {/* Features Section */}
       <div className="py-20 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
             Why Choose Ochel?
           </h2>
@@ -78,7 +78,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <div className="py-20 px-4 bg-gray-900 text-white">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to Create Your Menu?
           </h2>

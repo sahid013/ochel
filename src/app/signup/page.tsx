@@ -288,13 +288,7 @@ export default function SignupPage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&q=80)' }}
           ></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#F34A23]/80 to-[#d63d1a]/80"></div>
-          <div className="relative h-full flex flex-col justify-center items-center p-12 text-white">
-            <h2 className="text-5xl font-bold mb-6 font-forum">Start Your Journey</h2>
-            <p className="text-xl text-center max-w-md opacity-90">
-              Create your account and bring your restaurant menu to life in minutes.
-            </p>
-          </div>
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Right Column - Form */}

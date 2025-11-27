@@ -251,13 +251,7 @@ export default function LoginPage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80)' }}
           ></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-[#F34A23]/80 to-[#d63d1a]/80"></div>
-          <div className="relative h-full flex flex-col justify-center items-center p-12 text-white">
-            <h2 className="text-5xl font-bold mb-6 font-forum">Welcome Back</h2>
-            <p className="text-xl text-center max-w-md opacity-90">
-              Sign in to manage your restaurant menu and delight your customers.
-            </p>
-          </div>
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Right Column - Form */}
