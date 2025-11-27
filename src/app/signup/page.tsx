@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { LandingLanguageSwitcher } from '@/components/layout/LandingLanguageSwitcher';
-import { LandingProfileDropdown } from '@/components/layout/LandingProfileDropdown';
+import { Navbar } from '@/components/layout/Navbar';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -237,8 +236,8 @@ export default function SignupPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2 font-forum">Success!</h2>
-          <p className="text-gray-600">Your restaurant account has been created. Redirecting to admin panel...</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 font-loubag uppercase">Success!</h2>
+          <p className="text-gray-600 font-inter">Your restaurant account has been created. Redirecting to admin panel...</p>
         </div>
       </div>
     );
@@ -246,42 +245,10 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6]">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <a href="/" className="text-3xl font-bold text-gray-900 font-forum tracking-tight">
-              Ochel
-            </a>
-
-            {/* Language Switcher + Auth Buttons/Profile */}
-            <div className="flex items-center gap-4">
-              <LandingLanguageSwitcher />
-
-              {!loading && (
-                <>
-                  {isLoggedIn ? (
-                    <LandingProfileDropdown />
-                  ) : (
-                    <>
-                      <a
-                        href="/login"
-                        className="px-6 py-2.5 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors"
-                      >
-                        Login
-                      </a>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Two Column Layout */}
-      <div className="pt-20 min-h-screen grid lg:grid-cols-2">
+      <div className="pt-16 min-h-screen grid lg:grid-cols-2">
         {/* Left Column - Image */}
         <div className="hidden lg:block relative bg-gradient-to-br from-[#F34A23] to-[#d63d1a]">
           <div
@@ -295,20 +262,20 @@ export default function SignupPage() {
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-forum">Create Account</h1>
-              <p className="text-gray-600">Sign up to manage your restaurant menu</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-loubag uppercase">Create Account</h1>
+              <p className="text-gray-600 font-inter">Sign up to manage your restaurant menu</p>
             </div>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-600 font-inter">{error}</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Restaurant Name */}
               <div>
-                <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                   Restaurant Name *
                 </label>
                 <input
@@ -321,7 +288,7 @@ export default function SignupPage() {
                   placeholder="e.g., Magnifiko"
                 />
                 {formData.restaurantName && (
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 font-inter">
                     Your URL will be: <span className="font-medium">/{generateSlug(formData.restaurantName)}</span>
                   </p>
                 )}
@@ -329,7 +296,7 @@ export default function SignupPage() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                   Email *
                 </label>
                 <input
@@ -345,7 +312,7 @@ export default function SignupPage() {
 
               {/* Phone */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                   Phone Number *
                 </label>
                 <input
@@ -361,7 +328,7 @@ export default function SignupPage() {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                   Password *
                 </label>
                 <input
@@ -377,7 +344,7 @@ export default function SignupPage() {
 
               {/* Confirm Password */}
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                   Confirm Password *
                 </label>
                 <input
@@ -395,13 +362,13 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20"
+                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20 font-inter"
               >
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-gray-600">
+            <p className="mt-6 text-center text-sm text-gray-600 font-inter">
               Already have an account?{' '}
               <a href="/login" className="text-[#F34A23] hover:underline font-medium">
                 Sign in

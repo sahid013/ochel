@@ -195,6 +195,14 @@ body {
     font-family: var(--font-oswald), ui-sans-serif, system-ui, sans-serif;
   }
 
+  .font-inter {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .font-loubag {
+    font-family: var(--font-loubag), ui-sans-serif, system-ui, sans-serif;
+  }
+
   /* Hide scrollbar utility */
   .scrollbar-hide {
     -ms-overflow-style: none;

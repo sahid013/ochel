@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { EB_Garamond, Forum, Oswald } from "next/font/google";
+import { EB_Garamond, Forum, Oswald, Inter } from "next/font/google";
 import { ClientProviders } from "@/components/providers";
 import { DeliveryPopup } from "@/components/DeliveryPopup";
 import { AuthErrorHandler } from "@/components/AuthErrorHandler";
@@ -50,6 +50,43 @@ const oswald = Oswald({
   weight: ["400", "500", "600", "700"],
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+});
+
+const loubag = localFont({
+  src: [
+    {
+      path: "./fonts/Loubag-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Loubag-Medium.ttf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Loubag-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Loubag-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Loubag-ExtraBold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-loubag",
+});
+
 export const metadata: Metadata = {
   title: "",
   description: "",
@@ -66,7 +103,7 @@ export default function RootLayout({
         <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js" async></script>
       </head>
       <body
-        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} font-sans antialiased`}
+        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} ${inter.variable} ${loubag.variable} font-sans antialiased`}
       >
         <ClientProviders>
           {/* Global Auth Error Handler */}

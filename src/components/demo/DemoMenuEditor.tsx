@@ -159,7 +159,7 @@ export function DemoMenuEditor() {
     <div className="w-full">
       {/* Header */}
       <div className="text-center mb-12 pt-[100px] px-5">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-forum">
+        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-loubag uppercase">
           Try It Out
         </h2>
       </div>
@@ -167,8 +167,8 @@ export function DemoMenuEditor() {
       <div className="px-5 pb-12">
         <div className="grid gap-8 items-start" style={{ gridTemplateColumns: '0.6fr 1fr' }}>
           {/* Left Column - Add Your First Item */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 h-fit">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 font-loubag uppercase">
               Add Your First Item
             </h3>
 
@@ -380,8 +380,8 @@ export function DemoMenuEditor() {
           </div>
 
           {/* Right Column - Choose Your Template */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-gray-200 flex flex-col h-fit">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6 font-loubag uppercase">
               Choose Your Template
             </h3>
 
@@ -402,7 +402,7 @@ export function DemoMenuEditor() {
             </div>
 
             {/* Preview */}
-            <div className="relative rounded-lg overflow-hidden shadow-2xl border-2 border-gray-800" style={{ height: '600px' }}>
+            <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {/* Template 1 */}
               {selectedTemplate === 'template1' && (
                 <div className="h-full overflow-auto">

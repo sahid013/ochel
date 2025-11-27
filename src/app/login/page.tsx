@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { LandingLanguageSwitcher } from '@/components/layout/LandingLanguageSwitcher';
-import { LandingProfileDropdown } from '@/components/layout/LandingProfileDropdown';
+import { Navbar } from '@/components/layout/Navbar';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -209,42 +208,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6]">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <a href="/" className="text-3xl font-bold text-gray-900 font-forum tracking-tight">
-              Ochel
-            </a>
-
-            {/* Language Switcher + Auth Buttons/Profile */}
-            <div className="flex items-center gap-4">
-              <LandingLanguageSwitcher />
-
-              {!loading && (
-                <>
-                  {isLoggedIn ? (
-                    <LandingProfileDropdown />
-                  ) : (
-                    <>
-                      <a
-                        href="/signup"
-                        className="px-6 py-2.5 bg-[#F34A23] text-white font-medium rounded-xl hover:bg-[#d63d1a] transition-all shadow-lg shadow-orange-500/20"
-                      >
-                        Sign Up
-                      </a>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Two Column Layout */}
-      <div className="pt-20 min-h-screen grid lg:grid-cols-2">
+      <div className="pt-16 min-h-screen grid lg:grid-cols-2">
         {/* Left Column - Image */}
         <div className="hidden lg:block relative bg-gradient-to-br from-[#F34A23] to-[#d63d1a]">
           <div
@@ -258,26 +225,26 @@ export default function LoginPage() {
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-forum">Sign In</h1>
-              <p className="text-gray-600">Enter your credentials to access your account</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-loubag uppercase">Sign In</h1>
+              <p className="text-gray-600 font-inter">Enter your credentials to access your account</p>
             </div>
 
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-600 font-inter">{error}</p>
               </div>
             )}
 
             {loginStatus && (
               <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <p className="text-sm text-blue-600">{loginStatus}</p>
+                <p className="text-sm text-blue-600 font-inter">{loginStatus}</p>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                   Email *
                 </label>
                 <input
@@ -294,13 +261,13 @@ export default function LoginPage() {
               {/* Password */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 font-inter">
                     Password *
                   </label>
                   <button
                     type="button"
                     onClick={() => setShowResetPassword(true)}
-                    className="text-sm text-[#F34A23] hover:underline"
+                    className="text-sm text-[#F34A23] hover:underline font-inter"
                   >
                     Forgot Password?
                   </button>
@@ -320,13 +287,13 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20"
+                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20 font-inter"
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-gray-600">
+            <p className="mt-6 text-center text-sm text-gray-600 font-inter">
               Don't have an account?{' '}
               <a href="/signup" className="text-[#F34A23] hover:underline font-medium">
                 Sign up
@@ -340,8 +307,8 @@ export default function LoginPage() {
       {showResetPassword && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 font-forum">Reset Password</h2>
-            <p className="text-gray-600 mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 font-loubag uppercase">Reset Password</h2>
+            <p className="text-gray-600 mb-6 font-inter">
               Enter your email address and we'll send you a link to reset your password.
             </p>
 
@@ -352,8 +319,8 @@ export default function LoginPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Check your email</h3>
-                <p className="text-gray-600 mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 font-inter">Check your email</h3>
+                <p className="text-gray-600 mb-6 font-inter">
                   We've sent a password reset link to <strong>{resetEmail}</strong>
                 </p>
                 <button
@@ -362,7 +329,7 @@ export default function LoginPage() {
                     setResetSuccess(false);
                     setResetEmail('');
                   }}
-                  className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] transition-colors"
+                  className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] transition-colors font-inter"
                 >
                   Close
                 </button>
@@ -370,7 +337,7 @@ export default function LoginPage() {
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div>
-                  <label htmlFor="resetEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="resetEmail" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
                     Email Address
                   </label>
                   <input
@@ -392,14 +359,14 @@ export default function LoginPage() {
                       setResetEmail('');
                       setError('');
                     }}
-                    className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+                    className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-xl font-medium hover:bg-gray-300 transition-colors font-inter"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={resetLoading}
-                    className="flex-1 bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="flex-1 bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-inter"
                   >
                     {resetLoading ? 'Sending...' : 'Send Reset Link'}
                   </button>

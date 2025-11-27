@@ -6,8 +6,6 @@ import { useTranslation } from '@/contexts/LanguageContext';
 const languages = [
   { code: 'fr', label: 'Français', flag: '🇫🇷' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
 ] as const;
 
 export function LandingLanguageSwitcher() {
