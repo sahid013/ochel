@@ -109,7 +109,7 @@ export default function RootLayout({
         <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js" async></script>
       </head>
       <body
-        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} ${inter.variable} ${loubag.variable} ${plusJakartaSans.variable} font-sans antialiased`}
+        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} ${inter.variable} ${loubag.variable} ${plusJakartaSans.variable} font-sans antialiased bg-white`}
       >
         <ClientProviders>
           {/* Global Auth Error Handler */}

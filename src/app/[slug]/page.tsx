@@ -27,19 +27,7 @@ export default function RestaurantMenuPage() {
   const previewTemplate = searchParams.get('preview');
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Only show loader if loading takes more than 300ms
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (loading) {
-        setShowLoader(true);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [loading]);
 
   useEffect(() => {
     // Ensure proper scrolling context for sticky positioning
@@ -121,28 +109,9 @@ export default function RestaurantMenuPage() {
     }
   }, [slug]);
 
-  // Only show full-page loader if loading is taking time
-  if (loading && showLoader) {
-    return (
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="rounded-full bg-[#F34A23] h-6 w-6 animate-bounce-dot"
-              style={{
-                animationDelay: `${i * 0.16}s`
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Return nothing while waiting for fast loads
+  // Show blank page with appropriate background while loading (no flash)
   if (loading) {
-    return null;
+    return <div className="min-h-screen bg-white" />;
   }
 
   if (error || !restaurant) {
@@ -207,35 +176,18 @@ export default function RestaurantMenuPage() {
       <div
         className={`min-h-screen ${isPreviewMode ? 'mt-10' : ''}`}
         style={{
-          backgroundColor: customization.backgroundColor,
           color: customization.textColor,
           fontFamily: customization.font === 'forum' ? 'var(--font-forum)' :
-                       customization.font === 'satoshi' ? 'var(--font-satoshi)' :
-                       customization.font === 'eb-garamond' ? 'var(--font-eb-garamond)' :
-                       customization.font,
+            customization.font === 'satoshi' ? 'var(--font-satoshi)' :
+              customization.font === 'eb-garamond' ? 'var(--font-eb-garamond)' :
+                customization.font,
           '--primary-color': customization.primaryColor,
           '--accent-color': customization.accentColor,
           '--bg-color': customization.backgroundColor,
           '--text-color': customization.textColor,
         } as React.CSSProperties}
       >
-        <Suspense
-          fallback={
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="flex items-center gap-3">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="rounded-full bg-[#F34A23] h-6 w-6 animate-bounce-dot"
-                    style={{
-                      animationDelay: `${i * 0.16}s`
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          }
-        >
+        <Suspense fallback={null}>
           {renderTemplate()}
         </Suspense>
       </div>

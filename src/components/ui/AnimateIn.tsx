@@ -72,7 +72,7 @@ const AnimateIn: React.FC<AnimateInProps> = ({
             ...style,
         }
         : {
-            opacity: 0, // Hide initially to prevent flash, but rely on animation-fill-mode: both once animating
+            visibility: "hidden",
             ...style,
         };
 

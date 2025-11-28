@@ -311,10 +311,12 @@ input[type="radio"]:checked {
 /* In-view animations */
 @keyframes fade-in {
   from {
-    opacity: 0;
+    visibility: hidden;
+    opacity: 0.01;
   }
 
   to {
+    visibility: visible;
     opacity: 1;
   }
 }
@@ -326,7 +328,7 @@ input[type="radio"]:checked {
 @keyframes slide-in-from-bottom {
   from {
     transform: translateY(20px);
-    opacity: 0;
+    opacity: 0.01;
   }
 
   to {
@@ -338,7 +340,7 @@ input[type="radio"]:checked {
 @keyframes blur-in {
   from {
     filter: blur(10px);
-    opacity: 0;
+    opacity: 0.01;
   }
 
   to {

@@ -11,9 +11,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', loading = false, disabled, children, ...props }, ref) => {
     const baseStyles = 'inline-flex items-center justify-center font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
-    
+
     const variants = {
-      primary: 'bg-[#F34A23] hover:bg-[#F34A23]/90 text-white focus:ring-[#F34A23]',
+      primary: 'bg-[#F34A23] hover:bg-[#d63d1a] text-white focus:ring-[#F34A23]',
       secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
       destructive: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
       outline: 'border border-[#D1D5DC] bg-white hover:bg-gray-50 text-black focus:ring-[#F34A23]',
@@ -26,6 +26,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'px-6 py-3 text-lg rounded-2xl'
     };
 
+    // Apply glowing shadow to primary variant when not disabled
+    const buttonStyle = variant === 'primary' && !disabled
+      ? {
+        boxShadow: '0 0 34.366px 11.988px rgba(241, 155, 135, 0.50), 0 0.999px 2.997px 0 #FDD8C7 inset'
+      }
+      : undefined;
+
     return (
       <button
         className={cn(
@@ -34,6 +41,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           sizes[size],
           className
         )}
+        style={buttonStyle}
         disabled={disabled || loading}
         ref={ref}
         {...props}

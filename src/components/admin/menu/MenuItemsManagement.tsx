@@ -965,7 +965,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
         <h3 className="text-lg font-semibold text-gray-900 font-plus-jakarta-sans">
           Menu Items ({filteredMenuItems.length})
         </h3>
-        <Button onClick={handleCreate} size="sm" disabled={categories.length === 0} className="font-plus-jakarta-sans">
+        <Button onClick={handleCreate} size="sm" variant="primary" disabled={categories.length === 0} className="font-plus-jakarta-sans">
           + Add Item
         </Button>
       </div>

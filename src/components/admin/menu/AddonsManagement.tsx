@@ -536,8 +536,8 @@ function SortableAddonRow({
       </td>
       <td className="px-4 py-4 whitespace-nowrap hidden sm:table-cell">
         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${addon.status === 'active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-gray-100 text-gray-800'
+          ? 'bg-green-100 text-green-800'
+          : 'bg-gray-100 text-gray-800'
           }`}>
           {addon.status === 'active' ? 'Actif' : 'Inactif'}
         </span>
@@ -856,7 +856,7 @@ export function AddonsManagement({ restaurantId }: AddonsManagementProps) {
         <h3 className="text-lg font-semibold text-gray-900">
           Add-ons ({filteredAddons.length})
         </h3>
-        <Button onClick={handleCreate} size="sm" disabled={categories.length === 0}>
+        <Button onClick={handleCreate} size="sm" variant="primary" disabled={categories.length === 0} className="font-plus-jakarta-sans">
           + Ajouter un add-on
         </Button>
       </div>
