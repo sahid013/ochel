@@ -1,5 +1,6 @@
 // UI component exports
 export { Button } from './Button';
+export { PrimaryButton } from './PrimaryButton';
 export { Input } from './Input';
 export { Select } from './Select';
 export { Textarea } from './Textarea';

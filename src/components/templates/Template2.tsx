@@ -100,10 +100,10 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
         </div>
 
         {/* Two Column Layout - Tabs Left, Content Right */}
-        <div className="relative">
-          {/* Left Sidebar - Vertical Tabs (Fixed on Desktop) - Only show if there are categories */}
+        <div className="relative lg:flex">
+          {/* Left Sidebar - Vertical Tabs (Sticky on Desktop) - Only show if there are categories */}
           {categories.length > 0 && (
-            <div className="lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-64 bg-[#000000] border-r border-white/20 z-20 lg:overflow-y-auto">
+            <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen lg:w-64 bg-[#000000] border-r border-white/20 z-20 lg:overflow-y-auto flex-shrink-0">
               <div className="p-4 lg:pt-8">
                 {/* Category Tabs - Vertical */}
                 <div className="space-y-2">
@@ -131,8 +131,8 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
 
           {/* Right Content Area */}
           <div className={cn(
-            "px-4 md:px-6 lg:px-8 py-12",
-            categories.length > 0 ? "lg:ml-64" : ""
+            "px-4 md:px-6 lg:px-8 py-12 flex-1",
+            // categories.length > 0 ? "lg:ml-64" : "" // Removed margin-left as we are using flex
           )}>
             {/* Loading State - Skeleton */}
             {loading && (

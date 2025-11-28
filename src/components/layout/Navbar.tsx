@@ -1,6 +1,7 @@
 'use client';
 
 import { LandingLanguageSwitcher } from './LandingLanguageSwitcher';
+import { PrimaryButton } from '@/components/ui';
 
 export function Navbar() {
   return (
@@ -8,25 +9,19 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <a href="/" className="text-3xl font-bold text-gray-900 font-loubag tracking-tight uppercase">
+          <a href="/" className="text-3xl font-bold text-primary font-loubag tracking-tight uppercase">
             Ochel
           </a>
 
           {/* Language Switcher + Login/Signup Buttons */}
           <div className="flex items-center gap-3">
             <LandingLanguageSwitcher />
-            <a
-              href="/login"
-              className="px-6 py-2 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors font-inter"
-            >
+            <PrimaryButton href="/login" variant="secondary" size="sm">
               Login
-            </a>
-            <a
-              href="/signup"
-              className="px-6 py-2 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors font-inter"
-            >
+            </PrimaryButton>
+            <PrimaryButton href="/signup" size="sm">
               Sign Up
-            </a>
+            </PrimaryButton>
           </div>
         </div>
       </div>

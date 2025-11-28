@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
+import { PrimaryButton } from '@/components/ui';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -191,12 +192,22 @@ export default function LoginPage() {
     setResetLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/reset-password`,
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      console.log('Sending password reset email to:', resetEmail);
+      console.log('Redirect URL:', redirectUrl);
+
+      const { data, error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: redirectUrl,
       });
 
-      if (error) throw error;
+      console.log('Reset password response:', { data, error });
 
+      if (error) {
+        console.error('Reset password error:', error);
+        throw error;
+      }
+
+      console.log('Password reset email sent successfully');
       setResetSuccess(true);
     } catch (err: any) {
       console.error('Password reset error:', err);
@@ -207,7 +218,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6]">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
       <Navbar />
 
       {/* Two Column Layout */}
@@ -218,15 +229,14 @@ export default function LoginPage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80)' }}
           ></div>
-          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Right Column - Form */}
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-loubag uppercase">Sign In</h1>
-              <p className="text-gray-600 font-inter">Enter your credentials to access your account</p>
+              <h1 className="text-3xl font-bold text-primary mb-2 font-loubag uppercase">Sign In</h1>
+              <p className="text-secondary font-inter">Enter your credentials to access your account</p>
             </div>
 
             {error && (
@@ -253,7 +263,8 @@ export default function LoginPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="your@email.com"
                 />
               </div>
@@ -278,19 +289,16 @@ export default function LoginPage() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="Your password"
                 />
               </div>
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20 font-inter"
-              >
+              <PrimaryButton type="submit" disabled={loading} fullWidth>
                 {loading ? 'Signing in...' : 'Sign In'}
-              </button>
+              </PrimaryButton>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-600 font-inter">
@@ -307,8 +315,8 @@ export default function LoginPage() {
       {showResetPassword && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 font-loubag uppercase">Reset Password</h2>
-            <p className="text-gray-600 mb-6 font-inter">
+            <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">Reset Password</h2>
+            <p className="text-secondary mb-6 font-inter">
               Enter your email address and we'll send you a link to reset your password.
             </p>
 
@@ -319,20 +327,20 @@ export default function LoginPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 font-inter">Check your email</h3>
-                <p className="text-gray-600 mb-6 font-inter">
+                <h3 className="text-lg font-semibold text-primary mb-2 font-inter">Check your email</h3>
+                <p className="text-secondary mb-6 font-inter">
                   We've sent a password reset link to <strong>{resetEmail}</strong>
                 </p>
-                <button
+                <PrimaryButton
                   onClick={() => {
                     setShowResetPassword(false);
                     setResetSuccess(false);
                     setResetEmail('');
                   }}
-                  className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] transition-colors font-inter"
+                  fullWidth
                 >
                   Close
-                </button>
+                </PrimaryButton>
               </div>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
@@ -346,7 +354,8 @@ export default function LoginPage() {
                     required
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                     placeholder="your@email.com"
                   />
                 </div>
@@ -363,13 +372,9 @@ export default function LoginPage() {
                   >
                     Cancel
                   </button>
-                  <button
-                    type="submit"
-                    disabled={resetLoading}
-                    className="flex-1 bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-inter"
-                  >
+                  <PrimaryButton type="submit" disabled={resetLoading} className="flex-1">
                     {resetLoading ? 'Sending...' : 'Send Reset Link'}
-                  </button>
+                  </PrimaryButton>
                 </div>
               </form>
             )}

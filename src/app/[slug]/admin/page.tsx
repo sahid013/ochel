@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { PageLayout } from '@/components/layout';
-import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab } from '@/components/admin';
+import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton } from '@/components/admin';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
+import { useFirstTimeUser } from '@/hooks/useFirstTimeUser';
 
 type AdminTab = 'menu' | 'template' | 'customize';
 
@@ -21,6 +22,9 @@ export default function RestaurantAdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('menu');
+
+  // Check if user has completed onboarding
+  const { isFirstTime, loading: checkingFirstTime, checkAgain } = useFirstTimeUser(restaurant);
 
   useEffect(() => {
     async function checkAccess() {
@@ -73,7 +77,7 @@ export default function RestaurantAdminPage() {
     }
   }, [slug]);
 
-  if (loading) {
+  if (loading || checkingFirstTime) {
     return (
       <PageLayout showHeader={false} showFooter={false}>
         <div className="min-h-screen bg-gray-50 md:bg-white font-forum flex items-center justify-center">
@@ -115,6 +119,42 @@ export default function RestaurantAdminPage() {
     );
   }
 
+  // Show first-time menu editor if user has no menu items
+  if (isFirstTime) {
+    return (
+      <PageLayout showHeader={false} showFooter={false}>
+        <div className="min-h-screen font-forum" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
+          <AdminHeader />
+
+          {/* Publish Menu Button below navbar */}
+          <div className="bg-white border-b border-gray-200 shadow-sm">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-primary font-loubag uppercase">
+                  Welcome to Ochel!
+                </h1>
+                <p className="text-sm text-secondary font-inter mt-1">
+                  Create your first menu item and publish when ready
+                </p>
+              </div>
+              <PublishMenuButton
+                restaurantId={restaurant.id}
+                restaurantSlug={slug}
+                onPublishComplete={checkAgain}
+              />
+            </div>
+          </div>
+
+          {/* First Time Menu Editor */}
+          <div className="py-8">
+            <FirstTimeMenuEditor restaurant={restaurant} />
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  // Normal admin interface for existing users
   return (
     <PageLayout showHeader={false} showFooter={false}>
       <div className="min-h-screen bg-gray-50 md:bg-white font-forum">

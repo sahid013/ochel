@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { EB_Garamond, Forum, Oswald, Inter } from "next/font/google";
+import { EB_Garamond, Forum, Oswald, Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { ClientProviders } from "@/components/providers";
 import { DeliveryPopup } from "@/components/DeliveryPopup";
 import { AuthErrorHandler } from "@/components/AuthErrorHandler";
@@ -87,6 +87,12 @@ const loubag = localFont({
   variable: "--font-loubag",
 });
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta-sans",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 export const metadata: Metadata = {
   title: "",
   description: "",
@@ -103,7 +109,7 @@ export default function RootLayout({
         <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js" async></script>
       </head>
       <body
-        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} ${inter.variable} ${loubag.variable} font-sans antialiased`}
+        className={`${satoshi.variable} ${ebGaramond.variable} ${forum.variable} ${oswald.variable} ${inter.variable} ${loubag.variable} ${plusJakartaSans.variable} font-sans antialiased`}
       >
         <ClientProviders>
           {/* Global Auth Error Handler */}

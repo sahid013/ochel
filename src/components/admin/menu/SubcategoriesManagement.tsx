@@ -157,7 +157,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer"
               required
             >
               <option value="" className="text-gray-500">Sélectionner une catégorie</option>
@@ -201,7 +201,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Description optionnelle..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
               </div>
@@ -692,7 +692,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
               <select
                 value={selectedCategoryId}
                 onChange={(e) => setSelectedCategoryId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                className="w-full md:w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900"
+                className="w-full md:w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900"
               >
                 <option value="all">Toutes les catégories</option>
                 {categories.map((cat) => (

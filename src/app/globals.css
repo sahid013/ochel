@@ -51,8 +51,14 @@
   /* Template customization variables */
   --primary-color: #F34A23;
   --accent-color: #FFD65A;
-  --bg-color: #000000;
+  --bg-color: #474343;
   --text-color: #FFFFFF;
+
+  /* Brand color tokens - Single source of truth for colors */
+  --color-text-primary: #474343;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+  --color-bg-beige: rgb(245, 245, 220);
 }
 
 .dark {
@@ -201,6 +207,23 @@ body {
 
   .font-loubag {
     font-family: var(--font-loubag), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .font-plus-jakarta-sans {
+    font-family: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Color utilities - Single source of truth */
+  .text-primary {
+    color: var(--color-text-primary);
+  }
+
+  .text-secondary {
+    color: var(--color-text-secondary);
+  }
+
+  .text-muted {
+    color: var(--color-text-muted);
   }
 
   /* Hide scrollbar utility */

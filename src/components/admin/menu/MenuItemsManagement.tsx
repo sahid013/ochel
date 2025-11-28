@@ -289,7 +289,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Description complète du plat..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
               </div>
@@ -405,7 +405,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
             <select
               value={categoryId || ''}
               onChange={(e) => setCategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer"
               required
             >
               <option value="" className="text-gray-500">Sélectionner une catégorie</option>
@@ -437,7 +437,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
             <select
               value={subcategoryId || ''}
               onChange={(e) => setSubcategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
               disabled={!categoryId || isSpecial}
             >
               <option value="" className="text-gray-500">
@@ -990,7 +990,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
               setFilterCategory(e.target.value === 'all' ? 'all' : Number(e.target.value));
               setFilterSubcategory('all');
             }}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer md:w-48"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer md:w-48"
           >
             <option value="all">Toutes les catégories</option>
             {categories.map((cat) => (
@@ -1011,7 +1011,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
                 setFilterSubcategory(Number(value));
               }
             }}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed md:w-48"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed md:w-48"
             disabled={filterCategory === 'all'}
           >
             <option value="all">

@@ -172,7 +172,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Description optionnelle..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
               </div>

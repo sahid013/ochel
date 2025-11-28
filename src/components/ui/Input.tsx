@@ -38,11 +38,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               'w-full px-4 py-3 rounded-2xl border',
               'bg-white text-black placeholder-[#0A0A0A]/50',
               'outline-none transition-all duration-200',
-              'focus:ring-2 focus:ring-[#F34A23] focus:ring-opacity-50',
               '[&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-0',
               'disabled:bg-gray-100 disabled:text-gray-400',
               error
-                ? '!border-[#e54d2e] focus:!border-[#e54d2e] focus:border-[1px] focus:!ring-[#e54d2e]'
+                ? '!border-[#e54d2e] focus:!border-[#e54d2e] focus:border-[1px]'
                 : 'focus:border-[#F34A23] focus:border-[1px]',
               icon && 'pr-10',
               className

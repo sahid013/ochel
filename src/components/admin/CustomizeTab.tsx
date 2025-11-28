@@ -92,7 +92,7 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
             <select
               value={customization.font}
               onChange={(e) => setCustomization({ ...customization, font: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#F34A23]"
             >
               <option value="forum">Forum (Default)</option>
               <option value="satoshi">Satoshi</option>
@@ -121,7 +121,7 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
                 type="text"
                 value={customization.primaryColor}
                 onChange={(e) => setCustomization({ ...customization, primaryColor: e.target.value })}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#F34A23]"
                 placeholder="#F34A23"
               />
             </div>
@@ -146,7 +146,7 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
                 type="text"
                 value={customization.accentColor}
                 onChange={(e) => setCustomization({ ...customization, accentColor: e.target.value })}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#F34A23]"
                 placeholder="#FFD65A"
               />
             </div>
@@ -171,7 +171,7 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
                 type="text"
                 value={customization.backgroundColor}
                 onChange={(e) => setCustomization({ ...customization, backgroundColor: e.target.value })}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#F34A23]"
                 placeholder="#000000"
               />
             </div>
@@ -196,7 +196,7 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
                 type="text"
                 value={customization.textColor}
                 onChange={(e) => setCustomization({ ...customization, textColor: e.target.value })}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#F34A23]"
                 placeholder="#FFFFFF"
               />
             </div>

@@ -261,7 +261,7 @@ function AddonModal({ addon, categories, subcategories, restaurantId, onSave, on
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Description optionnelle..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
               </div>
@@ -356,7 +356,7 @@ function AddonModal({ addon, categories, subcategories, restaurantId, onSave, on
             <select
               value={categoryId || ''}
               onChange={(e) => setCategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer"
               required
             >
               <option value="" className="text-gray-500">Sélectionner une catégorie</option>
@@ -375,7 +375,7 @@ function AddonModal({ addon, categories, subcategories, restaurantId, onSave, on
             <select
               value={subcategoryId || ''}
               onChange={(e) => setSubcategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer"
               disabled={!categoryId}
             >
               <option value="" className="text-gray-500">
@@ -882,7 +882,7 @@ export function AddonsManagement({ restaurantId }: AddonsManagementProps) {
               setFilterCategory(e.target.value === 'all' ? 'all' : Number(e.target.value));
               setFilterSubcategory('all');
             }}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 cursor-pointer md:w-48"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer md:w-48"
           >
             <option value="all">Toutes les catégories</option>
             {categories.map((cat) => (
@@ -903,7 +903,7 @@ export function AddonsManagement({ restaurantId }: AddonsManagementProps) {
                 setFilterSubcategory(Number(value));
               }
             }}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-transparent text-gray-900 disabled:bg-gray-100 disabled:cursor-not-allowed md:w-48"
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 disabled:bg-gray-100 disabled:cursor-not-allowed md:w-48"
             disabled={filterCategory === 'all'}
           >
             <option value="all">

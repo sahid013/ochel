@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
+import { PrimaryButton } from '@/components/ui';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -132,16 +133,27 @@ export default function SignupPage() {
 
       // Step 4: Check for demo item and transfer it to the new restaurant
       const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
+      const DEMO_TEMPLATE_KEY = 'ochel_demo_template';
+      const FIRST_TIME_CACHE_KEY = 'ochel_first_time_menu_item';
+      const FIRST_TIME_TEMPLATE_KEY = 'ochel_first_time_template';
+
       const cachedDemoItem = localStorage.getItem(DEMO_CACHE_KEY);
+      const cachedDemoTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
 
       if (cachedDemoItem && newRestaurant) {
-        // Clear localStorage immediately to prevent reuse across accounts
-        localStorage.removeItem(DEMO_CACHE_KEY);
-        localStorage.removeItem('ochel_demo_template');
-
         try {
           console.log('Demo item found, transferring to new restaurant...');
           const demoItem = JSON.parse(cachedDemoItem);
+
+          // Transfer demo item to first-time cache so it's available in admin panel
+          localStorage.setItem(FIRST_TIME_CACHE_KEY, cachedDemoItem);
+          if (cachedDemoTemplate) {
+            localStorage.setItem(FIRST_TIME_TEMPLATE_KEY, cachedDemoTemplate);
+          }
+
+          // Clear demo cache to prevent reuse
+          localStorage.removeItem(DEMO_CACHE_KEY);
+          localStorage.removeItem(DEMO_TEMPLATE_KEY);
 
           // Create category for the demo item
           const { data: category, error: categoryError } = await supabase
@@ -150,9 +162,8 @@ export default function SignupPage() {
               restaurant_id: newRestaurant.id,
               title: demoItem.category,
               title_en: demoItem.category,
-              title_ar: demoItem.category,
-              title_fr: demoItem.category,
-              order: 0
+              order: 0,
+              status: 'active'
             })
             .select()
             .single();
@@ -164,12 +175,12 @@ export default function SignupPage() {
             const { data: subcategory, error: subcategoryError } = await supabase
               .from('subcategories')
               .insert({
+                restaurant_id: newRestaurant.id,
                 category_id: category.id,
                 title: demoItem.subcategory || 'General',
                 title_en: demoItem.subcategory || 'General',
-                title_ar: demoItem.subcategory || 'General',
-                title_fr: demoItem.subcategory || 'General',
-                order: 0
+                order: 0,
+                status: 'active'
               })
               .select()
               .single();
@@ -181,21 +192,19 @@ export default function SignupPage() {
               const { error: itemError } = await supabase
                 .from('menu_items')
                 .insert({
+                  restaurant_id: newRestaurant.id,
                   category_id: category.id,
                   subcategory_id: subcategory.id,
                   title: demoItem.title,
                   title_en: demoItem.title,
-                  title_ar: demoItem.title,
-                  title_fr: demoItem.title,
                   description: demoItem.description,
                   description_en: demoItem.description,
-                  description_ar: demoItem.description,
-                  description_fr: demoItem.description,
                   price: parseFloat(demoItem.price) || 0,
                   image_path: null, // Don't transfer images to prevent cross-account leakage
                   model_3d_url: demoItem.model3dGlbUrl || null,
                   redirect_3d_url: demoItem.model3dUsdzUrl || null,
-                  order: 0
+                  order: 0,
+                  status: 'active'
                 });
 
               if (itemError) {
@@ -229,22 +238,22 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6] flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2 font-loubag uppercase">Success!</h2>
-          <p className="text-gray-600 font-inter">Your restaurant account has been created. Redirecting to admin panel...</p>
+          <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">Success!</h2>
+          <p className="text-secondary font-inter">Your restaurant account has been created. Redirecting to admin panel...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FFF8F6] via-white to-[#FFF8F6]">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
       <Navbar />
 
       {/* Two Column Layout */}
@@ -255,15 +264,14 @@ export default function SignupPage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&q=80)' }}
           ></div>
-          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Right Column - Form */}
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2 font-loubag uppercase">Create Account</h1>
-              <p className="text-gray-600 font-inter">Sign up to manage your restaurant menu</p>
+              <h1 className="text-3xl font-bold text-primary mb-2 font-loubag uppercase">Create Account</h1>
+              <p className="text-secondary font-inter">Sign up to manage your restaurant menu</p>
             </div>
 
             {error && (
@@ -284,7 +292,8 @@ export default function SignupPage() {
                   required
                   value={formData.restaurantName}
                   onChange={(e) => setFormData({ ...formData, restaurantName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="e.g., Magnifiko"
                 />
                 {formData.restaurantName && (
@@ -305,7 +314,8 @@ export default function SignupPage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="your@email.com"
                 />
               </div>
@@ -321,7 +331,8 @@ export default function SignupPage() {
                   required
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="+33 1 23 45 67 89"
                 />
               </div>
@@ -337,7 +348,8 @@ export default function SignupPage() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="At least 6 characters"
                 />
               </div>
@@ -353,19 +365,16 @@ export default function SignupPage() {
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F34A23] focus:border-[#F34A23] text-gray-900"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                   placeholder="Re-enter your password"
                 />
               </div>
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-[#F34A23] text-white py-3 px-6 rounded-xl font-medium hover:bg-[#d63d1a] disabled:bg-gray-300 disabled:cursor-not-allowed transition-all shadow-lg shadow-orange-500/20 font-inter"
-              >
+              <PrimaryButton type="submit" disabled={loading} fullWidth>
                 {loading ? 'Creating Account...' : 'Create Account'}
-              </button>
+              </PrimaryButton>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-600 font-inter">

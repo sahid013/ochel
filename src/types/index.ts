@@ -16,6 +16,7 @@ export interface Restaurant {
   font_family?: string;
   is_active: boolean;
   template: 'template1' | 'template2' | 'template3' | 'template4';
+  has_completed_onboarding?: boolean;
   created_at: string;
   updated_at: string;
 }
