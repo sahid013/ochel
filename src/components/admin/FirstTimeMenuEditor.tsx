@@ -14,7 +14,6 @@ interface MenuItem {
   title: string;
   description: string;
   price: number;
-  category_id: number;
   subcategory_id: number;
   model_3d_url?: string | null;
   redirect_3d_url?: string | null;
@@ -134,7 +133,6 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
         .from('menu_items')
         .insert({
           restaurant_id: restaurant.id,
-          category_id: categoryData.data.id,
           subcategory_id: subcategoryData.data.id,
           title: title,
           title_en: title,
@@ -152,6 +150,11 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
 
       // Refresh menu items
       await fetchMenuItems();
+
+      // Clear cache to ensure template updates
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(`menu_data_${restaurant.id}`);
+      }
 
       // Reset form
       setTitle('');
@@ -198,6 +201,11 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
 
       // Refresh menu items
       await fetchMenuItems();
+
+      // Clear cache to ensure template updates
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(`menu_data_${restaurant.id}`);
+      }
     } catch (err) {
       console.error('Error deleting menu item:', err);
       alert('Failed to delete menu item. Please try again.');
@@ -227,24 +235,14 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="text-center mb-12 px-5">
-        <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-loubag uppercase">
-          Create your <span className="text-[#F34A23]">Menu Items</span>
-        </h2>
-        <p className="text-secondary text-lg font-inter">
-          {menuItems.length > 0
-            ? `You have ${menuItems.length} item${menuItems.length > 1 ? 's' : ''}. Add more or click "Publish your menu" to go live!`
-            : 'Start building your menu by adding your first item'
-          }
-        </p>
-      </div>
+
 
       <div className="px-5 pb-12">
         <div className="grid gap-8 items-start" style={{ gridTemplateColumns: '0.6fr 1fr' }}>
           {/* Left Column - Add Items */}
           <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
-              {menuItems.length > 0 ? 'Add More Items' : 'Add Your First Item'}
+              {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
             </h3>
 
             {/* Display existing items */}
@@ -449,28 +447,28 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {/* Template 1 */}
               {selectedTemplate === 'template1' && (
-                <div className="h-full overflow-auto">
+                <div key="template1" className="h-full overflow-auto animate-fade-in">
                   <Template1 restaurant={restaurant} demoItem={demoItem} />
                 </div>
               )}
 
               {/* Template 2 */}
               {selectedTemplate === 'template2' && (
-                <div className="h-full overflow-auto">
+                <div key="template2" className="h-full overflow-auto animate-fade-in">
                   <Template2 restaurant={restaurant} demoItem={demoItem} />
                 </div>
               )}
 
               {/* Template 3 */}
               {selectedTemplate === 'template3' && (
-                <div className="h-full overflow-auto">
+                <div key="template3" className="h-full overflow-auto animate-fade-in">
                   <Template3 restaurant={restaurant} demoItem={demoItem} />
                 </div>
               )}
 
               {/* Template 4 */}
               {selectedTemplate === 'template4' && (
-                <div className="h-full overflow-auto">
+                <div key="template4" className="h-full overflow-auto animate-fade-in">
                   <Template4 restaurant={restaurant} demoItem={demoItem} />
                 </div>
               )}

@@ -82,12 +82,12 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
     e.preventDefault();
 
     if (!title.trim()) {
-      setError('Le titre est obligatoire');
+      setError('Title is required');
       return;
     }
 
     if (!categoryId) {
-      setError('Veuillez sélectionner une catégorie');
+      setError('Please select a category');
       return;
     }
 
@@ -112,7 +112,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
 
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      setError(err instanceof Error ? err.message : 'Error saving subcategory');
     } finally {
       setSaving(false);
     }
@@ -139,7 +139,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
         </button>
 
         <h3 className="text-base md:text-lg font-semibold mb-4">
-          {subcategory ? 'Modifier la sous-catégorie' : 'Nouvelle sous-catégorie'}
+          {subcategory ? 'Edit Subcategory' : 'New Subcategory'}
         </h3>
 
         {error && (
@@ -152,7 +152,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
           {/* Category Selection (always visible) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Catégorie parente <span className="text-red-500">*</span>
+              Parent Category <span className="text-red-500">*</span>
             </label>
             <select
               value={categoryId}
@@ -160,7 +160,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer"
               required
             >
-              <option value="" className="text-gray-500">Sélectionner une catégorie</option>
+              <option value="" className="text-gray-500">Select a category</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id} className="text-gray-900">
                   {cat.title}
@@ -182,13 +182,13 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Titre <span className="text-red-500">*</span>
+                  Title <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ex: Pizzas, Pâtes, Viandes..."
+                  placeholder="Ex: Pizzas, Pasta, Meats..."
                   required
                 />
               </div>
@@ -200,7 +200,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Description optionnelle..."
+                  placeholder="Optional description..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
@@ -212,7 +212,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
           {activeTab === 'en' && (
             <>
               <TranslationField
-                label="Titre (EN)"
+                label="Title (EN)"
                 sourceText={title}
                 value={titleEn}
                 onChange={setTitleEn}
@@ -234,7 +234,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
           {activeTab === 'it' && (
             <>
               <TranslationField
-                label="Titre (IT)"
+                label="Title (IT)"
                 sourceText={title}
                 value={titleIt}
                 onChange={setTitleIt}
@@ -256,7 +256,7 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
           {activeTab === 'es' && (
             <>
               <TranslationField
-                label="Titre (ES)"
+                label="Title (ES)"
                 sourceText={title}
                 value={titleEs}
                 onChange={setTitleEs}
@@ -276,10 +276,10 @@ function SubcategoryModal({ subcategory, categories, onSave, onClose }: Subcateg
 
           <div className="flex flex-col sm:flex-row gap-2 mt-6">
             <Button type="submit" disabled={saving} className="flex-1 order-2 sm:order-1">
-              {saving ? 'Enregistrement...' : 'Enregistrer'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose} disabled={saving} className="flex-1 order-1 sm:order-2">
-              Annuler
+              Cancel
             </Button>
           </div>
         </form>
@@ -339,7 +339,7 @@ function SortableSubcategoryRow({
             {...attributes}
             {...listeners}
             className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
-            aria-label="Glisser pour réorganiser"
+            aria-label="Drag to reorder"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
@@ -351,7 +351,7 @@ function SortableSubcategoryRow({
               onClick={() => onReorder(subcategory.id, 'up')}
               disabled={isFirst || deletingId === subcategory.id}
               className="hidden p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label="Monter"
+              aria-label="Move up"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -361,7 +361,7 @@ function SortableSubcategoryRow({
               onClick={() => onReorder(subcategory.id, 'down')}
               disabled={isLast || deletingId === subcategory.id}
               className="hidden p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label="Descendre"
+              aria-label="Move down"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -371,22 +371,22 @@ function SortableSubcategoryRow({
         </div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">{subcategory.title}</div>
+        <div className="text-sm font-medium text-gray-900 font-plus-jakarta-sans">{subcategory.title}</div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap hidden lg:table-cell">
         <div className="text-sm text-gray-500">{getCategoryName(subcategory.category_id)}</div>
       </td>
       <td className="px-4 py-4 hidden md:table-cell">
-        <div className="text-sm text-gray-500 max-w-xs truncate">
+        <div className="text-sm text-gray-500 max-w-xs truncate font-inter">
           {subcategory.text || '-'}
         </div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap">
         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${subcategory.status === 'active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-gray-100 text-gray-800'
+          ? 'bg-green-100 text-green-800'
+          : 'bg-gray-100 text-gray-800'
           }`}>
-          {subcategory.status === 'active' ? 'Actif' : 'Inactif'}
+          {subcategory.status === 'active' ? 'Active' : 'Inactive'}
         </span>
       </td>
       <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -396,17 +396,18 @@ function SortableSubcategoryRow({
             variant="outline"
             size="sm"
             disabled={deletingId === subcategory.id}
+            className="font-plus-jakarta-sans"
           >
-            Modifier
+            Edit
           </Button>
           <Button
             onClick={() => onDelete(subcategory)}
             variant="outline"
             size="sm"
             disabled={deletingId === subcategory.id}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 font-plus-jakarta-sans"
           >
-            {deletingId === subcategory.id ? '...' : 'Supprimer'}
+            {deletingId === subcategory.id ? '...' : 'Delete'}
           </Button>
         </div>
       </td>
@@ -446,7 +447,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
       setSubcategories(subcatsData);
       setCategories(catsData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      setError(err instanceof Error ? err.message : 'Error loading subcategories');
     } finally {
       setLoading(false);
     }
@@ -542,7 +543,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
       setShowDeleteModal(false);
       setSubcategoryToDelete(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      setError(err instanceof Error ? err.message : 'Error deleting subcategory');
     } finally {
       setDeletingId(null);
     }
@@ -563,7 +564,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
       menuUpdateChannel.close();
       await loadData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du réordonnancement');
+      setError(err instanceof Error ? err.message : 'Error reordering subcategories');
     }
   };
 
@@ -639,7 +640,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
       menuUpdateChannel.postMessage('invalidate');
       menuUpdateChannel.close();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du réordonnancement');
+      setError(err instanceof Error ? err.message : 'Error reordering subcategories');
       // Revert on error
       await loadData();
     }
@@ -649,7 +650,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
     return (
       <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
-        <span className="ml-2 text-gray-600">Chargement des sous-catégories...</span>
+        <span className="ml-2 text-gray-600">Loading subcategories...</span>
       </div>
     );
   }
@@ -663,17 +664,17 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
       )}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Sous-catégories ({filteredSubcategories.length})
+        <h3 className="text-lg font-semibold text-gray-900 font-plus-jakarta-sans">
+          Subcategories ({filteredSubcategories.length})
         </h3>
-        <Button onClick={handleCreate} size="sm" disabled={categories.length === 0}>
-          + Ajouter une sous-catégorie
+        <Button onClick={handleCreate} size="sm" disabled={categories.length === 0} className="font-plus-jakarta-sans">
+          + Add Subcategory
         </Button>
       </div>
 
       {categories.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600 mb-4">Vous devez d'abord créer au moins une catégorie</p>
+          <p className="text-gray-600 mb-4">You must create at least one category first</p>
         </div>
       ) : (
         <>
@@ -683,7 +684,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
               <div className="flex-1">
                 <Input
                   type="text"
-                  placeholder="Rechercher par titre, description ou catégorie..."
+                  placeholder="Search by title, description or category..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full"
@@ -694,7 +695,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
                 onChange={(e) => setSelectedCategoryId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                 className="w-full md:w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900"
               >
-                <option value="all">Toutes les catégories</option>
+                <option value="all">All categories</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.title}
@@ -707,11 +708,11 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
           {filteredSubcategories.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <p className="text-gray-600 mb-4">
-                {subcategories.length === 0 ? 'Aucune sous-catégorie pour le moment' : 'Aucun résultat trouvé'}
+                {subcategories.length === 0 ? 'No subcategories yet' : 'No results found'}
               </p>
               {subcategories.length === 0 && (
                 <Button onClick={handleCreate} variant="outline">
-                  Créer la première sous-catégorie
+                  Create first subcategory
                 </Button>
               )}
             </div>
@@ -727,22 +728,22 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Ordre
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                            Order
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Titre
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                            Title
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-                            Catégorie
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell font-plus-jakarta-sans">
+                            Category
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell font-plus-jakarta-sans">
                             Description
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Statut
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                            Status
                           </th>
-                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
                             Actions
                           </th>
                         </tr>
@@ -784,10 +785,10 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
                       variant="outline"
                       size="sm"
                     >
-                      Précédent
+                      Previous
                     </Button>
                     <span className="text-sm text-gray-700 self-center">
-                      Page {currentPage} sur {totalPages}
+                      Page {currentPage} of {totalPages}
                     </span>
                     <Button
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
@@ -795,15 +796,15 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
                       variant="outline"
                       size="sm"
                     >
-                      Suivant
+                      Next
                     </Button>
                   </div>
                   <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm text-gray-700">
-                        Affichage de <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> à{' '}
+                        Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
                         <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredSubcategories.length)}</span> sur{' '}
-                        <span className="font-medium">{filteredSubcategories.length}</span> résultats
+                        <span className="font-medium">{filteredSubcategories.length}</span> results
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -813,7 +814,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
                         variant="outline"
                         size="sm"
                       >
-                        Précédent
+                        Previous
                       </Button>
                       {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                         let pageNum;
@@ -843,7 +844,7 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
                         variant="outline"
                         size="sm"
                       >
-                        Suivant
+                        Next
                       </Button>
                     </div>
                   </div>
@@ -868,10 +869,10 @@ export function SubcategoriesManagement({ restaurantId }: SubcategoriesManagemen
 
       {showDeleteModal && subcategoryToDelete && (
         <ConfirmationModal
-          title="Supprimer la sous-catégorie"
-          message={`Êtes-vous sûr de vouloir supprimer la sous-catégorie "${subcategoryToDelete.title}" ? Tous les éléments de menu associés seront également supprimés (cascade).`}
-          confirmLabel="Supprimer"
-          cancelLabel="Annuler"
+          title="Delete Subcategory"
+          message={`Are you sure you want to delete the subcategory "${subcategoryToDelete.title}"?`}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
           isLoading={deletingId === subcategoryToDelete.id}

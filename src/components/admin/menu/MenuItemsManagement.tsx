@@ -148,17 +148,17 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
     e.preventDefault();
 
     if (!title.trim()) {
-      setError('Le titre est obligatoire');
+      setError('Title is required');
       return;
     }
 
     if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-      setError('Le prix doit être un nombre positif');
+      setError('Price must be a positive number');
       return;
     }
 
     if (!categoryId) {
-      setError('Veuillez sélectionner une catégorie');
+      setError('Please select a category');
       return;
     }
 
@@ -175,7 +175,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         if (generalSubcat) {
           finalSubcategoryId = generalSubcat.id;
         } else {
-          setError('Aucune sous-catégorie disponible. Veuillez d\'abord créer une sous-catégorie.');
+          setError('No subcategories available. Please create a subcategory first.');
           setSaving(false);
           return;
         }
@@ -208,7 +208,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
 
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      setError(err instanceof Error ? err.message : 'Error saving menu item');
     } finally {
       setSaving(false);
     }
@@ -235,7 +235,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         </button>
 
         <h3 className="text-base md:text-lg font-semibold mb-4">
-          {menuItem ? 'Modifier l\'élément de menu' : 'Nouvel élément de menu'}
+          {menuItem ? 'Edit Menu Item' : 'New Menu Item'}
         </h3>
 
         {error && (
@@ -258,26 +258,26 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Titre <span className="text-red-500">*</span>
+                  Title <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ex: Salade César, Steak Frites..."
+                  placeholder="Ex: Caesar Salad, Steak Frites..."
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Texte court
+                  Short text
                 </label>
                 <Input
                   type="text"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Texte court optionnel..."
+                  placeholder="Optional short text..."
                 />
               </div>
 
@@ -288,7 +288,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Description complète du plat..."
+                  placeholder="Full description of the dish..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
@@ -300,14 +300,14 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
           {activeTab === 'en' && (
             <>
               <TranslationField
-                label="Titre (EN)"
+                label="Title (EN)"
                 sourceText={title}
                 value={titleEn}
                 onChange={setTitleEn}
                 targetLang="en"
               />
               <TranslationField
-                label="Texte court (EN)"
+                label="Short text (EN)"
                 sourceText={text}
                 value={textEn}
                 onChange={setTextEn}
@@ -329,14 +329,14 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
           {activeTab === 'it' && (
             <>
               <TranslationField
-                label="Titre (IT)"
+                label="Title (IT)"
                 sourceText={title}
                 value={titleIt}
                 onChange={setTitleIt}
                 targetLang="it"
               />
               <TranslationField
-                label="Texte court (IT)"
+                label="Short text (IT)"
                 sourceText={text}
                 value={textIt}
                 onChange={setTextIt}
@@ -358,14 +358,14 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
           {activeTab === 'es' && (
             <>
               <TranslationField
-                label="Titre (ES)"
+                label="Title (ES)"
                 sourceText={title}
                 value={titleEs}
                 onChange={setTitleEs}
                 targetLang="es"
               />
               <TranslationField
-                label="Texte court (ES)"
+                label="Short text (ES)"
                 sourceText={text}
                 value={textEs}
                 onChange={setTextEs}
@@ -385,7 +385,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Prix (€) <span className="text-red-500">*</span>
+              Price (€) <span className="text-red-500">*</span>
             </label>
             <Input
               type="number"
@@ -400,7 +400,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Catégorie <span className="text-red-500">*</span>
+              Category <span className="text-red-500">*</span>
             </label>
             <select
               value={categoryId || ''}
@@ -408,7 +408,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer"
               required
             >
-              <option value="" className="text-gray-500">Sélectionner une catégorie</option>
+              <option value="" className="text-gray-500">Select a category</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id} className="text-gray-900">
                   {cat.title}
@@ -426,13 +426,13 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               className="w-4 h-4 text-[#F34A23] border-gray-300 rounded focus:ring-[#F34A23] cursor-pointer"
             />
             <label htmlFor="isSpecial" className="text-sm font-medium text-gray-700 cursor-pointer">
-              Élément spécial
+              Special Item
             </label>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sous-catégorie
+              Subcategory
             </label>
             <select
               value={subcategoryId || ''}
@@ -441,16 +441,16 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               disabled={!categoryId || isSpecial}
             >
               <option value="" className="text-gray-500">
-                {!categoryId ? 'Sélectionner d\'abord une catégorie' : isSpecial ? 'Général (auto-sélectionné pour les spéciaux)' : 'Général (par défaut)'}
+                {!categoryId ? 'Select a category first' : isSpecial ? 'General (auto-selected for specials)' : 'General (default)'}
               </option>
               {filteredSubcategories.map((subcat) => (
                 <option key={subcat.id} value={subcat.id} className="text-gray-900">
-                  {subcat.title}
+                  Subcategory: {subcat.title}
                 </option>
               ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">
-              {isSpecial ? 'Les éléments spéciaux sont automatiquement assignés à la sous-catégorie générale' : 'Laissez vide pour utiliser la sous-catégorie générale par défaut'}
+              {isSpecial ? 'Special items are automatically assigned to the general subcategory' : 'Leave empty to use the default general subcategory'}
             </p>
           </div>
 
@@ -459,12 +459,12 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
             onChange={setImagePath}
             folder="menu-item"
             restaurantId={restaurantId}
-            label="Image principale"
+            label="Main Image"
           />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              URL du modèle 3D GLB (Android/Web)
+              3D Model URL (GLB - Android/Web)
             </label>
             <Input
               type="url"
@@ -473,13 +473,13 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               placeholder="https://example.com/model.glb"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Format GLB pour Android et affichage web 3D
+              GLB format for Android and 3D web view
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              URL du modèle 3D USDZ (iOS AR)
+              3D Model URL (USDZ - iOS AR)
             </label>
             <Input
               type="url"
@@ -488,16 +488,16 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               placeholder="https://example.com/model.usdz"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Format USDZ pour la réalité augmentée iOS
+              USDZ format for iOS augmented reality
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 mt-6">
             <Button type="submit" disabled={saving} className="flex-1 order-2 sm:order-1">
-              {saving ? 'Enregistrement...' : 'Enregistrer'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose} disabled={saving} className="flex-1 order-1 sm:order-2">
-              Annuler
+              Cancel
             </Button>
           </div>
         </form>
@@ -559,7 +559,7 @@ function SortableMenuItemRow({
             {...attributes}
             {...listeners}
             className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
-            aria-label="Glisser pour réorganiser"
+            aria-label="Drag to reorder"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
@@ -571,7 +571,7 @@ function SortableMenuItemRow({
               onClick={() => onReorder(item.id, 'up')}
               disabled={isFirst || deletingId === item.id}
               className="hidden p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label="Monter"
+              aria-label="Move up"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -581,7 +581,7 @@ function SortableMenuItemRow({
               onClick={() => onReorder(item.id, 'down')}
               disabled={isLast || deletingId === item.id}
               className="hidden p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label="Descendre"
+              aria-label="Move down"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -603,14 +603,14 @@ function SortableMenuItemRow({
           </div>
         ) : (
           <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">Pas d'image</span>
+            <span className="text-gray-400 text-xs">No image</span>
           </div>
         )}
       </td>
       <td className="px-4 py-4">
-        <div className="text-sm font-medium text-gray-900">{item.title}</div>
+        <div className="text-sm font-medium text-gray-900 font-plus-jakarta-sans">{item.title}</div>
         {item.description && (
-          <div className="text-xs text-gray-500 truncate max-w-xs">{item.description}</div>
+          <div className="text-xs text-gray-500 truncate max-w-xs font-inter">{item.description}</div>
         )}
       </td>
       <td className="px-4 py-4 hidden md:table-cell">
@@ -625,7 +625,7 @@ function SortableMenuItemRow({
       <td className="px-4 py-4 whitespace-nowrap hidden xl:table-cell">
         {item.is_special && (
           <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-            Spécial
+            Special
           </span>
         )}
       </td>
@@ -634,7 +634,7 @@ function SortableMenuItemRow({
           ? 'bg-green-100 text-green-800'
           : 'bg-gray-100 text-gray-800'
           }`}>
-          {item.status === 'active' ? 'Actif' : 'Inactif'}
+          {item.status === 'active' ? 'Active' : 'Inactive'}
         </span>
       </td>
       <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -644,17 +644,18 @@ function SortableMenuItemRow({
             variant="outline"
             size="sm"
             disabled={deletingId === item.id}
+            className="font-plus-jakarta-sans"
           >
-            Modifier
+            Edit
           </Button>
           <Button
             onClick={() => onDelete(item)}
             variant="outline"
             size="sm"
             disabled={deletingId === item.id}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 font-plus-jakarta-sans"
           >
-            {deletingId === item.id ? '...' : 'Supprimer'}
+            {deletingId === item.id ? '...' : 'Delete'}
           </Button>
         </div>
       </td>
@@ -700,7 +701,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
       setCategories(catsData);
       setSubcategories(subcatsData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      setError(err instanceof Error ? err.message : 'Error loading menu items');
     } finally {
       setLoading(false);
     }
@@ -829,7 +830,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
       setShowDeleteModal(false);
       setMenuItemToDelete(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      setError(err instanceof Error ? err.message : 'Error deleting menu item');
     } finally {
       setDeletingId(null);
     }
@@ -947,7 +948,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
     return (
       <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
-        <span className="ml-2 text-gray-600">Chargement des éléments de menu...</span>
+        <span className="ml-2 text-gray-600">Loading menu items...</span>
       </div>
     );
   }
@@ -961,11 +962,11 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
       )}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Éléments de menu ({filteredMenuItems.length})
+        <h3 className="text-lg font-semibold text-gray-900 font-plus-jakarta-sans">
+          Menu Items ({filteredMenuItems.length})
         </h3>
-        <Button onClick={handleCreate} size="sm" disabled={categories.length === 0}>
-          + Ajouter un élément
+        <Button onClick={handleCreate} size="sm" disabled={categories.length === 0} className="font-plus-jakarta-sans">
+          + Add Item
         </Button>
       </div>
 
@@ -976,7 +977,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
           <div className="flex-1">
             <Input
               type="text"
-              placeholder="Rechercher par titre, description, catégorie..."
+              placeholder="Search by title, description or category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
@@ -992,7 +993,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
             }}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 cursor-pointer md:w-48"
           >
-            <option value="all">Toutes les catégories</option>
+            <option value="all">All categories</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.title}
@@ -1015,12 +1016,12 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
             disabled={filterCategory === 'all'}
           >
             <option value="all">
-              {filterCategory === 'all' ? 'Sélectionner d\'abord une catégorie' : 'Tous les éléments'}
+              {filterCategory === 'all' ? 'Select a category first' : 'All types'}
             </option>
             {filterCategory !== 'all' && (
               <>
-                <option value="special">Special</option>
-                <option value="regular">Regular</option>
+                <option value="special">Specials only</option>
+                <option value="regular">Regulars only</option>
               </>
             )}
             {availableSubcategories.map((subcat) => (
@@ -1034,16 +1035,16 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
 
       {categories.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600 mb-4">Vous devez d'abord créer au moins une catégorie</p>
+          <p className="text-gray-600 mb-4">You must create at least one category first</p>
         </div>
       ) : filteredMenuItems.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-600 mb-4">
-            {menuItems.length === 0 ? 'Aucun élément de menu pour le moment' : 'Aucun résultat trouvé'}
+            {menuItems.length === 0 ? 'No menu items yet' : 'No results found'}
           </p>
           {menuItems.length === 0 && (
             <Button onClick={handleCreate} variant="outline">
-              Créer le premier élément
+              Create first item
             </Button>
           )}
         </div>
@@ -1059,31 +1060,31 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ordre
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                        Order
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
                         Image
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Titre
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                        Details
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
-                        Catégorie
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell font-plus-jakarta-sans">
+                        Category
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-                        Sous-catégorie
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell font-plus-jakarta-sans">
+                        Subcategory
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Prix
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                        Price
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell">
-                        Spécial
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden xl:table-cell font-plus-jakarta-sans">
+                        Type
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
-                        Statut
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell font-plus-jakarta-sans">
+                        Status
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
                         Actions
                       </th>
                     </tr>
@@ -1126,10 +1127,10 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
                   variant="outline"
                   size="sm"
                 >
-                  Précédent
+                  Previous
                 </Button>
                 <span className="text-sm text-gray-700 self-center">
-                  Page {currentPage} sur {totalPages}
+                  Page {currentPage} of {totalPages}
                 </span>
                 <Button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
@@ -1137,15 +1138,15 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
                   variant="outline"
                   size="sm"
                 >
-                  Suivant
+                  Next
                 </Button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Affichage de <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> à{' '}
-                    <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredMenuItems.length)}</span> sur{' '}
-                    <span className="font-medium">{filteredMenuItems.length}</span> résultats
+                    Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
+                    <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredMenuItems.length)}</span> of{' '}
+                    <span className="font-medium">{filteredMenuItems.length}</span> results
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -1155,7 +1156,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
                     variant="outline"
                     size="sm"
                   >
-                    Précédent
+                    Previous
                   </Button>
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
@@ -1185,7 +1186,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
                     variant="outline"
                     size="sm"
                   >
-                    Suivant
+                    Next
                   </Button>
                 </div>
               </div>
@@ -1210,10 +1211,10 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
 
       {showDeleteModal && menuItemToDelete && (
         <ConfirmationModal
-          title="Supprimer l'élément de menu"
-          message={`Êtes-vous sûr de vouloir supprimer "${menuItemToDelete.title}" ? Cette action est irréversible.`}
-          confirmLabel="Supprimer"
-          cancelLabel="Annuler"
+          title="Delete Menu Item"
+          message={`Are you sure you want to delete the item "${menuItemToDelete.title}"? This action is irreversible.`}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
           isLoading={deletingId === menuItemToDelete.id}

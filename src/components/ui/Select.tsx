@@ -32,8 +32,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             'outline-none transition-all duration-200',
             'disabled:bg-gray-100 disabled:text-gray-400',
             error
-              ? '!border-[#e54d2e] focus:!border-[#e54d2e]'
-              : '!border-[#F6F1F0] focus:!border-[#FF7043]',
+              ? '!border-[#e54d2e] focus:!border-[#e54d2e] focus:!ring-1 focus:!ring-[#e54d2e]'
+              : 'border-[rgba(239,230,210,0.2)] focus:!border-[#F34A23] focus:!ring-1 focus:!ring-[#F34A23]',
             className
           )}
           ref={ref}

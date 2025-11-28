@@ -39,6 +39,53 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
     const loadAllData = async () => {
       if (loading || categories.length === 0) return;
 
+      // Handle demo mode
+      if (restaurant.id === 'demo-restaurant' && demoItem) {
+        const mockMap = new Map();
+        const categoryId = categories[0].id;
+
+        mockMap.set(categoryId, {
+          category: categories[0],
+          subcategories: [{
+            id: 1,
+            category_id: categoryId,
+            title: demoItem.subcategory || 'General',
+            title_en: demoItem.subcategory || 'General',
+            title_fr: demoItem.subcategory || 'General',
+            text: '',
+            text_en: '',
+            text_fr: '',
+            order: 0,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }],
+          menuItems: [{
+            id: parseInt(demoItem.id),
+            subcategory_id: 1,
+            title: demoItem.title,
+            title_en: demoItem.title,
+            title_fr: demoItem.title,
+            description: demoItem.description,
+            description_en: demoItem.description,
+            description_fr: demoItem.description,
+            price: parseFloat(demoItem.price),
+            image_path: demoItem.image,
+            model_3d_url: demoItem.model3dGlbUrl,
+            redirect_3d_url: demoItem.model3dUsdzUrl,
+            is_special: false,
+            order: 0,
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }],
+          addons: []
+        });
+
+        setAllCategoriesData(mockMap);
+        return;
+      }
+
       try {
         const { menuService } = await import('@/services');
         const allData = await menuService.getAllMenuData(restaurant.id);

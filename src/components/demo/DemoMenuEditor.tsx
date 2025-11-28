@@ -10,6 +10,7 @@ import Template1 from '@/components/templates/Template1';
 import Template2 from '@/components/templates/Template2';
 import Template3 from '@/components/templates/Template3';
 import Template4 from '@/components/templates/Template4';
+import TextRotator from '@/components/ui/TextRotator';
 import { Restaurant } from '@/types';
 
 interface DemoMenuItem {
@@ -157,11 +158,16 @@ export function DemoMenuEditor() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-[1460px] mx-auto">
       {/* Header */}
       <div className="text-center mb-12 pt-[80px] px-5">
-        <h2 className="text-4xl md:text-5xl font-bold text-primary mb-4 font-loubag uppercase">
-          Create your <span className="text-[#F34A23]">Ochel</span> Menu Now
+        <h2 className="text-xl md:text-[32px] font-bold text-primary mb-4 font-loubag uppercase flex flex-col md:flex-row items-center justify-center gap-2">
+          <span>Create</span>
+          <TextRotator
+            texts={["your restaurant menu", "3d menu model"]}
+            interval={3000}
+            className="text-[#F34A23]"
+          />
         </h2>
       </div>
 
@@ -415,28 +421,28 @@ export function DemoMenuEditor() {
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {/* Template 1 */}
               {selectedTemplate === 'template1' && (
-                <div className="h-full overflow-auto">
+                <div key="template1" className="h-full overflow-auto animate-fade-in">
                   <Template1 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                 </div>
               )}
 
               {/* Template 2 */}
               {selectedTemplate === 'template2' && (
-                <div className="h-full overflow-auto">
+                <div key="template2" className="h-full overflow-auto animate-fade-in">
                   <Template2 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                 </div>
               )}
 
               {/* Template 3 */}
               {selectedTemplate === 'template3' && (
-                <div className="h-full overflow-auto">
+                <div key="template3" className="h-full overflow-auto animate-fade-in">
                   <Template3 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                 </div>
               )}
 
               {/* Template 4 */}
               {selectedTemplate === 'template4' && (
-                <div className="h-full overflow-auto">
+                <div key="template4" className="h-full overflow-auto animate-fade-in">
                   <Template4 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                 </div>
               )}

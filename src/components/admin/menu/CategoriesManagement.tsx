@@ -79,7 +79,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
     e.preventDefault();
 
     if (!title.trim()) {
-      setError('Le titre est obligatoire');
+      setError('Title is required');
       return;
     }
 
@@ -103,7 +103,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
 
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
+      setError(err instanceof Error ? err.message : 'Error saving category');
     } finally {
       setSaving(false);
     }
@@ -130,7 +130,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
         </button>
 
         <h3 className="text-base md:text-lg font-semibold mb-4">
-          {category ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
+          {category ? 'Edit Category' : 'New Category'}
         </h3>
 
         {error && (
@@ -153,13 +153,13 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Titre <span className="text-red-500">*</span>
+                  Title <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ex: Entrées, Plats, Desserts..."
+                  placeholder="Ex: Starters, Main Courses, Desserts..."
                   required
                 />
               </div>
@@ -171,7 +171,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Description optionnelle..."
+                  placeholder="Optional description..."
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
                   rows={3}
                 />
@@ -183,7 +183,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
           {activeTab === 'en' && (
             <>
               <TranslationField
-                label="Titre (EN)"
+                label="Title (EN)"
                 sourceText={title}
                 value={titleEn}
                 onChange={setTitleEn}
@@ -205,7 +205,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
           {activeTab === 'it' && (
             <>
               <TranslationField
-                label="Titre (IT)"
+                label="Title (IT)"
                 sourceText={title}
                 value={titleIt}
                 onChange={setTitleIt}
@@ -227,7 +227,7 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
           {activeTab === 'es' && (
             <>
               <TranslationField
-                label="Titre (ES)"
+                label="Title (ES)"
                 sourceText={title}
                 value={titleEs}
                 onChange={setTitleEs}
@@ -247,10 +247,10 @@ function CategoryModal({ category, onSave, onClose }: CategoryModalProps) {
 
           <div className="flex flex-col sm:flex-row gap-2 mt-6">
             <Button type="submit" disabled={saving} className="flex-1 order-2 sm:order-1">
-              {saving ? 'Enregistrement...' : 'Enregistrer'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose} disabled={saving} className="flex-1 order-1 sm:order-2">
-              Annuler
+              Cancel
             </Button>
           </div>
         </form>
@@ -306,7 +306,7 @@ function SortableCategoryRow({
             {...attributes}
             {...listeners}
             className="p-1 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing transition-colors"
-            aria-label="Glisser pour réorganiser"
+            aria-label="Drag to reorder"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M7 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 2zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 7 14zm6-8a2 2 0 1 0-.001-4.001A2 2 0 0 0 13 6zm0 2a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 8zm0 6a2 2 0 1 0 .001 4.001A2 2 0 0 0 13 14z" />
@@ -318,7 +318,7 @@ function SortableCategoryRow({
               onClick={() => onReorder(category.id, 'up')}
               disabled={index === 0 || deletingId === category.id}
               className="hidden p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label="Monter"
+              aria-label="Move up"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -328,7 +328,7 @@ function SortableCategoryRow({
               onClick={() => onReorder(category.id, 'down')}
               disabled={index === totalItems - 1 || deletingId === category.id}
               className="hidden p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              aria-label="Descendre"
+              aria-label="Move down"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -338,19 +338,19 @@ function SortableCategoryRow({
         </div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">{category.title}</div>
+        <div className="text-sm font-medium text-gray-900 font-plus-jakarta-sans">{category.title}</div>
       </td>
       <td className="px-4 py-4 hidden md:table-cell">
-        <div className="text-sm text-gray-500 max-w-xs truncate">
+        <div className="text-sm text-gray-500 max-w-xs truncate font-inter">
           {category.text || '-'}
         </div>
       </td>
       <td className="px-4 py-4 whitespace-nowrap">
         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${category.status === 'active'
-            ? 'bg-green-100 text-green-800'
-            : 'bg-gray-100 text-gray-800'
+          ? 'bg-green-100 text-green-800'
+          : 'bg-gray-100 text-gray-800'
           }`}>
-          {category.status === 'active' ? 'Actif' : 'Inactif'}
+          {category.status === 'active' ? 'Active' : 'Inactive'}
         </span>
       </td>
       <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -360,17 +360,18 @@ function SortableCategoryRow({
             variant="outline"
             size="sm"
             disabled={deletingId === category.id}
+            className="font-plus-jakarta-sans"
           >
-            Modifier
+            Edit
           </Button>
           <Button
             onClick={() => onDelete(category)}
             variant="outline"
             size="sm"
             disabled={deletingId === category.id}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 font-plus-jakarta-sans"
           >
-            {deletingId === category.id ? '...' : 'Supprimer'}
+            {deletingId === category.id ? '...' : 'Delete'}
           </Button>
         </div>
       </td>
@@ -404,7 +405,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       const data = await categoryService.getAll(restaurantId);
       setCategories(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      setError(err instanceof Error ? err.message : 'Error loading categories');
     } finally {
       setLoading(false);
     }
@@ -500,7 +501,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       setShowDeleteModal(false);
       setCategoryToDelete(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      setError(err instanceof Error ? err.message : 'Error deleting category');
     } finally {
       setDeletingId(null);
     }
@@ -521,7 +522,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       menuUpdateChannel.close();
       await loadCategories();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du réordonnancement');
+      setError(err instanceof Error ? err.message : 'Error reordering categories');
     }
   };
 
@@ -580,7 +581,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       menuUpdateChannel.postMessage('invalidate');
       menuUpdateChannel.close();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du réordonnancement');
+      setError(err instanceof Error ? err.message : 'Error reordering categories');
       // Revert to original state on error
       await loadCategories();
     }
@@ -590,7 +591,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
     return (
       <div className="flex items-center justify-center py-12">
         <LoadingSpinner size="lg" />
-        <span className="ml-2 text-gray-600">Chargement des catégories...</span>
+        <span className="ml-2 text-gray-600">Loading categories...</span>
       </div>
     );
   }
@@ -604,11 +605,11 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       )}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Catégories ({filteredCategories.length})
+        <h3 className="text-lg font-semibold text-gray-900 font-plus-jakarta-sans">
+          Categories ({filteredCategories.length})
         </h3>
-        <Button onClick={handleCreate} size="sm">
-          + Ajouter une catégorie
+        <Button onClick={handleCreate} size="sm" variant="primary" className="font-plus-jakarta-sans">
+          + Add Category
         </Button>
       </div>
 
@@ -616,7 +617,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <Input
           type="text"
-          placeholder="Rechercher par titre ou description..."
+          placeholder="Search by title or description..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full"
@@ -626,11 +627,11 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       {filteredCategories.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-600 mb-4">
-            {categories.length === 0 ? 'Aucune catégorie pour le moment' : 'Aucun résultat trouvé'}
+            {categories.length === 0 ? 'No categories yet' : 'No results found'}
           </p>
           {categories.length === 0 && (
             <Button onClick={handleCreate} variant="outline">
-              Créer la première catégorie
+              Create first category
             </Button>
           )}
         </div>
@@ -646,19 +647,19 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ordre
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                        Order
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Titre
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                        Title
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell font-plus-jakarta-sans">
                         Description
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Statut
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
+                        Status
                       </th>
-                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider font-plus-jakarta-sans">
                         Actions
                       </th>
                     </tr>
@@ -697,10 +698,10 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
                   variant="outline"
                   size="sm"
                 >
-                  Précédent
+                  Previous
                 </Button>
                 <span className="text-sm text-gray-700 self-center">
-                  Page {currentPage} sur {totalPages}
+                  Page {currentPage} of {totalPages}
                 </span>
                 <Button
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
@@ -708,15 +709,15 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
                   variant="outline"
                   size="sm"
                 >
-                  Suivant
+                  Next
                 </Button>
               </div>
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Affichage de <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> à{' '}
+                    Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
                     <span className="font-medium">{Math.min(currentPage * itemsPerPage, filteredCategories.length)}</span> sur{' '}
-                    <span className="font-medium">{filteredCategories.length}</span> résultats
+                    <span className="font-medium">{filteredCategories.length}</span> results
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -726,7 +727,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
                     variant="outline"
                     size="sm"
                   >
-                    Précédent
+                    Previous
                   </Button>
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
@@ -756,7 +757,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
                     variant="outline"
                     size="sm"
                   >
-                    Suivant
+                    Next
                   </Button>
                 </div>
               </div>
@@ -778,10 +779,10 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
 
       {showDeleteModal && categoryToDelete && (
         <ConfirmationModal
-          title="Supprimer la catégorie"
-          message={`Êtes-vous sûr de vouloir supprimer la catégorie "${categoryToDelete.title}" ? Toutes les sous-catégories et éléments de menu associés seront également supprimés (cascade).`}
-          confirmLabel="Supprimer"
-          cancelLabel="Annuler"
+          title="Delete Category"
+          message={`Are you sure you want to delete the category "${categoryToDelete.title}"? All associated subcategories and menu items will also be deleted (cascade).`}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
           isLoading={deletingId === categoryToDelete.id}

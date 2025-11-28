@@ -128,14 +128,12 @@ export default function RestaurantAdminPage() {
 
           {/* Publish Menu Button below navbar */}
           <div className="bg-white border-b border-gray-200 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
               <div>
                 <h1 className="text-2xl font-bold text-primary font-loubag uppercase">
                   Welcome to Ochel!
                 </h1>
-                <p className="text-sm text-secondary font-inter mt-1">
-                  Create your first menu item and publish when ready
-                </p>
+
               </div>
               <PublishMenuButton
                 restaurantId={restaurant.id}
@@ -146,7 +144,7 @@ export default function RestaurantAdminPage() {
           </div>
 
           {/* First Time Menu Editor */}
-          <div className="py-8">
+          <div className="py-8 max-w-[1460px] mx-auto">
             <FirstTimeMenuEditor restaurant={restaurant} />
           </div>
         </div>
@@ -162,35 +160,32 @@ export default function RestaurantAdminPage() {
 
         {/* Tabs Navigation */}
         <div className="border-b border-gray-200 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex space-x-8">
               <button
                 onClick={() => setActiveTab('menu')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'menu'
-                    ? 'border-[#F34A23] text-[#F34A23]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'menu'
+                  ? 'border-[#F34A23] text-[#F34A23]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 Menu Management
               </button>
               <button
                 onClick={() => setActiveTab('template')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'template'
-                    ? 'border-[#F34A23] text-[#F34A23]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'template'
+                  ? 'border-[#F34A23] text-[#F34A23]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 Template Settings
               </button>
               <button
                 onClick={() => setActiveTab('customize')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === 'customize'
-                    ? 'border-[#F34A23] text-[#F34A23]'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'customize'
+                  ? 'border-[#F34A23] text-[#F34A23]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
               >
                 Customize
               </button>
@@ -199,7 +194,7 @@ export default function RestaurantAdminPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {activeTab === 'menu' && (
             <MenuManagementTab restaurantId={restaurant.id} />
           )}

@@ -41,24 +41,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               '[&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert-0',
               'disabled:bg-gray-100 disabled:text-gray-400',
               error
-                ? '!border-[#e54d2e] focus:!border-[#e54d2e] focus:border-[1px]'
-                : 'focus:border-[#F34A23] focus:border-[1px]',
+                ? '!border-[#e54d2e] focus:!border-[#e54d2e] focus:!ring-1 focus:!ring-[#e54d2e]'
+                : 'border-[rgba(239,230,210,0.2)] focus:!border-[#F34A23] focus:!ring-1 focus:!ring-[#F34A23]',
               icon && 'pr-10',
               className
             )}
             style={{
-              ...(!error && {
-                borderColor: isValid ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 230, 210, 0.2)',
+              ...(!error && isValid && {
+                borderColor: 'rgba(34, 197, 94, 0.3)',
               }),
             }}
             onFocus={(e) => {
-              if (!error) {
-                e.currentTarget.style.borderColor = isValid ? 'rgba(34, 197, 94, 0.5)' : '#F34A23';
+              if (!error && isValid) {
+                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.5)';
               }
             }}
             onBlur={(e) => {
-              if (!error) {
-                e.currentTarget.style.borderColor = isValid ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 230, 210, 0.2)';
+              if (!error && isValid) {
+                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.3)';
               }
             }}
             ref={ref}
