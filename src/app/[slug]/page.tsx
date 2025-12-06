@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, lazy, Suspense, ComponentType } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 
@@ -75,7 +75,6 @@ export default function RestaurantMenuPage() {
           .from('restaurants')
           .select('*')
           .eq('slug', slug)
-          .eq('is_active', true)
           .single();
 
         if (fetchError) {
@@ -114,18 +113,8 @@ export default function RestaurantMenuPage() {
     return <div className="min-h-screen bg-white" />;
   }
 
-  if (error || !restaurant) {
-    return (
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-        <div className="text-center text-white">
-          <h1 className="text-4xl font-bold mb-4">Restaurant Not Found</h1>
-          <p className="text-gray-400 mb-6">The restaurant you're looking for doesn't exist.</p>
-          <a href="/" className="text-[#F34A23] hover:underline">
-            Go to Home
-          </a>
-        </div>
-      </div>
-    );
+  if (error || !restaurant || (!restaurant.has_completed_onboarding && !searchParams.get('preview'))) {
+    notFound();
   }
 
   // Determine which template to render

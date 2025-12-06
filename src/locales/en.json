@@ -3,11 +3,113 @@
     "menu": "Menu",
     "reservation": "Reservation",
     "delivery": "Delivery",
-    "certifications": "Halal Certifications"
+    "certifications": "Halal Certifications",
+    "login": "Login",
+    "signup": "Sign Up"
   },
   "home": {
     "hero": {
-      "title": "WELCOME TO\n MAGNIFIKO"
+      "title": "BIENVENUE CHEZ\n MAGNIFIKO"
+    },
+    "demo": {
+      "create": "Create",
+      "rotator": {
+        "menu": "your restaurant menu",
+        "model": "3d menu model"
+      },
+      "subtitle": "Experience the power of a professional digital presence. Build your menu, choose your style, and launch in minutes.",
+      "addItem": {
+        "title": "Add Your First Item",
+        "category": "Category",
+        "categoryPlaceholder": "e.g., Main Dishes",
+        "categoryHelpTitle": "What is a Category?",
+        "categoryHelpText": "Categories are main sections of your menu (e.g., \"Main Dishes\", \"Appetizers\", \"Desserts\"). They help organize your menu items.",
+        "subcategory": "Subcategory",
+        "subcategoryPlaceholder": "e.g., Pizza (optional)",
+        "subcategoryHelpTitle": "What is a Subcategory?",
+        "subcategoryHelpText": "Subcategories are optional subsections within a category (e.g., \"Pizza\" or \"Pasta\" under \"Main Dishes\"). They provide extra organization.",
+        "itemName": "Item Name",
+        "itemNamePlaceholder": "e.g., Margherita Pizza",
+        "description": "Description",
+        "descriptionPlaceholder": "e.g., Fresh mozzarella, tomato sauce, and basil",
+        "price": "Price",
+        "pricePlaceholder": "12.50",
+        "modelGlb": "3D Model URL (GLB - Android/Web)",
+        "modelGlbPlaceholder": "https://example.com/model.glb",
+        "modelGlbHelp": "Optional: GLB format for 3D preview on web and Android",
+        "modelUsdz": "3D Model URL (USDZ - iOS AR)",
+        "modelUsdzPlaceholder": "https://example.com/model.usdz",
+        "modelUsdzHelp": "Optional: USDZ format for iOS AR Quick Look",
+        "submit": "Add to Menu",
+        "update": "Update Item",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "moreItems": "Want to add more items?",
+        "continueSignup": "Continue with Sign Up",
+        "alert": "Please fill in the title, category, and price",
+        "images": {
+          "title": "Attach 4 images of your menu item",
+          "info": "We will send you a 3d menu link within 24hours",
+          "placeholder": "Click to upload images (max 4)",
+          "uploading": "Uploading...",
+          "views": {
+            "top": "Top",
+            "right": "Right",
+            "bottom": "Bottom",
+            "left": "Left"
+          }
+        },
+        "previewImage": {
+          "title": "Upload Menu Preview Image",
+          "placeholder": "Click to upload",
+          "uploading": "Uploading..."
+        }
+      },
+      "template": {
+        "title": "Choose Your Template",
+        "livePreview": "Live Preview",
+        "itemAdded": "Your Item Added",
+        "classicDark": "Classic Dark",
+        "modernSidebar": "Modern Sidebar",
+        "elegantGold": "Elegant Gold",
+        "modernMinimalist": "Modern Minimalist"
+      },
+      "modal": {
+        "title": "Great Start!",
+        "subtitle": "Your first menu item has been saved. Create an account to continue building your menu and publish it live!",
+        "benefits": {
+          "title": "With an account you can:",
+          "unlimited": "Add unlimited menu items",
+          "customize": "Customize your menu design",
+          "publish": "Publish your menu online instantly",
+          "saved": "Your demo item will be waiting for you!"
+        },
+        "buttons": {
+          "signup": "Create An Account",
+          "login": "Already have an account? Login"
+        }
+      }
+    },
+    "features": {
+      "title": "Why Choose Ochel?",
+      "fast": {
+        "title": "Lightning Fast",
+        "description": "Create and publish your menu in minutes, not hours"
+      },
+      "customizable": {
+        "title": "Fully Customizable",
+        "description": "Choose from beautiful templates and customize colors"
+      },
+      "mobile": {
+        "title": "Mobile Optimized",
+        "description": "Perfect viewing experience on all devices"
+      }
+    },
+    "cta": {
+      "title": "Ready to Create Your Menu?",
+      "subtitle": "Join thousands of restaurants using Ochel",
+      "button": "Sign up"
     },
     "experience": {
       "subtitle": "Our Story",
@@ -265,5 +367,59 @@
         "validEmail": "Please enter a valid email address."
       }
     }
+  },
+  "loginPage": {
+    "title": "Sign In",
+    "subtitle": "Enter your credentials to access your account",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "forgotPassword": "Forgot Password?",
+    "submit": "Sign In",
+    "submitting": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "signup": "Sign up",
+    "status": {
+      "signingIn": "Signing in...",
+      "checkingRestaurant": "Checking restaurant...",
+      "transferring": "Transferring your demo item...",
+      "redirecting": "Redirecting to admin panel..."
+    },
+    "reset": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email address and we'll send you a link to reset your password.",
+      "emailLabel": "Email Address",
+      "cancel": "Cancel",
+      "submit": "Send Reset Link",
+      "submitting": "Sending...",
+      "successTitle": "Check your email",
+      "successMessage": "We've sent a password reset link to",
+      "close": "Close"
+    }
+  },
+  "signupPage": {
+    "title": "Create Account",
+    "subtitle": "Sign up to manage your restaurant menu",
+    "restaurantName": "Restaurant Name",
+    "urlPreview": "Your URL will be:",
+    "email": "Email",
+    "phone": "Phone Number",
+    "password": "Password",
+    "passwordPlaceholder": "At least 6 characters",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "submit": "Create Account",
+    "submitting": "Creating Account...",
+    "hasAccount": "Already have an account?",
+    "signin": "Sign in",
+    "success": {
+      "title": "Success!",
+      "message": "Your restaurant account has been created. Redirecting to admin panel..."
+    }
+  },
+  "notFound": {
+    "subtitle": "Oops! The page you're looking for doesn't exist.",
+    "button": "Go to Homepage"
   }
 }

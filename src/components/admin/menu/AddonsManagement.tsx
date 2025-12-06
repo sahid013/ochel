@@ -871,7 +871,8 @@ export function AddonsManagement({ restaurantId }: AddonsManagementProps) {
               placeholder="Rechercher par titre, description, catégorie..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400 bg-white"
+              style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
             />
           </div>
 

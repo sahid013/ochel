@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from '@/contexts/LanguageContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export function AdminHeader() {
   const { t } = useTranslation();
   const router = useRouter();
+  const params = useParams();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -61,24 +62,27 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="bg-[#F34A23] !border-b !border-[#F6F1F0] font-forum">
+    <header className="bg-white/60 backdrop-blur-[10px] !border-b !border-gray-200 font-plus-jakarta-sans">
       {/* Desktop Header */}
       <div className="hidden md:block max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
-            <div>
-              <h1 className="text-xl font-semibold text-white">{t('admin.header.title')}</h1>
-              <p className="text-sm text-white/80">{t('admin.header.subtitle')}</p>
-            </div>
+            <a href="/" className="flex items-center">
+              <img
+                src="/icons/ochellogofull.png"
+                alt="Ochel"
+                className="h-7 w-auto"
+              />
+            </a>
           </div>
 
           {/* Profile Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
             </button>
@@ -108,6 +112,19 @@ export function AdminHeader() {
                   </svg>
                   Membership
                 </button>
+                <button
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    // Force refresh to reload the page with new param
+                    window.location.href = `/${params.slug}/admin?onboarding=true`;
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Visit onboarding flow
+                </button>
                 <div className="border-t border-gray-200 my-1"></div>
                 <button
                   onClick={handleLogout}
@@ -128,22 +145,22 @@ export function AdminHeader() {
       <div className="block md:hidden px-4 safe-area-pt">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <div className="w-4 h-4 bg-white rounded-sm"></div>
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-white">{t('admin.header.title')}</h1>
-              <p className="text-xs text-white/70 -mt-1">{t('admin.header.subtitle').split(' ')[0]}</p>
-            </div>
+            <a href="/" className="flex items-center">
+              <img
+                src="/icons/ochellogofull.png"
+                alt="Ochel"
+                className="h-7 w-auto"
+              />
+            </a>
           </div>
 
           {/* Profile Dropdown - Mobile */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition-colors focus:outline-none"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none"
             >
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
             </button>

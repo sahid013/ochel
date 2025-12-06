@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { Alert } from '@/components/ui/Alert';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 
 interface TemplateSelectorProps {
   restaurant: Restaurant;
@@ -16,28 +17,28 @@ const templates = [
     name: 'Classic Dark',
     description: 'Elegant dark theme with split layout - perfect for fine dining',
     features: ['Dark background', 'Split-screen design', 'Image gallery support', '3D model integration'],
-    preview: '/images/template1-preview.png', // You'll add this image
+    preview: '/images/template1_preview.png',
   },
   {
     id: 'template2',
     name: 'Modern Light',
     description: 'Clean, bright design with minimalist aesthetics',
     features: ['Light background', 'Card-based layout', 'Mobile-optimized', 'Fast loading'],
-    preview: '/images/template2-preview.png',
+    preview: '/images/template2_preview.png',
   },
   {
     id: 'template3',
     name: 'Boutique',
     description: 'Stylish template with elegant typography and spacing',
     features: ['Custom fonts', 'Spacious layout', 'Premium feel', 'Category highlights'],
-    preview: '/images/template3-preview.png',
+    preview: '/images/template3_preview.png',
   },
   {
     id: 'template4',
     name: 'Casual Dining',
     description: 'Friendly, approachable design for casual restaurants',
     features: ['Colorful accents', 'Grid layout', 'Photo-focused', 'Social media integration'],
-    preview: '/images/template4-preview.png',
+    preview: '/images/template4_preview.png',
   },
 ];
 
@@ -86,7 +87,7 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
           rel="noopener noreferrer"
           className="flex-shrink-0 px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
         >
-          View Public Menu →
+          View Public Menu
         </a>
       </div>
 
@@ -100,81 +101,62 @@ export default function TemplateSelector({ restaurant, onTemplateChange }: Templ
         {templates.map((template) => (
           <div
             key={template.id}
-            className={`relative border-2 rounded-lg overflow-hidden transition-all cursor-pointer ${selectedTemplate === template.id
-                ? 'border-[#F34A23] shadow-lg'
-                : 'border-gray-200 hover:border-gray-300'
+            className={`relative border rounded-xl overflow-hidden transition-all cursor-pointer bg-white ${selectedTemplate === template.id
+              ? 'border-2 border-[#F34A23]'
+              : 'border-gray-200 hover:border-gray-300'
               }`}
             onClick={() => handleSelectTemplate(template.id)}
           >
-            {/* Preview Image Placeholder */}
-            <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
-              {/* Add actual preview images later */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-2">
-                    {template.id === 'template1' && '🌙'}
-                    {template.id === 'template2' && '☀️'}
-                    {template.id === 'template3' && '✨'}
-                    {template.id === 'template4' && '🍔'}
-                  </div>
-                  <p className="text-sm text-gray-500">Preview</p>
-                </div>
-              </div>
+            {/* Preview Image */}
+            <div className="aspect-video bg-gray-100 relative overflow-hidden group">
+              <img
+                src={template.preview}
+                alt={`${template.name} Preview`}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
 
               {/* Selected Badge */}
               {selectedTemplate === template.id && (
-                <div className="absolute top-3 right-3 bg-[#F34A23] text-white px-3 py-1 rounded-full text-sm font-medium">
+                <div className="absolute top-3 right-3 bg-[#F34A23] text-white px-3 py-1 rounded-full text-sm font-medium shadow-sm">
                   ✓ Active
                 </div>
               )}
             </div>
 
             {/* Template Info */}
-            <div className="p-4">
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{template.name}</h3>
-              <p className="text-sm text-gray-600 mb-3">{template.description}</p>
-
-              {/* Features */}
-              <div className="space-y-1">
-                {template.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center text-sm text-gray-700">
-                    <span className="text-[#F34A23] mr-2">•</span>
-                    {feature}
-                  </div>
-                ))}
+            <div className="p-5">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-gray-900 mb-1">{template.name}</h3>
+                <p className="text-sm text-gray-600 line-clamp-2">{template.description}</p>
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-4 space-y-2">
+              <div className="flex items-center gap-3">
                 {/* Preview Button */}
-                <a
+                <PrimaryButton
                   href={`/${restaurant.slug}?preview=${template.id}`}
+                  variant="secondary"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="block w-full py-2 px-4 rounded-lg font-medium text-center border-2 border-[#F34A23] text-[#F34A23] hover:bg-[#F34A23] hover:text-white transition-colors"
+                  onClick={(e) => e && e.stopPropagation()}
+                  className="flex-1 justify-center"
                 >
-                  Preview Live →
-                </a>
+                  Preview Live
+                </PrimaryButton>
 
                 {/* Select Button */}
-                <button
+                <PrimaryButton
                   onClick={(e) => {
-                    e.stopPropagation();
+                    if (e) e.stopPropagation();
                     handleSelectTemplate(template.id);
                   }}
-                  disabled={saving && selectedTemplate === template.id}
-                  className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${selectedTemplate === template.id
-                      ? 'bg-[#F34A23] text-white hover:bg-[#d63d1a]'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  disabled={saving || selectedTemplate === template.id}
+                  variant="primary"
+                  className={`flex-1 justify-center ${selectedTemplate === template.id ? 'disabled:bg-[#F34A23] disabled:opacity-50 disabled:text-white' : ''
                     }`}
                 >
-                  {saving && selectedTemplate === template.id
-                    ? 'Saving...'
-                    : selectedTemplate === template.id
-                      ? 'Current Template'
-                      : 'Activate Template'}
-                </button>
+                  {saving && selectedTemplate === template.id ? 'Saving...' : 'Activate'}
+                </PrimaryButton>
               </div>
             </div>
           </div>

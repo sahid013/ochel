@@ -96,6 +96,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "",
   description: "",
+  icons: {
+    icon: '/icons/logo.png',
+  },
 };
 
 export default function RootLayout({

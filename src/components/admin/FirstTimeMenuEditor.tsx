@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
-import { PrimaryButton } from '@/components/ui';
+import { MenuEditorForm, MenuEditorFormData } from '@/components/menu/MenuEditorForm';
 import Template1 from '@/components/templates/Template1';
 import Template2 from '@/components/templates/Template2';
 import Template3 from '@/components/templates/Template3';
 import Template4 from '@/components/templates/Template4';
+import { uploadImage } from '@/lib/storage';
 
 interface MenuItem {
   id: number;
@@ -22,31 +23,67 @@ interface MenuItem {
 interface FirstTimeMenuEditorProps {
   restaurant: Restaurant;
   onPublish?: () => void;
+  onTemplateChange?: (template: string) => void;
 }
 
 /**
  * First-time menu editor for authenticated users
  * Fetches menu items from database and allows adding more before publishing
  */
-export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
+export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeMenuEditorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isMigrating, setIsMigrating] = useState(false);
+  // Key to force reset form after successful submission
+  const [formKey, setFormKey] = useState(0);
+  const [showItemsModal, setShowItemsModal] = useState(false);
 
-  // Form state
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [subcategory, setSubcategory] = useState('');
-  const [model3dGlbUrl, setModel3dGlbUrl] = useState('');
-  const [model3dUsdzUrl, setModel3dUsdzUrl] = useState('');
+  // Fetch existing categories and subcategories for autocomplete
+  const [categories, setCategories] = useState<string[]>([]);
+  const [subcategories, setSubcategories] = useState<string[]>([]);
 
-  // Fetch existing menu items from database
+  const fetchTaxonomy = async () => {
+    try {
+      const { data: catData } = await supabase
+        .from('categories')
+        .select('title')
+        .eq('restaurant_id', restaurant.id);
+
+      const { data: subData } = await supabase
+        .from('subcategories')
+        .select('title')
+        .eq('restaurant_id', restaurant.id);
+
+      if (catData) {
+        const uniqueCats = Array.from(new Set(catData.map(c => c.title)));
+        setCategories(uniqueCats);
+      }
+      if (subData) {
+        const uniqueSubs = Array.from(new Set(subData.map(s => s.title)));
+        setSubcategories(uniqueSubs);
+      }
+    } catch (err) {
+      console.error('Error fetching taxonomy:', err);
+    }
+  };
+
   useEffect(() => {
-    fetchMenuItems();
+    fetchTaxonomy();
   }, [restaurant.id]);
+
+  // Helper to convert Base64 to File
+  const base64ToFile = (base64: string, filename: string): File => {
+    const arr = base64.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  };
 
   const fetchMenuItems = async () => {
     try {
@@ -66,23 +103,41 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const migrateDemoItem = async () => {
+    // Prevent concurrent migrations
+    if (isMigrating) return;
 
-    if (!title || !price || !category) {
-      alert('Please fill in the title, category, and price');
-      return;
+    const DEMO_KEY = 'ochel_demo_menu_item';
+    const FIRST_TIME_KEY = 'ochel_first_time_menu_item';
+
+    let cached = localStorage.getItem(DEMO_KEY);
+    let usedKey = DEMO_KEY;
+
+    // Fallback to first_time key (set by login/signup pages)
+    if (!cached) {
+      cached = localStorage.getItem(FIRST_TIME_KEY);
+      usedKey = FIRST_TIME_KEY;
+    }
+
+    console.log('Migration check - Cached item:', cached ? `Found in ${usedKey}` : 'Not found');
+
+    if (!cached) {
+      // If manually triggered and no item, alert user
+      return false;
     }
 
     try {
-      setLoading(true);
+      console.log('Starting migration...');
+      setIsMigrating(true);
+      const demoItem = JSON.parse(cached);
+      console.log('Parsed demo item:', demoItem);
 
       // Create or get category
       let categoryData = await supabase
         .from('categories')
         .select('*')
         .eq('restaurant_id', restaurant.id)
-        .eq('title', category)
+        .eq('title', demoItem.category)
         .maybeSingle();
 
       if (!categoryData.data) {
@@ -90,8 +145,8 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
           .from('categories')
           .insert({
             restaurant_id: restaurant.id,
-            title: category,
-            title_en: category,
+            title: demoItem.category,
+            title_en: demoItem.category,
             order: 0,
             status: 'active'
           })
@@ -107,7 +162,7 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
         .from('subcategories')
         .select('*')
         .eq('category_id', categoryData.data.id)
-        .eq('title', subcategory || 'General')
+        .eq('title', demoItem.subcategory || 'General')
         .maybeSingle();
 
       if (!subcategoryData.data) {
@@ -116,8 +171,8 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
           .insert({
             restaurant_id: restaurant.id,
             category_id: categoryData.data.id,
-            title: subcategory || 'General',
-            title_en: subcategory || 'General',
+            title: demoItem.subcategory || 'General',
+            title_en: demoItem.subcategory || 'General',
             order: 0,
             status: 'active'
           })
@@ -128,20 +183,176 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
         subcategoryData.data = newSubcategory;
       }
 
+      // Handle image upload
+      let imagePath = null;
+      if (demoItem.image && demoItem.image.startsWith('data:image')) {
+        try {
+          const file = base64ToFile(demoItem.image, `demo-image-${Date.now()}.png`);
+          const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
+          imagePath = uploadResult.publicUrl; // Use publicUrl for image_path as expected by templates
+        } catch (imgErr) {
+          console.error('Failed to upload demo image:', imgErr);
+        }
+      }
+
       // Create menu item
       const { error: itemError } = await supabase
         .from('menu_items')
         .insert({
           restaurant_id: restaurant.id,
           subcategory_id: subcategoryData.data.id,
-          title: title,
-          title_en: title,
-          description: description || '',
-          description_en: description || '',
-          price: parseFloat(price) || 0,
-          image_path: null,
-          model_3d_url: model3dGlbUrl.trim() || null,
-          redirect_3d_url: model3dUsdzUrl.trim() || null,
+          title: demoItem.title,
+          title_en: demoItem.title,
+          description: demoItem.description || '',
+          description_en: demoItem.description || '',
+          price: parseFloat(demoItem.price) || 0,
+          image_path: imagePath,
+          model_3d_url: demoItem.model3dGlbUrl || null,
+          redirect_3d_url: demoItem.model3dUsdzUrl || null,
+          order: 0,
+          status: 'active'
+        });
+
+      if (itemError) throw itemError;
+
+      // Clear demo item from local storage
+      localStorage.removeItem(usedKey);
+
+      // Clear menu data cache to ensure template updates
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(`menu_data_${restaurant.id}`);
+      }
+
+      // Refresh items
+      await fetchMenuItems();
+      return true;
+
+    } catch (err) {
+      console.error('Error migrating demo item:', err);
+      alert(`Migration failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      return false;
+    } finally {
+      setIsMigrating(false);
+    }
+  };
+
+  // Auto-migrate on mount if items are empty and loading is done
+  useEffect(() => {
+    if (!loading && menuItems.length === 0) {
+      migrateDemoItem();
+    }
+  }, [loading, menuItems.length, restaurant.id]);
+
+  useEffect(() => {
+    // Initial fetch
+    fetchMenuItems();
+  }, [restaurant.id]);
+
+  // Form submission handler
+  const handleFormSubmit = async (data: MenuEditorFormData) => {
+    if (!data.title || !data.price || !data.category) {
+      alert('Please fill in the title, category, and price');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create or get category
+      let categoryData = await supabase
+        .from('categories')
+        .select('*')
+        .eq('restaurant_id', restaurant.id)
+        .eq('title', data.category)
+        .maybeSingle();
+
+      if (!categoryData.data) {
+        const { data: newCategory, error: categoryError } = await supabase
+          .from('categories')
+          .insert({
+            restaurant_id: restaurant.id,
+            title: data.category,
+            title_en: data.category,
+            order: 0,
+            status: 'active'
+          })
+          .select()
+          .single();
+
+        if (categoryError) throw categoryError;
+        categoryData.data = newCategory;
+      }
+
+      // Create or get subcategory
+      let subcategoryData = await supabase
+        .from('subcategories')
+        .select('*')
+        .eq('category_id', categoryData.data.id)
+        .eq('title', data.subcategory || 'General')
+        .maybeSingle();
+
+      if (!subcategoryData.data) {
+        const { data: newSubcategory, error: subcategoryError } = await supabase
+          .from('subcategories')
+          .insert({
+            restaurant_id: restaurant.id,
+            category_id: categoryData.data.id,
+            title: data.subcategory || 'General',
+            title_en: data.subcategory || 'General',
+            order: 0,
+            status: 'active'
+          })
+          .select()
+          .single();
+
+        if (subcategoryError) throw subcategoryError;
+        subcategoryData.data = newSubcategory;
+      }
+
+      // Handle Main Image Upload
+      let imagePath = null;
+      if (data.previewImage?.[0] && data.previewImage[0] instanceof File) {
+        try {
+          const uploadResult = await uploadImage(data.previewImage[0], 'menu-item', restaurant.id);
+          imagePath = uploadResult.publicUrl;
+        } catch (imgErr) {
+          console.error('Failed to upload image:', imgErr);
+        }
+      }
+
+      // Handle Detailed Images Upload (4 images)
+      const additionalImagePaths: string[] = [];
+      if (data.selectedImages && data.selectedImages.length > 0) {
+        for (const img of data.selectedImages) {
+          if (img instanceof File) {
+            try {
+              const uploadResult = await uploadImage(img, 'menu-item', restaurant.id);
+              additionalImagePaths.push(uploadResult.publicUrl);
+            } catch (detailImgErr) {
+              console.error('Failed to upload detail image:', detailImgErr);
+            }
+          } else if (typeof img === 'string') {
+            // Keep existing URL if any (though unlikely for new item)
+            additionalImagePaths.push(img);
+          }
+        }
+      }
+
+      // Create menu item
+      const { error: itemError } = await supabase
+        .from('menu_items')
+        .insert({
+          restaurant_id: restaurant.id,
+          subcategory_id: subcategoryData.data.id,
+          title: data.title,
+          title_en: data.title,
+          description: data.description || '',
+          description_en: data.description || '',
+          price: parseFloat(data.price) || 0,
+          image_path: imagePath,
+          additional_image_url: additionalImagePaths.length > 0 ? JSON.stringify(additionalImagePaths) : null,
+          model_3d_url: data.model3dGlbUrl?.trim() || null,
+          redirect_3d_url: data.model3dUsdzUrl?.trim() || null,
           order: 0,
           status: 'active'
         });
@@ -150,21 +361,16 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
 
       // Refresh menu items
       await fetchMenuItems();
+      await fetchTaxonomy();
 
       // Clear cache to ensure template updates
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem(`menu_data_${restaurant.id}`);
       }
 
-      // Reset form
-      setTitle('');
-      setDescription('');
-      setPrice('');
-      setCategory('');
-      setSubcategory('');
-      setModel3dGlbUrl('');
-      setModel3dUsdzUrl('');
-      setIsEditing(false);
+      // Reset form handled by updating key
+      setFormKey(prev => prev + 1);
+
     } catch (err: any) {
       console.error('Error creating menu item:', err);
       alert(`Failed to create menu item: ${err.message || 'Unknown error'}`);
@@ -176,11 +382,16 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
   const handleTemplateChange = async (template: string) => {
     setSelectedTemplate(template);
 
+    // Notify parent
+    if (onTemplateChange) {
+      onTemplateChange(template);
+    }
+
     // Save template to database
     try {
       await supabase
         .from('restaurants')
-        .update({ template })
+        .update({ template } as any)
         .eq('id', restaurant.id);
     } catch (err) {
       console.error('Error updating template:', err);
@@ -235,189 +446,40 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
   return (
     <div className="w-full">
       {/* Header */}
-
-
       <div className="px-5 pb-12">
         <div className="grid gap-8 items-start" style={{ gridTemplateColumns: '0.6fr 1fr' }}>
           {/* Left Column - Add Items */}
           <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-            <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
-              {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
-            </h3>
-
-            {/* Display existing items */}
-            {menuItems.length > 0 && (
-              <div className="space-y-3 mb-6 max-h-[300px] overflow-y-auto">
-                {menuItems.map((item) => (
-                  <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-semibold text-primary">{item.title}</h4>
-                        <span className="text-md font-bold text-[#F34A23]">{item.price}€</span>
-                      </div>
-                      {item.description && (
-                        <p className="text-sm text-gray-600">{item.description}</p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="ml-3 text-red-600 hover:text-red-800"
-                      title="Delete item"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl md:text-3xl font-bold text-primary font-loubag uppercase">
+                {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
+              </h3>
+              {menuItems.length > 0 && (
+                <button
+                  onClick={() => setShowItemsModal(true)}
+                  className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline"
+                >
+                  See All ({menuItems.length})
+                </button>
+              )}
+            </div>
 
             {/* Item Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    Category <span className="text-red-500">*</span>
-                    <div className="group relative">
-                      <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                      </svg>
-                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                        <p className="font-semibold mb-1">What is a Category?</p>
-                        <p>Categories are main sections of your menu (e.g., "Main Dishes", "Appetizers", "Desserts"). They help organize your menu items.</p>
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                      </div>
-                    </div>
-                  </label>
-                  <input
-                    type="text"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    placeholder="e.g., Main Dishes"
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    Subcategory
-                    <div className="group relative">
-                      <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                      </svg>
-                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                        <p className="font-semibold mb-1">What is a Subcategory?</p>
-                        <p>Subcategories are optional subsections within a category (e.g., "Pizza" or "Pasta" under "Main Dishes"). They provide extra organization.</p>
-                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                      </div>
-                    </div>
-                  </label>
-                  <input
-                    type="text"
-                    value={subcategory}
-                    onChange={(e) => setSubcategory(e.target.value)}
-                    placeholder="e.g., Pizza (optional)"
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Item Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., Margherita Pizza"
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="e.g., Fresh mozzarella, tomato sauce, and basil"
-                  rows={3}
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] resize-none text-primary placeholder:text-gray-400"
-                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="12.50"
-                    className="w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                    required
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
-                    €
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  3D Model URL (GLB - Android/Web)
-                </label>
-                <input
-                  type="url"
-                  value={model3dGlbUrl}
-                  onChange={(e) => setModel3dGlbUrl(e.target.value)}
-                  placeholder="https://example.com/model.glb"
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Optional: GLB format for 3D preview on web and Android
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  3D Model URL (USDZ - iOS AR)
-                </label>
-                <input
-                  type="url"
-                  value={model3dUsdzUrl}
-                  onChange={(e) => setModel3dUsdzUrl(e.target.value)}
-                  placeholder="https://example.com/model.usdz"
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Optional: USDZ format for iOS AR Quick Look
-                </p>
-              </div>
-
-              <PrimaryButton type="submit" disabled={loading} fullWidth>
-                {loading ? 'Adding...' : 'Add Item'}
-              </PrimaryButton>
-            </form>
+            <MenuEditorForm
+              key={formKey}
+              onSubmit={handleFormSubmit}
+              isLoading={loading}
+              submitLabel={loading ? 'Adding...' : 'Add Item'}
+              show3DInputs={false}
+              showDetailedImageUpload={true}
+              existingCategories={categories}
+              existingSubcategories={subcategories}
+            />
           </div>
 
           {/* Right Column - Choose Your Template */}
           <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-            <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
+            <h3 className="text-2xl md:text-3xl font-bold text-primary mb-6 font-loubag uppercase">
               Choose Your Template
             </h3>
 
@@ -445,46 +507,57 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
 
             {/* Preview */}
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-              {/* Template 1 */}
               {selectedTemplate === 'template1' && (
-                <div key="template1" className="h-full overflow-auto animate-fade-in">
-                  <Template1 restaurant={restaurant} demoItem={demoItem} />
+                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template1 restaurant={restaurant} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
-              {/* Template 2 */}
               {selectedTemplate === 'template2' && (
-                <div key="template2" className="h-full overflow-auto animate-fade-in">
-                  <Template2 restaurant={restaurant} demoItem={demoItem} />
+                <div key="template2" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template2 restaurant={restaurant} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
-              {/* Template 3 */}
               {selectedTemplate === 'template3' && (
-                <div key="template3" className="h-full overflow-auto animate-fade-in">
-                  <Template3 restaurant={restaurant} demoItem={demoItem} />
+                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template3 restaurant={restaurant} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
-              {/* Template 4 */}
               {selectedTemplate === 'template4' && (
-                <div key="template4" className="h-full overflow-auto animate-fade-in">
-                  <Template4 restaurant={restaurant} demoItem={demoItem} />
+                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template4 restaurant={restaurant} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
-              {/* Preview Label */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                <div className="flex items-center justify-between text-white/90 text-xs">
-                  <span className="font-medium">Live Preview</span>
-                  <span className="bg-white/20 px-2 py-1 rounded">
-                    {selectedTemplate === 'template1' && 'Classic Dark'}
-                    {selectedTemplate === 'template2' && 'Modern Sidebar'}
-                    {selectedTemplate === 'template3' && 'Elegant Gold'}
-                    {selectedTemplate === 'template4' && 'Modern Minimalist'}
-                  </span>
+              {menuItems.length === 0 && (
+                <div className="absolute top-3 right-3">
+                  <button
+                    onClick={() => {
+                      const hasDemo = localStorage.getItem('ochel_demo_menu_item');
+                      const hasFirstTime = localStorage.getItem('ochel_first_time_menu_item');
+
+                      if (hasDemo || hasFirstTime) {
+                        migrateDemoItem();
+                      } else {
+                        alert('No demo item found in storage.');
+                      }
+                    }}
+                    className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:bg-blue-600 transition-colors"
+                  >
+                    Import Demo Item
+                  </button>
                 </div>
-              </div>
+              )}
 
               {menuItems.length > 0 && (
                 <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium shadow-lg flex items-center gap-1 bg-green-500 text-white">
@@ -498,6 +571,63 @@ export function FirstTimeMenuEditor({ restaurant }: FirstTimeMenuEditorProps) {
           </div>
         </div>
       </div>
+      {/* Items List Modal */}
+      {showItemsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowItemsModal(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col shadow-xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-100">
+              <h3 className="text-xl font-bold text-primary font-plus-jakarta-sans">Your Menu Items</h3>
+              <button
+                onClick={() => setShowItemsModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto">
+              <div className="space-y-3">
+                {menuItems.map((item) => (
+                  <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="text-lg font-semibold text-primary">{item.title}</h4>
+                        <span className="text-md font-bold text-[#F34A23]">{item.price}€</span>
+                      </div>
+                      {item.description && (
+                        <p className="text-sm text-gray-600">{item.description}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => {
+                        handleDelete(item.id);
+                        if (menuItems.length <= 1) setShowItemsModal(false);
+                      }}
+                      className="ml-3 text-red-600 hover:text-red-800"
+                      title="Delete item"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+              <button
+                onClick={() => setShowItemsModal(false)}
+                className="w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-xl transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

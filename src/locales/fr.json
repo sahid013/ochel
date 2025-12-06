@@ -7,11 +7,113 @@
     "specialties": "Nos Spécialités",
     "reviews": "Avis",
     "backToTop": "Retour en haut",
-    "location": "Localisation"
+    "location": "Localisation",
+    "login": "Connexion",
+    "signup": "S'inscrire"
   },
   "home": {
     "hero": {
       "title": "BIENVENUE CHEZ\n MAGNIFIKO"
+    },
+    "demo": {
+      "create": "Créez",
+      "rotator": {
+        "menu": "votre menu de restaurant",
+        "model": "modèle de menu 3d"
+      },
+      "subtitle": "Découvrez la puissance d'une présence numérique professionnelle. Créez votre menu, choisissez votre style et lancez-vous en quelques minutes.",
+      "addItem": {
+        "title": "Ajoutez votre premier article",
+        "category": "Catégorie",
+        "categoryPlaceholder": "ex: Plats principaux",
+        "categoryHelpTitle": "Qu'est-ce qu'une catégorie ?",
+        "categoryHelpText": "Les catégories sont les sections principales de votre menu (ex: \"Plats principaux\", \"Entrées\", \"Desserts\"). Elles aident à organiser vos articles.",
+        "subcategory": "Sous-catégorie",
+        "subcategoryPlaceholder": "ex: Pizza (optionnel)",
+        "subcategoryHelpTitle": "Qu'est-ce qu'une sous-catégorie ?",
+        "subcategoryHelpText": "Les sous-catégories sont des sections optionnelles au sein d'une catégorie (ex: \"Pizza\" ou \"Pâtes\" sous \"Plats principaux\"). Elles offrent une organisation supplémentaire.",
+        "itemName": "Nom de l'article",
+        "itemNamePlaceholder": "ex: Pizza Margherita",
+        "description": "Description",
+        "descriptionPlaceholder": "ex: Mozzarella fraîche, sauce tomate et basilic",
+        "price": "Prix",
+        "pricePlaceholder": "12.50",
+        "modelGlb": "URL du modèle 3D (GLB - Android/Web)",
+        "modelGlbPlaceholder": "https://exemple.com/modele.glb",
+        "modelGlbHelp": "Optionnel : format GLB pour l'aperçu 3D sur le web et Android",
+        "modelUsdz": "URL du modèle 3D (USDZ - iOS AR)",
+        "modelUsdzPlaceholder": "https://exemple.com/modele.usdz",
+        "modelUsdzHelp": "Optionnel : format USDZ pour iOS AR Quick Look",
+        "submit": "Ajouter au menu",
+        "update": "Mettre à jour",
+        "cancel": "Annuler",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "moreItems": "Vous voulez ajouter plus d'articles ?",
+        "continueSignup": "Continuer avec l'inscription",
+        "alert": "Veuillez remplir le titre, la catégorie et le prix",
+        "images": {
+          "title": "Joindre 4 images de votre article de menu",
+          "info": "Nous vous enverrons un lien de menu 3d dans les 24 heures",
+          "placeholder": "Cliquez pour télécharger des images (max 4)",
+          "uploading": "Téléchargement...",
+          "views": {
+            "top": "Haut",
+            "right": "Droite",
+            "bottom": "Bas",
+            "left": "Gauche"
+          }
+        },
+        "previewImage": {
+          "title": "Télécharger l'image de prévisualisation du menu",
+          "placeholder": "Cliquez pour télécharger",
+          "uploading": "Téléchargement..."
+        }
+      },
+      "template": {
+        "title": "Choisissez votre modèle",
+        "livePreview": "Aperçu en direct",
+        "itemAdded": "Votre article ajouté",
+        "classicDark": "Classique Sombre",
+        "modernSidebar": "Barre latérale moderne",
+        "elegantGold": "Élégant Doré",
+        "modernMinimalist": "Moderne Minimaliste"
+      },
+      "modal": {
+        "title": "Excellent début !",
+        "subtitle": "Votre premier article a été enregistré. Créez un compte pour continuer à construire votre menu et le publier en ligne !",
+        "benefits": {
+          "title": "Avec un compte, vous pouvez :",
+          "unlimited": "Ajouter un nombre illimité d'articles",
+          "customize": "Personnaliser le design de votre menu",
+          "publish": "Publier votre menu en ligne instantanément",
+          "saved": "Votre article de démo vous attendra !"
+        },
+        "buttons": {
+          "signup": "Créer un compte",
+          "login": "Déjà un compte ? Se connecter"
+        }
+      }
+    },
+    "features": {
+      "title": "Pourquoi choisir Ochel ?",
+      "fast": {
+        "title": "Ultra Rapide",
+        "description": "Créez et publiez votre menu en quelques minutes, pas en heures"
+      },
+      "customizable": {
+        "title": "Entièrement Personnalisable",
+        "description": "Choisissez parmi de magnifiques modèles et personnalisez les couleurs"
+      },
+      "mobile": {
+        "title": "Optimisé pour Mobile",
+        "description": "Expérience de visualisation parfaite sur tous les appareils"
+      }
+    },
+    "cta": {
+      "title": "Prêt à créer votre menu ?",
+      "subtitle": "Rejoignez des milliers de restaurants utilisant Ochel",
+      "button": "S'inscrire"
     },
     "experience": {
       "subtitle": "Notre Histoire",
@@ -329,5 +431,59 @@
         "noReservationsOnDate": "Aucune réservation trouvée pour le"
       }
     }
+  },
+  "loginPage": {
+    "title": "Connexion",
+    "subtitle": "Entrez vos identifiants pour accéder à votre compte",
+    "email": "Email",
+    "emailPlaceholder": "votre@email.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "submitting": "Connexion en cours...",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signup": "S'inscrire",
+    "status": {
+      "signingIn": "Connexion en cours...",
+      "checkingRestaurant": "Vérification du restaurant...",
+      "transferring": "Transfert de votre article de démo...",
+      "redirecting": "Redirection vers le panneau d'administration..."
+    },
+    "reset": {
+      "title": "Réinitialiser le mot de passe",
+      "subtitle": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "emailLabel": "Adresse email",
+      "cancel": "Annuler",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi...",
+      "successTitle": "Vérifiez votre email",
+      "successMessage": "Nous avons envoyé un lien de réinitialisation à",
+      "close": "Fermer"
+    }
+  },
+  "signupPage": {
+    "title": "Créer un compte",
+    "subtitle": "Inscrivez-vous pour gérer le menu de votre restaurant",
+    "restaurantName": "Nom du restaurant",
+    "urlPreview": "Votre URL sera :",
+    "email": "Email",
+    "phone": "Numéro de téléphone",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Au moins 6 caractères",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Entrez à nouveau votre mot de passe",
+    "submit": "Créer un compte",
+    "submitting": "Création du compte...",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "signin": "Se connecter",
+    "success": {
+      "title": "Succès !",
+      "message": "Le compte de votre restaurant a été créé. Redirection vers le panneau d'administration..."
+    }
+  },
+  "notFound": {
+    "subtitle": "Oups ! La page que vous recherchez n'existe pas.",
+    "button": "Aller à la page d'accueil"
   }
 }

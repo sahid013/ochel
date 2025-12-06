@@ -212,3 +212,27 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
     timeoutId = setTimeout(() => func(...args), delay);
   };
 }
+
+// Font class mapping helper
+export function getFontClassName(font: string | undefined | null): string {
+  if (!font) return 'font-plus-jakarta-sans';
+
+  switch (font.toLowerCase()) {
+    case 'forum':
+      return 'font-forum';
+    case 'satoshi':
+      return 'font-satoshi';
+    case 'eb-garamond':
+      return 'font-eb-garamond';
+    case 'oswald':
+      return 'font-oswald';
+    case 'inter':
+      return 'font-inter';
+    case 'loubag':
+      return 'font-loubag';
+    case 'plus-jakarta-sans':
+      return 'font-plus-jakarta-sans';
+    default:
+      return 'font-plus-jakarta-sans';
+  }
+}

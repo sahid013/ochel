@@ -1,12 +1,13 @@
 'use client';
 
-import { cn } from '@/lib';
+import { cn, getFontClassName } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData, DemoItem } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
+import { EmptyState } from '@/components/ui';
 
 interface Template3Props {
   restaurant: Restaurant;
@@ -32,6 +33,8 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
     getTranslatedField,
   } = useMenuData(restaurant.id, demoItem);
 
+  const fontClass = getFontClassName(restaurant.font_family);
+
   return (
     <>
       {/* Navigation */}
@@ -46,22 +49,22 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
       />
 
       {/* Main Layout - Boutique Elegant Theme */}
-      <div className="bg-[#FAF8F3] text-gray-900 font-forum min-h-screen">
+      <div className={cn("bg-[#FAF8F3] text-gray-900 min-h-screen", fontClass)}>
         {/* Elegant Header */}
-        <div className="relative bg-[#2C2416] text-[#F5E6D3] py-20">
+        <div className="relative bg-[#2C2416] text-[#F5E6D3] h-[276px] flex items-center justify-center">
           <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-6xl md:text-7xl font-forum mb-6 tracking-wide">
+            <h1 className="text-[56px] mb-6 tracking-wide font-loubag">
               {restaurant.name}
             </h1>
             <div className="w-24 h-1 bg-[#D4AF37] mx-auto mb-6"></div>
-            <p className="text-2xl font-light tracking-widest uppercase">
+            <p className="text-xl font-light tracking-widest uppercase">
               {t('menuPage.title')}
             </p>
           </div>
         </div>
 
         {/* Content Container - Spacious */}
-        <div className="max-w-4xl mx-auto px-6 py-16">
+        <div className="max-w-4xl mx-auto px-6 py-6">
           {/* Category Pills - Elegant Style */}
           <div className="mb-12">
             <div className="flex flex-wrap justify-center gap-3">
@@ -86,7 +89,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
           {/* Category Title - Elegant */}
           {currentCategory && (
             <div className="mb-12 text-center">
-              <h2 className="text-5xl font-forum text-[#2C2416] mb-4 tracking-wide">
+              <h2 className="text-[22px] text-[#2C2416] mb-4 tracking-wide">
                 {getTranslatedField(currentCategory, 'title')}
               </h2>
               <div className="w-16 h-1 bg-[#D4AF37] mx-auto mb-4"></div>
@@ -116,16 +119,14 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
           {!loading && !error && (
             <div className={`transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
               {sections.length === 0 ? (
-                <div className="text-center py-16">
-                  <p className="text-gray-500 text-lg italic">{t('menu.noItems')}</p>
-                </div>
+                <EmptyState message={t('menu.noItems')} className="text-gray-500 italic" />
               ) : (
                 sections.map((section, sectionIndex) => (
                   <div key={sectionIndex} className="mb-16">
                     {/* Section Title - Elegant */}
                     {section.title && (
                       <div className="mb-8 text-center">
-                        <h3 className="text-4xl font-forum text-[#2C2416] capitalize mb-3">
+                        <h3 className="text-[18px] text-[#2C2416] capitalize mb-3">
                           {section.title}
                         </h3>
                         <div className="w-12 h-0.5 bg-[#D4AF37] mx-auto"></div>
@@ -145,7 +146,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
                           className="bg-white rounded-lg p-8 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
                         >
                           <div className="flex justify-between items-start mb-3">
-                            <h4 className="text-2xl font-forum text-[#2C2416] tracking-wide">
+                            <h4 className="text-2xl text-[#2C2416] tracking-wide">
                               {item.title}
                             </h4>
                             <span className="text-xl font-semibold text-[#D4AF37] ml-6 whitespace-nowrap">

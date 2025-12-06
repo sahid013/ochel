@@ -94,9 +94,13 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
               onChange={(e) => setCustomization({ ...customization, font: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#F34A23]"
             >
-              <option value="forum">Forum (Default)</option>
+              <option value="plus-jakarta-sans">Plus Jakarta Sans (Default)</option>
+              <option value="forum">Forum</option>
+              <option value="loubag">Loubag</option>
               <option value="satoshi">Satoshi</option>
               <option value="eb-garamond">EB Garamond</option>
+              <option value="oswald">Oswald</option>
+              <option value="inter">Inter</option>
               <option value="sans-serif">Sans Serif</option>
               <option value="serif">Serif</option>
             </select>

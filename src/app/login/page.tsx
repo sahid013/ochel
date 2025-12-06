@@ -5,12 +5,15 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { PrimaryButton } from '@/components/ui';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
@@ -30,7 +33,7 @@ export default function LoginPage() {
 
     try {
       console.log('Attempting login with:', formData.email);
-      setLoginStatus('Signing in...');
+      setLoginStatus(t('loginPage.status.signingIn'));
 
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -43,7 +46,7 @@ export default function LoginPage() {
       if (!data.user) throw new Error('Failed to login');
 
       console.log('User logged in:', data.user.id);
-      setLoginStatus('Checking restaurant...');
+      setLoginStatus(t('loginPage.status.checkingRestaurant'));
 
       // Check if user has a restaurant with timeout
       const restaurantCheckPromise = supabase
@@ -76,16 +79,27 @@ export default function LoginPage() {
 
       // Check for demo item and transfer it to the restaurant
       const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
+      const DEMO_TEMPLATE_KEY = 'ochel_demo_template';
+      const FIRST_TIME_CACHE_KEY = 'ochel_first_time_menu_item';
+      const FIRST_TIME_TEMPLATE_KEY = 'ochel_first_time_template';
+
       const cachedDemoItem = localStorage.getItem(DEMO_CACHE_KEY);
+      const cachedTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
 
       if (cachedDemoItem && restaurant) {
-        // Clear localStorage immediately to prevent reuse across accounts
+        // Save to first-time cache as backup and for onboarding
+        localStorage.setItem(FIRST_TIME_CACHE_KEY, cachedDemoItem);
+        if (cachedTemplate) {
+          localStorage.setItem(FIRST_TIME_TEMPLATE_KEY, cachedTemplate);
+        }
+
+        // Clear demo cache immediately to prevent reuse across accounts
         localStorage.removeItem(DEMO_CACHE_KEY);
-        localStorage.removeItem('ochel_demo_template');
+        localStorage.removeItem(DEMO_TEMPLATE_KEY);
 
         try {
           console.log('Demo item found, transferring to restaurant...');
-          setLoginStatus('Transferring your demo item...');
+          setLoginStatus(t('loginPage.status.transferring'));
           const demoItem = JSON.parse(cachedDemoItem);
 
           // Create category for the demo item
@@ -156,7 +170,7 @@ export default function LoginPage() {
         }
       }
 
-      setLoginStatus('Redirecting to admin panel...');
+      setLoginStatus(t('loginPage.status.redirecting'));
 
       // Get the full restaurant data to access slug
       const { data: fullRestaurant } = await supabase
@@ -235,8 +249,8 @@ export default function LoginPage() {
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-primary mb-2 font-loubag uppercase">Sign In</h1>
-              <p className="text-secondary font-inter">Enter your credentials to access your account</p>
+              <h1 className="text-3xl font-bold text-primary mb-2 font-loubag uppercase">{t('loginPage.title')}</h1>
+              <p className="text-secondary font-inter">{t('loginPage.subtitle')}</p>
             </div>
 
             {error && (
@@ -255,7 +269,7 @@ export default function LoginPage() {
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                  Email *
+                  {t('loginPage.email')} *
                 </label>
                 <input
                   id="email"
@@ -265,7 +279,7 @@ export default function LoginPage() {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
                   style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  placeholder="your@email.com"
+                  placeholder={t('loginPage.emailPlaceholder')}
                 />
               </div>
 
@@ -273,38 +287,56 @@ export default function LoginPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700 font-inter">
-                    Password *
+                    {t('loginPage.password')} *
                   </label>
                   <button
                     type="button"
                     onClick={() => setShowResetPassword(true)}
                     className="text-sm text-[#F34A23] hover:underline font-inter"
                   >
-                    Forgot Password?
+                    {t('loginPage.forgotPassword')}
                   </button>
                 </div>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
-                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  placeholder="Your password"
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary pr-12"
+                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
+                    placeholder={t('loginPage.passwordPlaceholder')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Submit Button */}
               <PrimaryButton type="submit" disabled={loading} fullWidth>
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? t('loginPage.submitting') : t('loginPage.submit')}
               </PrimaryButton>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-600 font-inter">
-              Don't have an account?{' '}
+              {t('loginPage.noAccount')}{' '}
               <a href="/signup" className="text-[#F34A23] hover:underline font-medium">
-                Sign up
+                {t('loginPage.signup')}
               </a>
             </p>
           </div>
@@ -315,9 +347,9 @@ export default function LoginPage() {
       {showResetPassword && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">Reset Password</h2>
+            <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">{t('loginPage.reset.title')}</h2>
             <p className="text-secondary mb-6 font-inter">
-              Enter your email address and we'll send you a link to reset your password.
+              {t('loginPage.reset.subtitle')}
             </p>
 
             {resetSuccess ? (
@@ -327,9 +359,9 @@ export default function LoginPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-primary mb-2 font-inter">Check your email</h3>
+                <h3 className="text-lg font-semibold text-primary mb-2 font-inter">{t('loginPage.reset.successTitle')}</h3>
                 <p className="text-secondary mb-6 font-inter">
-                  We've sent a password reset link to <strong>{resetEmail}</strong>
+                  {t('loginPage.reset.successMessage')} <strong>{resetEmail}</strong>
                 </p>
                 <PrimaryButton
                   onClick={() => {
@@ -339,14 +371,14 @@ export default function LoginPage() {
                   }}
                   fullWidth
                 >
-                  Close
+                  {t('loginPage.reset.close')}
                 </PrimaryButton>
               </div>
             ) : (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div>
                   <label htmlFor="resetEmail" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                    Email Address
+                    {t('loginPage.reset.emailLabel')}
                   </label>
                   <input
                     id="resetEmail"
@@ -356,7 +388,7 @@ export default function LoginPage() {
                     onChange={(e) => setResetEmail(e.target.value)}
                     className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
                     style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                    placeholder="your@email.com"
+                    placeholder={t('loginPage.emailPlaceholder')}
                   />
                 </div>
 
@@ -370,10 +402,10 @@ export default function LoginPage() {
                     }}
                     className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-xl font-medium hover:bg-gray-300 transition-colors font-inter"
                   >
-                    Cancel
+                    {t('loginPage.reset.cancel')}
                   </button>
                   <PrimaryButton type="submit" disabled={resetLoading} className="flex-1">
-                    {resetLoading ? 'Sending...' : 'Send Reset Link'}
+                    {resetLoading ? t('loginPage.reset.submitting') : t('loginPage.reset.submit')}
                   </PrimaryButton>
                 </div>
               </form>

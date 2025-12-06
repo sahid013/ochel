@@ -1,12 +1,13 @@
 'use client';
 
-import { cn } from '@/lib';
+import { cn, getFontClassName } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData, DemoItem } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
+import { EmptyState } from '@/components/ui';
 
 interface Template4Props {
   restaurant: Restaurant;
@@ -32,6 +33,8 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
     getTranslatedField,
   } = useMenuData(restaurant.id, demoItem);
 
+  const fontClass = getFontClassName(restaurant.font_family);
+
   return (
     <>
       {/* Navigation */}
@@ -46,21 +49,21 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
       />
 
       {/* Main Layout - Casual Colorful Theme */}
-      <div className="bg-gradient-to-br from-orange-50 to-yellow-50 text-gray-900 font-forum min-h-screen">
+      <div className={cn("bg-gradient-to-br from-orange-50 to-yellow-50 text-gray-900 min-h-screen", fontClass)}>
         {/* Fun Header */}
-        <div className="relative bg-gradient-to-r from-[#F34A23] to-[#FF6B4A] text-white py-16">
+        <div className="relative bg-gradient-to-r from-[#F34A23] to-[#FF6B4A] text-white h-[276px] flex items-center justify-center">
           <div className="max-w-6xl mx-auto px-6 text-center">
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">
+            <h1 className="text-[56px] font-bold mb-4 font-loubag">
               {restaurant.name}
             </h1>
-            <p className="text-2xl font-medium">
-              {t('menuPage.title')} 🍔
+            <p className="text-xl font-medium">
+              {t('menuPage.title')}
             </p>
           </div>
         </div>
 
         {/* Content Container */}
-        <div className="max-w-6xl mx-auto px-4 md:px-6 py-12">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-6">
           {/* Category Tabs - Colorful Buttons */}
           <div className="mb-10">
             <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide">
@@ -85,7 +88,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
           {/* Category Title - Fun Style */}
           {currentCategory && (
             <div className="mb-10">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+              <h2 className="text-[22px] font-bold text-gray-900 mb-3">
                 {getTranslatedField(currentCategory, 'title')}
               </h2>
               {getTranslatedField(currentCategory, 'text') && (
@@ -114,16 +117,14 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
           {!loading && !error && (
             <div className={`transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
               {sections.length === 0 ? (
-                <div className="text-center py-16">
-                  <p className="text-gray-600 text-lg">{t('menu.noItems')}</p>
-                </div>
+                <EmptyState message={t('menu.noItems')} className="text-gray-600" />
               ) : (
                 sections.map((section, sectionIndex) => (
                   <div key={sectionIndex} className="mb-12">
                     {/* Section Title - Bold & Colorful */}
                     {section.title && (
                       <div className="mb-6">
-                        <h3 className="text-3xl font-bold text-[#F34A23] capitalize mb-2">
+                        <h3 className="text-[18px] font-bold text-[#F34A23] capitalize mb-2">
                           {section.title}
                         </h3>
                         {section.subtitle && (

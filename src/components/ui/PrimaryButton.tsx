@@ -1,8 +1,9 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface PrimaryButtonProps {
   children: React.ReactNode;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
@@ -10,6 +11,8 @@ interface PrimaryButtonProps {
   href?: string;
   size?: 'default' | 'sm';
   variant?: 'primary' | 'secondary';
+  target?: string;
+  rel?: string;
 }
 
 /**
@@ -28,6 +31,8 @@ export function PrimaryButton({
   href,
   size = 'default',
   variant = 'primary',
+  target,
+  rel,
 }: PrimaryButtonProps) {
   // Size-specific classes - secondary variant has reduced padding to compensate for 2px border
   const getSizeClasses = () => {
@@ -45,7 +50,13 @@ export function PrimaryButton({
     ? 'bg-transparent border-2 border-[#F34A23] text-[#F34A23] hover:bg-[#F34A23] hover:text-white disabled:border-gray-400 disabled:text-gray-400'
     : 'bg-[#F34A23] text-white hover:bg-[#d63d1a] disabled:bg-gray-400';
 
-  const baseClasses = `${fullWidth ? 'w-full' : ''} ${getSizeClasses()} ${variantClasses} font-semibold disabled:cursor-not-allowed transition-colors font-plus-jakarta-sans ${className}`;
+  const baseClasses = cn(
+    fullWidth ? 'w-full' : '',
+    getSizeClasses(),
+    variantClasses,
+    'inline-flex items-center justify-center font-semibold disabled:cursor-not-allowed transition-colors font-plus-jakarta-sans',
+    className
+  );
 
   const buttonStyle = {
     borderRadius: '0.87413rem',
@@ -64,6 +75,8 @@ export function PrimaryButton({
         className={baseClasses}
         style={buttonStyle}
         onClick={onClick}
+        target={target}
+        rel={rel}
       >
         {children}
       </a>

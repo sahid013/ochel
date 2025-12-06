@@ -8,6 +8,7 @@ export { Card, CardHeader, CardContent, CardFooter } from './Card';
 export { Alert } from './Alert';
 export { LoadingSpinner, PageLoadingSpinner } from './LoadingSpinner';
 export { Badge } from './Badge';
+export { EmptyState } from './EmptyState';
 
 export type { ButtonProps } from './Button';
 export type { InputProps } from './Input';

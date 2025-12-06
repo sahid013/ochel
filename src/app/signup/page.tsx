@@ -5,13 +5,17 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { PrimaryButton } from '@/components/ui';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 export default function SignupPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     restaurantName: '',
@@ -245,8 +249,8 @@ export default function SignupPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">Success!</h2>
-          <p className="text-secondary font-inter">Your restaurant account has been created. Redirecting to admin panel...</p>
+          <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">{t('signupPage.success.title')}</h2>
+          <p className="text-secondary font-inter">{t('signupPage.success.message')}</p>
         </div>
       </div>
     );
@@ -270,8 +274,8 @@ export default function SignupPage() {
         <div className="flex items-center justify-center p-8">
           <div className="w-full max-w-md">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-primary mb-2 font-loubag uppercase">Create Account</h1>
-              <p className="text-secondary font-inter">Sign up to manage your restaurant menu</p>
+              <h1 className="text-3xl font-bold text-primary mb-2 font-loubag uppercase">{t('signupPage.title')}</h1>
+              <p className="text-secondary font-inter">{t('signupPage.subtitle')}</p>
             </div>
 
             {error && (
@@ -284,7 +288,7 @@ export default function SignupPage() {
               {/* Restaurant Name */}
               <div>
                 <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                  Restaurant Name *
+                  {t('signupPage.restaurantName')} *
                 </label>
                 <input
                   id="restaurantName"
@@ -298,7 +302,7 @@ export default function SignupPage() {
                 />
                 {formData.restaurantName && (
                   <p className="mt-1 text-xs text-gray-500 font-inter">
-                    Your URL will be: <span className="font-medium">/{generateSlug(formData.restaurantName)}</span>
+                    {t('signupPage.urlPreview')} <span className="font-medium">/{generateSlug(formData.restaurantName)}</span>
                   </p>
                 )}
               </div>
@@ -306,7 +310,7 @@ export default function SignupPage() {
               {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                  Email *
+                  {t('signupPage.email')} *
                 </label>
                 <input
                   id="email"
@@ -323,7 +327,7 @@ export default function SignupPage() {
               {/* Phone */}
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                  Phone Number *
+                  {t('signupPage.phone')} *
                 </label>
                 <input
                   id="phone"
@@ -338,49 +342,81 @@ export default function SignupPage() {
               </div>
 
               {/* Password */}
-              <div>
+              <div className="relative">
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                  Password *
+                  {t('signupPage.password')} *
                 </label>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary pr-10"
                   style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  placeholder="At least 6 characters"
+                  placeholder={t('signupPage.passwordPlaceholder')}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 top-8"
+                >
+                  {showPassword ? (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.879 16.121A4.995 4.995 0 0112 15c1.414 0 2.757.483 3.89 1.354M16.01 11.99a7.504 7.504 0 00-4.504-4.504M3 3l3 3m3 3l3 3m3 3l3 3m3 3l3 3" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
               </div>
 
               {/* Confirm Password */}
-              <div>
+              <div className="relative">
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2 font-inter">
-                  Confirm Password *
+                  {t('signupPage.confirmPassword')} *
                 </label>
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:border-[#F34A23] text-primary pr-10"
                   style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  placeholder="Re-enter your password"
+                  placeholder={t('signupPage.confirmPasswordPlaceholder')}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 top-8"
+                >
+                  {showConfirmPassword ? (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.879 16.121A4.995 4.995 0 0112 15c1.414 0 2.757.483 3.89 1.354M16.01 11.99a7.504 7.504 0 00-4.504-4.504M3 3l3 3m3 3l3 3m3 3l3 3m3 3l3 3" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
               </div>
 
               {/* Submit Button */}
               <PrimaryButton type="submit" disabled={loading} fullWidth>
-                {loading ? 'Creating Account...' : 'Create Account'}
+                {loading ? t('signupPage.submitting') : t('signupPage.submit')}
               </PrimaryButton>
             </form>
 
             <p className="mt-6 text-center text-sm text-gray-600 font-inter">
-              Already have an account?{' '}
+              {t('signupPage.hasAccount')}{' '}
               <a href="/login" className="text-[#F34A23] hover:underline font-medium">
-                Sign in
+                {t('signupPage.signin')}
               </a>
             </p>
           </div>

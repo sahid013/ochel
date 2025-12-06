@@ -1,21 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layout';
 import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton } from '@/components/admin';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
+import { PrimaryButton } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { useFirstTimeUser } from '@/hooks/useFirstTimeUser';
 
 type AdminTab = 'menu' | 'template' | 'customize';
 
+// Check if user has completed onboarding 
 export default function RestaurantAdminPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const slug = params.slug as string;
+  const isOnboardingView = searchParams.get('onboarding') === 'true';
 
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
@@ -119,11 +123,11 @@ export default function RestaurantAdminPage() {
     );
   }
 
-  // Show first-time menu editor if user has no menu items
-  if (isFirstTime) {
+  // Show first-time menu editor if user has no menu items or explicitly requested via query param
+  if (isFirstTime || isOnboardingView) {
     return (
       <PageLayout showHeader={false} showFooter={false}>
-        <div className="min-h-screen font-forum" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
+        <div className="min-h-screen font-plus-jakarta-sans" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
           <AdminHeader />
 
           {/* Publish Menu Button below navbar */}
@@ -135,17 +139,32 @@ export default function RestaurantAdminPage() {
                 </h1>
 
               </div>
-              <PublishMenuButton
-                restaurantId={restaurant.id}
-                restaurantSlug={slug}
-                onPublishComplete={checkAgain}
-              />
+              <div className="flex items-end gap-3">
+                <PrimaryButton
+                  href={`/${slug}?preview=${restaurant.template || 'template1'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="secondary"
+                  className="py-1.5"
+                >
+                  Preview Menu
+                </PrimaryButton>
+                <PublishMenuButton
+                  restaurantId={restaurant.id}
+                  restaurantSlug={slug}
+                  currentTemplate={restaurant.template || 'template1'}
+                  onPublishComplete={checkAgain}
+                />
+              </div>
             </div>
           </div>
 
           {/* First Time Menu Editor */}
           <div className="py-8 max-w-[1460px] mx-auto">
-            <FirstTimeMenuEditor restaurant={restaurant} />
+            <FirstTimeMenuEditor
+              restaurant={restaurant}
+              onTemplateChange={(template) => setRestaurant({ ...restaurant, template: template as any })}
+            />
           </div>
         </div>
       </PageLayout>
@@ -155,7 +174,7 @@ export default function RestaurantAdminPage() {
   // Normal admin interface for existing users
   return (
     <PageLayout showHeader={false} showFooter={false}>
-      <div className="min-h-screen bg-gray-50 md:bg-white font-forum">
+      <div className="min-h-screen font-plus-jakarta-sans" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
         <AdminHeader />
 
         {/* Tabs Navigation */}

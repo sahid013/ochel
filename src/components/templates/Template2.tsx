@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib';
+import { cn, getFontClassName } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData, DemoItem } from '@/hooks/useMenuData';
@@ -9,6 +9,8 @@ import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { getTranslatedField as getFieldTranslation } from '@/services';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
+import { EmptyState } from '@/components/ui';
+import cookingBlackAnimation from '../../../public/assets/cookingBlack.json';
 
 interface Template2Props {
   restaurant: Restaurant;
@@ -113,6 +115,8 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
     }
   };
 
+  const fontClass = getFontClassName(restaurant.font_family);
+
   return (
     <div className="bg-[#000000]">
       {/* Navigation */}
@@ -127,10 +131,10 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
       />
 
       {/* Main Layout - Dark Theme */}
-      <div className="bg-[#000000] text-white font-forum min-h-screen">
+      <div className={cn("bg-[#000000] text-white min-h-screen", fontClass)}>
         {/* Hero Header */}
         <div
-          className="relative h-[300px] bg-cover bg-center bg-no-repeat"
+          className="relative h-[276px] bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: 'url("/images/menu-bg 2.webp")' }}
         >
           {/* Dark overlay for better text readability */}
@@ -138,7 +142,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
 
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center relative z-10">
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+              <h1 className="text-[56px] font-bold text-white mb-4 font-loubag">
                 {restaurant.name}
               </h1>
               <p className="text-xl text-white">{t('menuPage.title')}</p>
@@ -178,7 +182,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
 
           {/* Right Content Area */}
           <div className={cn(
-            "px-4 md:px-6 lg:px-8 py-12 flex-1",
+            "px-4 md:px-6 lg:px-8 py-4 flex-1",
             // categories.length > 0 ? "lg:ml-64" : "" // Removed margin-left as we are using flex
           )}>
             {/* Loading State - Skeleton */}
@@ -199,9 +203,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
             {!loading && !error && (
               <div>
                 {categories.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-white/60 text-lg">{t('menu.noItems')}</p>
-                  </div>
+                  <EmptyState message={t('menu.noItems')} className="text-white" animationData={cookingBlackAnimation} />
                 ) : (
                   categories.map((category) => {
                     const menuData = allCategoriesData.get(category.id);
@@ -301,7 +303,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                       <div key={category.id} id={`category-${category.id}`} className="mb-16 scroll-mt-24">
                         {/* Category Title */}
                         <div className="mb-8">
-                          <h2 className="text-4xl font-bold text-[#FFF2CC] mb-2">
+                          <h2 className="text-[22px] font-bold text-[#FFF2CC] mb-2">
                             {getTranslatedField(category, 'title')}
                           </h2>
                           {getTranslatedField(category, 'text') && (
@@ -317,7 +319,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                             {/* Section Title */}
                             {section.title && (
                               <div className="mb-6">
-                                <h3 className="text-3xl font-bold text-[#FFF2CC] capitalize">
+                                <h3 className="text-[18px] font-bold text-[#FFF2CC] capitalize">
                                   {section.title}
                                 </h3>
                                 {section.subtitle && (
@@ -340,7 +342,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                                       <img
                                         src={item.image}
                                         alt={item.title}
-                                        className="w-full md:w-48 h-48 object-cover rounded-lg flex-shrink-0"
+                                        className="w-[80px] h-[80px] object-cover rounded-lg flex-shrink-0"
                                       />
                                     )}
                                     <div className="flex-1">

@@ -1,12 +1,13 @@
 'use client';
 
-import { cn } from '@/lib';
+import { cn, getFontClassName } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData, DemoItem } from '@/hooks/useMenuData';
 import { Restaurant } from '@/types';
 import MenuItemCard from '@/components/menu/MenuItemCard';
 import { MenuSkeleton } from '@/components/ui/MenuSkeleton';
+import { EmptyState } from '@/components/ui';
 import AnimateIn from '@/components/ui/AnimateIn';
 
 interface Template1Props {
@@ -33,6 +34,8 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
     getTranslatedField,
   } = useMenuData(restaurant.id, demoItem);
 
+  const fontClass = getFontClassName(restaurant.font_family);
+
   return (
     <>
       {/* Navigation */}
@@ -47,18 +50,18 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
       />
 
       {/* Main Layout - Single Column */}
-      <div className="bg-[#fff5f0] text-[#3D1F00] font-oswald">
+      <div className={cn("bg-[#fff5f0] text-[#3D1F00]", fontClass)}>
         <div className="flex flex-col relative">
           {/* Hero Section - Top (Full Width) */}
           <div className='w-full flex-shrink-0 bg-white'>
-            <div className="relative flex flex-col justify-center items-center h-[400px] w-full px-4">
+            <div className="relative flex flex-col justify-center items-center h-[276px] w-full px-4">
 
               {/* Center Content */}
               <div className="text-center relative z-10 max-w-4xl mx-auto">
                 {/* Main Heading */}
                 <AnimateIn animation="fade" duration={800} delay={100}>
                   <div className="mb-6">
-                    <h1 className="text-[2.5rem] sm:text-[3.5rem] md:text-[4rem] lg:text-[5rem] font-bold tracking-tight text-[#3D1F00] uppercase leading-none">
+                    <h1 className="text-[56px] font-bold tracking-tight text-[#3D1F00] uppercase leading-none font-loubag">
                       {restaurant.name}
                     </h1>
                   </div>
@@ -66,8 +69,8 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
 
                 {/* Subtitle */}
                 <AnimateIn animation="blur" duration={1000} delay={300}>
-                  <p className="text-[14px] md:text-[16px] lg:text-[18px] text-[#3D1F00] max-w-[450px] mx-auto leading-relaxed font-normal">
-                    Explore a menu full of handcrafted dishes, rich flavors, and fresh ingredients. From light bites to hearty meals, there for everyone.
+                  <p className="text-xl text-[#3D1F00] max-w-[450px] mx-auto leading-relaxed font-normal">
+                    {t('menuPage.title')}
                   </p>
                 </AnimateIn>
               </div>
@@ -75,8 +78,8 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
           </div>
 
           {/* Content Section - Bottom (Full Width) */}
-          <div className="w-full bg-[#fff5f0] pt-8 min-h-screen">
-            <div className="w-full p-4 md:p-6 lg:p-8 pb-8">
+          <div className="w-full bg-[#fff5f0] pt-4 min-h-screen">
+            <div className="w-full px-4 md:px-6 lg:px-8 py-4 pb-8">
               {/* Tab Bar Container */}
               <AnimateIn animation="slide" duration={600} delay={200}>
                 <div className="mb-8">
@@ -114,11 +117,11 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
               {currentCategory && (
                 <AnimateIn animation="fade" duration={500} delay={100}>
                   <div className="mb-8">
-                    <h2 className="text-[28px] md:text-[32px] font-oswald text-[#3D1F00] font-bold uppercase">
+                    <h2 className="text-[22px] font-bold text-[#3D1F00] font-bold uppercase">
                       {getTranslatedField(currentCategory, 'title')}
                     </h2>
                     {getTranslatedField(currentCategory, 'text') && (
-                      <p className="text-[14px] md:text-[16px] font-oswald text-[#3D1F00]/70 mt-2">
+                      <p className="text-[14px] md:text-[16px] font-bold text-[#3D1F00]/70 mt-2">
                         {getTranslatedField(currentCategory, 'text')}
                       </p>
                     )}
@@ -135,7 +138,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
 
               {/* Error State */}
               {error && (
-                <div className="flex items-center justify-center py-12">
+                <div className="flex items-center justify-center py-4">
                   <div className="text-[#C8102E]">{error}</div>
                 </div>
               )}
@@ -144,9 +147,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
               {!loading && !error && (
                 <div className={`w-full transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                   {sections.length === 0 && categories.length > 0 ? (
-                    <div className="text-center py-12">
-                      <p className="text-[#3D1F00]/60">{t('menu.noItems')}</p>
-                    </div>
+                    <EmptyState message={t('menu.noItems')} className="text-[#3D1F00]/60" />
                   ) : sections.length > 0 ? (
                     sections.map((section, sectionIndex) => (
                       <div key={sectionIndex} className="mb-12">
@@ -154,11 +155,11 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                         {section.title && (
                           <AnimateIn animation="slide" duration={500} delay={100}>
                             <div className="mb-6">
-                              <h3 className="text-[24px] font-oswald text-[#3D1F00] font-bold uppercase">
+                              <h3 className="text-[18px] font-bold text-[#3D1F00] font-bold uppercase">
                                 {section.title}
                               </h3>
                               {section.subtitle && (
-                                <p className="text-[14px] font-oswald text-[#3D1F00]/70 mt-1">
+                                <p className="text-[14px] font-bold text-[#3D1F00]/70 mt-1">
                                   {section.subtitle}
                                 </p>
                               )}
@@ -195,7 +196,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
 
                                 {/* Content */}
                                 <div className="p-5">
-                                  <h4 className="text-[20px] md:text-[22px] font-oswald font-bold text-[#3D1F00] uppercase mb-2 leading-tight">
+                                  <h4 className="text-[20px] md:text-[22px] font-bold font-bold text-[#3D1F00] uppercase mb-2 leading-tight">
                                     {item.title}
                                   </h4>
                                   {item.subtitle && (
@@ -211,9 +212,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-12">
-                      <p className="text-[#3D1F00]/60">{t('menu.noCategories')}</p>
-                    </div>
+                    <EmptyState message={t('menu.noCategories')} className="text-[#3D1F00]/60" />
                   )}
                 </div>
               )}

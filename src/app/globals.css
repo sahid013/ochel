@@ -176,14 +176,7 @@ body {
 }
 
 /* Ensure no horizontal overflow */
-html {
-  overflow-x: hidden;
-}
 
-body {
-  overflow-x: hidden;
-  width: 100vw;
-}
 
 /* Font family utilities */
 @layer utilities {
@@ -306,6 +299,16 @@ input[type="radio"]:checked {
 
 .animate-bounce-dot {
   animation: bounce 1.4s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* In-view animations */

@@ -8,6 +8,7 @@ import { PrimaryButton } from '@/components/ui';
 interface PublishMenuButtonProps {
   restaurantId: string;
   restaurantSlug: string;
+  currentTemplate: string;
   onPublishComplete?: () => void;
 }
 
@@ -15,7 +16,7 @@ interface PublishMenuButtonProps {
  * Button to mark onboarding as complete and redirect to public menu
  * Items are already in the database, this just completes the onboarding flow
  */
-export function PublishMenuButton({ restaurantId, restaurantSlug, onPublishComplete }: PublishMenuButtonProps) {
+export function PublishMenuButton({ restaurantId, restaurantSlug, currentTemplate, onPublishComplete }: PublishMenuButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,10 +41,13 @@ export function PublishMenuButton({ restaurantId, restaurantSlug, onPublishCompl
         return;
       }
 
-      // Mark onboarding as complete
+      // Mark onboarding as complete and save template
       const { error: updateError } = await supabase
         .from('restaurants')
-        .update({ has_completed_onboarding: true })
+        .update({
+          has_completed_onboarding: true,
+          template: currentTemplate
+        } as any)
         .eq('id', restaurantId);
 
       if (updateError) throw updateError;

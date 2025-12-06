@@ -8,10 +8,10 @@ import { MenuItemsManagement } from './menu/MenuItemsManagement';
 import { AddonsManagement } from './menu/AddonsManagement';
 
 const menuTabs = [
-  { id: 'categories', label: 'Catégories', icon: '📁' },
-  { id: 'subcategories', label: 'Sous-catégories', icon: '📂' },
-  { id: 'items', label: 'Éléments de menu', icon: '🍽️' },
-  { id: 'addons', label: 'Add-ons', icon: '➕' },
+  { id: 'categories', label: 'Catégories' },
+  { id: 'subcategories', label: 'Sous-catégories' },
+  { id: 'items', label: 'Éléments de menu' },
+  { id: 'addons', label: 'Add-ons' },
 ];
 
 interface MenuManagementTabProps {
@@ -22,51 +22,61 @@ export function MenuManagementTab({ restaurantId }: MenuManagementTabProps) {
   const [activeTab, setActiveTab] = useState('categories');
 
   return (
-    <div className="space-y-6 font-forum">
+    <div className="space-y-6 font-plus-jakarta-sans">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Gestion du Menu</h2>
-        <p className="text-gray-600">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-2 font-loubag uppercase">Gestion du Menu</h2>
+        <p className="text-secondary font-plus-jakarta-sans text-lg">
           Gérez les catégories, sous-catégories, éléments de menu et add-ons du restaurant
         </p>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="border-b border-gray-200">
+      <div className="mb-8">
         {/* Desktop Tabs */}
-        <nav className="hidden md:flex -mb-px space-x-8">
+        <nav className="hidden md:flex space-x-4">
           {menuTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors rounded-t-lg cursor-pointer',
+                'px-6 py-3 font-medium transition-all font-plus-jakarta-sans text-[13px]',
                 activeTab === tab.id
-                  ? 'border-[#F34A23] text-[#F34A23] bg-[#F34A23]/5'
-                  : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-[#F34A23]/30 hover:bg-[#F34A23]/5'
+                  ? 'bg-[#F34A23] text-white scale-105'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               )}
+              style={activeTab === tab.id ? {
+                borderRadius: '0.87413rem',
+                boxShadow: '0 0 34.366px 11.988px rgba(241, 155, 135, 0.50), 0 0.999px 2.997px 0 #FDD8C7 inset'
+              } : {
+                borderRadius: '0.5rem'
+              }}
             >
-              <span>{tab.icon}</span>
               <span>{tab.label}</span>
             </button>
           ))}
         </nav>
 
         {/* Mobile Tabs */}
-        <div className="md:hidden flex overflow-x-auto scrollbar-hide">
+        <div className="md:hidden flex overflow-x-auto scrollbar-hide gap-3 pb-4 px-1">
           {menuTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex-shrink-0 flex flex-col items-center justify-center py-3 px-4 border-b-2 transition-colors min-w-[100px] cursor-pointer',
+                'flex-shrink-0 flex items-center justify-center py-3 px-4 transition-all min-w-[100px] cursor-pointer text-[13px]',
                 activeTab === tab.id
-                  ? 'border-[#F34A23] text-[#F34A23] bg-[#F34A23]/5'
-                  : 'border-transparent text-gray-600'
+                  ? 'bg-[#F34A23] text-white'
+                  : 'bg-gray-100 text-gray-700'
               )}
+              style={activeTab === tab.id ? {
+                borderRadius: '0.87413rem',
+                boxShadow: '0 0 15px 5px rgba(241, 155, 135, 0.50), 0 1px 3px 0 #FDD8C7 inset'
+              } : {
+                borderRadius: '0.5rem'
+              }}
             >
-              <span className="text-xl mb-1">{tab.icon}</span>
-              <span className="text-xs font-medium text-center">{tab.label}</span>
+              <span className="font-medium text-center">{tab.label}</span>
             </button>
           ))}
         </div>

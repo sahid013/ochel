@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LoginSignupModal } from './LoginSignupModal';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib';
 import { PrimaryButton } from '@/components/ui';
-import MenuItemCard from '@/components/menu/MenuItemCard';
+import { useTranslation } from '@/contexts/LanguageContext';
+import { MenuEditorForm, MenuEditorFormData } from '@/components/menu/MenuEditorForm';
+import { LoginSignupModal } from './LoginSignupModal';
 import Template1 from '@/components/templates/Template1';
 import Template2 from '@/components/templates/Template2';
 import Template3 from '@/components/templates/Template3';
@@ -23,6 +23,7 @@ interface DemoMenuItem {
   image?: string;
   model3dGlbUrl?: string;
   model3dUsdzUrl?: string;
+  images?: string[]; // Store filenames for display
 }
 
 const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
@@ -52,20 +53,12 @@ const MOCK_RESTAURANT: Restaurant = {
  * - Cache first item in localStorage
  */
 export function DemoMenuEditor() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [selectedTemplate, setSelectedTemplate] = useState<string>('template1');
   const [showModal, setShowModal] = useState(false);
   const [demoItem, setDemoItem] = useState<DemoMenuItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  // Form state
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('');
-  const [subcategory, setSubcategory] = useState('');
-  const [model3dGlbUrl, setModel3dGlbUrl] = useState('');
-  const [model3dUsdzUrl, setModel3dUsdzUrl] = useState('');
 
   // Load cached demo item on mount
   useEffect(() => {
@@ -85,29 +78,57 @@ export function DemoMenuEditor() {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
 
-    if (!title || !price || !category) {
-      alert('Please fill in the title, category, and price');
-      return;
-    }
-
+  // Form submission handler
+  const handleFormSubmit = async (data: MenuEditorFormData) => {
     // If user already has an item, show login/signup modal
     if (demoItem && !isEditing) {
       setShowModal(true);
       return;
     }
 
+    let imageBase64: string | undefined = undefined;
+
+    // Handle preview image (Base64 conversion)
+    if (data.previewImage && data.previewImage[0]) {
+      const img = data.previewImage[0];
+      if (typeof img === 'string') {
+        imageBase64 = img; // Already base64 or URL
+      } else if (img instanceof File) {
+        try {
+          imageBase64 = await fileToBase64(img);
+        } catch (error) {
+          console.error("Error converting file to base64", error);
+        }
+      }
+    } else if (isEditing && demoItem?.image) {
+      // Keep existing image if not changed (handled by initialValues logic usually)
+      // If previewImage is empty/null, it means user removed it or it's new.
+      // However, since we pass initialValues.previewImage = [demoItem.image],
+      // if user didn't change it, it comes back as string.
+      // If user removed it, it comes back as null.
+      // So valid logic is above: if data.previewImage[0] exists, use it.
+    }
+
     const newItem: DemoMenuItem = {
-      id: Date.now().toString(),
-      title,
-      description,
-      price,
-      category,
-      subcategory,
-      model3dGlbUrl: model3dGlbUrl.trim() || undefined,
-      model3dUsdzUrl: model3dUsdzUrl.trim() || undefined,
+      id: demoItem?.id || Date.now().toString(), // Keep ID if editing
+      title: data.title,
+      description: data.description,
+      price: data.price,
+      category: data.category,
+      subcategory: data.subcategory,
+      image: imageBase64,
+      model3dGlbUrl: data.model3dGlbUrl?.trim() || undefined,
+      model3dUsdzUrl: data.model3dUsdzUrl?.trim() || undefined,
+      images: [], // We don't really store the 4 images in demo anymore as files are hard to persist
     };
 
     // Save to state and cache
@@ -115,15 +136,10 @@ export function DemoMenuEditor() {
     localStorage.setItem(DEMO_CACHE_KEY, JSON.stringify(newItem));
     localStorage.setItem(DEMO_TEMPLATE_KEY, selectedTemplate);
 
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setPrice('');
-    setCategory('');
-    setSubcategory('');
-    setModel3dGlbUrl('');
-    setModel3dUsdzUrl('');
     setIsEditing(false);
+
+    // Smooth scroll to top to see result
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleTemplateChange = (template: string) => {
@@ -133,13 +149,6 @@ export function DemoMenuEditor() {
 
   const handleEdit = () => {
     if (demoItem) {
-      setTitle(demoItem.title);
-      setDescription(demoItem.description);
-      setPrice(demoItem.price);
-      setCategory(demoItem.category);
-      setSubcategory(demoItem.subcategory);
-      setModel3dGlbUrl(demoItem.model3dGlbUrl || '');
-      setModel3dUsdzUrl(demoItem.model3dUsdzUrl || '');
       setIsEditing(true);
     }
   };
@@ -147,24 +156,30 @@ export function DemoMenuEditor() {
   const handleDelete = () => {
     setDemoItem(null);
     localStorage.removeItem(DEMO_CACHE_KEY);
-    setTitle('');
-    setDescription('');
-    setPrice('');
-    setCategory('');
-    setSubcategory('');
-    setModel3dGlbUrl('');
-    setModel3dUsdzUrl('');
     setIsEditing(false);
   };
+
+  // Transform demoItem to initialValues
+  const initialValues: Partial<MenuEditorFormData> | undefined = isEditing && demoItem ? {
+    title: demoItem.title,
+    description: demoItem.description,
+    price: demoItem.price,
+    category: demoItem.category,
+    subcategory: demoItem.subcategory,
+    model3dGlbUrl: demoItem.model3dGlbUrl,
+    model3dUsdzUrl: demoItem.model3dUsdzUrl,
+    previewImage: demoItem.image ? [demoItem.image] : [null], // string passes here
+    selectedImages: [null, null, null, null]
+  } : undefined;
 
   return (
     <div className="w-full max-w-[1460px] mx-auto">
       {/* Header */}
       <div className="text-center mb-12 pt-[80px] px-5">
         <h2 className="text-xl md:text-[32px] font-bold text-primary mb-4 font-loubag uppercase flex flex-col md:flex-row items-center justify-center gap-2">
-          <span>Create</span>
+          <span>{t('home.demo.create')}</span>
           <TextRotator
-            texts={["your restaurant menu", "3d menu model"]}
+            texts={[t('home.demo.rotator.menu'), t('home.demo.rotator.model')]}
             interval={3000}
             className="text-[#F34A23]"
           />
@@ -176,223 +191,75 @@ export function DemoMenuEditor() {
           {/* Left Column - Add Your First Item */}
           <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
-              Add Your First Item
+              {t('home.demo.addItem.title')}
             </h3>
 
             {demoItem && !isEditing ? (
               /* Display created item */
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="mb-3">
-                    <span className="inline-block px-3 py-1 bg-[#F34A23] text-white text-xs font-medium rounded-full mb-2">
-                      {demoItem.category}
-                    </span>
-                    {demoItem.subcategory && (
-                      <span className="inline-block px-3 py-1 bg-gray-300 text-gray-700 text-xs font-medium rounded-full mb-2 ml-2">
-                        {demoItem.subcategory}
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block px-3 py-1 bg-[#F34A23] text-white text-xs font-medium rounded-full">
+                        {demoItem.category}
                       </span>
-                    )}
+                      {demoItem.subcategory && (
+                        <span className="inline-block px-3 py-1 bg-gray-300 text-gray-700 text-xs font-medium rounded-full">
+                          {demoItem.subcategory}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleEdit}
+                        className="p-1.5 text-gray-500 hover:text-[#F34A23] hover:bg-orange-50 rounded-full transition-colors"
+                        title={t('home.demo.addItem.edit')}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                        title={t('home.demo.addItem.delete')}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-start mb-3">
-                    <h4 className="text-xl font-semibold text-primary">{demoItem.title}</h4>
-                    <span className="text-lg font-bold text-[#F34A23]">{demoItem.price}€</span>
+
+                  <div className="pt-4 border-t border-gray-200">
+                    <p className="text-sm text-gray-600 mb-3">
+                      {t('home.demo.addItem.moreItems')}
+                    </p>
+                    <PrimaryButton onClick={() => setShowModal(true)} fullWidth>
+                      {t('home.demo.addItem.continueSignup')}
+                    </PrimaryButton>
                   </div>
-                  {demoItem.description && (
-                    <p className="text-gray-600">{demoItem.description}</p>
-                  )}
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleEdit}
-                    className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className="flex-1 px-4 py-2 border-2 border-red-300 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors"
-                  >
-                    Delete
-                  </button>
-                </div>
-
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-sm text-gray-600 mb-3">
-                    Want to add more items?
-                  </p>
-                  <PrimaryButton onClick={() => setShowModal(true)} fullWidth>
-                    Continue with Sign Up
-                  </PrimaryButton>
                 </div>
               </div>
             ) : (
-              /* Item Form */
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      Category <span className="text-red-500">*</span>
-                      <div className="group relative">
-                        <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                          <p className="font-semibold mb-1">What is a Category?</p>
-                          <p>Categories are main sections of your menu (e.g., "Main Dishes", "Appetizers", "Desserts"). They help organize your menu items.</p>
-                          <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                        </div>
-                      </div>
-                    </label>
-                    <input
-                      type="text"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      placeholder="e.g., Main Dishes"
-                      className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                      style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      Subcategory
-                      <div className="group relative">
-                        <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                          <p className="font-semibold mb-1">What is a Subcategory?</p>
-                          <p>Subcategories are optional subsections within a category (e.g., "Pizza" or "Pasta" under "Main Dishes"). They provide extra organization.</p>
-                          <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-                        </div>
-                      </div>
-                    </label>
-                    <input
-                      type="text"
-                      value={subcategory}
-                      onChange={(e) => setSubcategory(e.target.value)}
-                      placeholder="e.g., Pizza (optional)"
-                      className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                      style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Item Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g., Margherita Pizza"
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="e.g., Fresh mozzarella, tomato sauce, and basil"
-                    rows={3}
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] resize-none text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      placeholder="12.50"
-                      className="w-full px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                      style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                      required
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
-                      €
-                    </span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    3D Model URL (GLB - Android/Web)
-                  </label>
-                  <input
-                    type="url"
-                    value={model3dGlbUrl}
-                    onChange={(e) => setModel3dGlbUrl(e.target.value)}
-                    placeholder="https://example.com/model.glb"
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Optional: GLB format for 3D preview on web and Android
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    3D Model URL (USDZ - iOS AR)
-                  </label>
-                  <input
-                    type="url"
-                    value={model3dUsdzUrl}
-                    onChange={(e) => setModel3dUsdzUrl(e.target.value)}
-                    placeholder="https://example.com/model.usdz"
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Optional: USDZ format for iOS AR Quick Look
-                  </p>
-                </div>
-
-                <PrimaryButton type="submit" fullWidth>
-                  {isEditing ? 'Update Item' : 'Add to Menu'}
-                </PrimaryButton>
-
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditing(false);
-                      setTitle('');
-                      setDescription('');
-                      setPrice('');
-                      setCategory('');
-                      setSubcategory('');
-                      setModel3dGlbUrl('');
-                      setModel3dUsdzUrl('');
-                    }}
-                    className="w-full px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </form>
+              /* Item Form Replaced */
+              <MenuEditorForm
+                initialValues={initialValues}
+                onSubmit={handleFormSubmit}
+                onCancel={() => setIsEditing(false)}
+                isEditing={isEditing}
+                show3DInputs={false}
+                showDetailedImageUpload={true}
+                existingCategories={[]}
+                existingSubcategories={[]}
+              />
             )}
           </div>
 
           {/* Right Column - Choose Your Template */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit sticky top-[100px]" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
-              Choose Your Template
+              {t('home.demo.template.title')}
             </h3>
 
             {/* Template Selector */}
@@ -421,51 +288,46 @@ export function DemoMenuEditor() {
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {/* Template 1 */}
               {selectedTemplate === 'template1' && (
-                <div key="template1" className="h-full overflow-auto animate-fade-in">
-                  <Template1 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template1 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
               {/* Template 2 */}
               {selectedTemplate === 'template2' && (
-                <div key="template2" className="h-full overflow-auto animate-fade-in">
-                  <Template2 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                <div key="template2" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template2 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
               {/* Template 3 */}
               {selectedTemplate === 'template3' && (
-                <div key="template3" className="h-full overflow-auto animate-fade-in">
-                  <Template3 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template3 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
 
               {/* Template 4 */}
               {selectedTemplate === 'template4' && (
-                <div key="template4" className="h-full overflow-auto animate-fade-in">
-                  <Template4 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                  <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
+                    <Template4 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                  </div>
                 </div>
               )}
-
-              {/* Preview Label */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                <div className="flex items-center justify-between text-white/90 text-xs">
-                  <span className="font-medium">Live Preview</span>
-                  <span className="bg-white/20 px-2 py-1 rounded">
-                    {selectedTemplate === 'template1' && 'Classic Dark'}
-                    {selectedTemplate === 'template2' && 'Modern Sidebar'}
-                    {selectedTemplate === 'template3' && 'Elegant Gold'}
-                    {selectedTemplate === 'template4' && 'Modern Minimalist'}
-                  </span>
-                </div>
-              </div>
 
               {demoItem && (
                 <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg flex items-center gap-1">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  Your Item Added
+                  {t('home.demo.template.itemAdded')}
                 </div>
               )}
             </div>
