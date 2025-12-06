@@ -236,12 +236,7 @@ export default function CustomizeTab({ restaurant }: CustomizeTabProps) {
           </button>
         </div>
 
-        {/* Preview Note */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
-            <strong>💡 Tip:</strong> After saving, preview your changes by visiting your public menu page or using the Template Settings preview feature.
-          </p>
-        </div>
+
       </div>
     </div>
   );
