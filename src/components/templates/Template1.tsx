@@ -54,8 +54,10 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
         <div className="flex flex-col relative">
           {/* Hero Section - Top (Full Width) */}
           <div className='w-full flex-shrink-0 bg-white'>
-            <div className="relative flex flex-col justify-center items-center h-[276px] w-full px-4">
-
+            <div
+              className="relative flex flex-col justify-center items-center h-[276px] w-full px-4 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: "url('/images/Template1HeroBackground.png')" }}
+            >
               {/* Center Content */}
               <div className="text-center relative z-10 max-w-4xl mx-auto">
                 {/* Main Heading */}
