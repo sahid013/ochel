@@ -56,13 +56,13 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
           <div className='w-full flex-shrink-0 bg-white'>
             <div
               className="relative flex flex-col justify-center items-center h-[276px] w-full px-4 bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: "url('/images/Template1HeroBackground.png')" }}
+              style={{ backgroundImage: "url('/images/Template1HeroWhite.png')" }}
             >
               {/* Center Content */}
-              <div className="text-center relative z-10 max-w-4xl mx-auto">
+              <div className="text-center relative z-10 max-w-4xl mx-auto backdrop-blur-sm bg-white/40 p-8 rounded-2xl shadow-sm border border-white/50">
                 {/* Main Heading */}
                 <AnimateIn animation="fade" duration={800} delay={100}>
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <h1 className="text-[56px] font-bold tracking-tight text-[#3D1F00] uppercase leading-none font-loubag">
                       {restaurant.name}
                     </h1>
@@ -71,7 +71,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
 
                 {/* Subtitle */}
                 <AnimateIn animation="blur" duration={1000} delay={300}>
-                  <p className="text-xl text-[#3D1F00] max-w-[450px] mx-auto leading-relaxed font-normal">
+                  <p className="text-xl text-[#3D1F00] max-w-[450px] mx-auto leading-relaxed font-bold">
                     {t('menuPage.title')}
                   </p>
                 </AnimateIn>

@@ -485,5 +485,43 @@
   "notFound": {
     "subtitle": "Oups ! La page que vous recherchez n'existe pas.",
     "button": "Aller à la page d'accueil"
+  },
+  "superAdmin": {
+    "login": {
+      "title": "Portail Super Admin",
+      "subtitle": "Veuillez vous connecter pour continuer",
+      "email": "Adresse Email",
+      "password": "Mot de passe",
+      "submit": "Accéder au Tableau de Bord",
+      "authenticating": "Authentification...",
+      "error": "Accès non autorisé. Cette zone est réservée aux Super Admins.",
+      "loginError": "Une erreur s'est produite lors de la connexion"
+    },
+    "nav": {
+      "restaurants": "Restaurants",
+      "3dModels": "Modèles 3D",
+      "logout": "Déconnexion"
+    },
+    "dashboard": {
+      "title": "Restaurants",
+      "columns": {
+        "name": "Nom",
+        "slug": "Slug",
+        "status": "Statut",
+        "contact": "Contact",
+        "joined": "Rejoint le",
+        "actions": "Actions"
+      },
+      "active": "Actif",
+      "inactive": "Inactif",
+      "view3dModels": "Voir Modèles 3D"
+    },
+    "models": {
+      "title": "Gestion des Modèles 3D",
+      "item": "Article",
+      "modelUrl": "URL du Modèle 3D",
+      "save": "Enregistrer",
+      "saving": "Enregistrement..."
+    }
   }
 }
