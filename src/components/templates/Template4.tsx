@@ -61,7 +61,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
       {/* Main Layout - Casual Colorful Theme */}
       <div
         className={cn(
-          "min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50",
+          "min-h-screen pt-16 bg-gradient-to-br from-orange-50 to-yellow-50",
           bodyFontClass
         )}
         style={{

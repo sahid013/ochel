@@ -129,7 +129,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
       />
 
       {/* Main Layout - Dark Theme */}
-      <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #000000)', color: 'var(--pixel-text, white)' }}>
+      <div className={cn("min-h-screen pt-16", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #000000)', color: 'var(--pixel-text, white)' }}>
         {/* Hero Header */}
         <div
           className="h-[240px] w-full bg-cover bg-center flex items-center justify-center relative"

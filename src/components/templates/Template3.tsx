@@ -55,7 +55,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
       />
 
       {/* Main Layout - Boutique Elegant Theme */}
-      <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #FAF8F3)', color: 'var(--pixel-text, #2C2416)', ...variableStyles }}>
+      <div className={cn("min-h-screen pt-16", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #FAF8F3)', color: 'var(--pixel-text, #2C2416)', ...variableStyles }}>
         {/* Elegant Header */}
         <div
           className="relative h-[276px] flex items-center justify-center p-6 text-center bg-cover bg-center"

@@ -92,7 +92,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
       />
 
       {/* Main Layout - Single Column */}
-      <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #fff5f0)', color: 'var(--pixel-text, #3D1F00)', ...variableStyles }}>
+      <div className={cn("min-h-screen pt-16", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #fff5f0)', color: 'var(--pixel-text, #3D1F00)', ...variableStyles }}>
         <div className="flex flex-col relative">
           {/* Hero Section - Top (Full Width) */}
           <div className='w-full flex-shrink-0 bg-white'>
