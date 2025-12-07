@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { cn, getFontClassName } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
@@ -34,6 +35,14 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
   } = useMenuData(restaurant.id, demoItem);
 
   const fontClass = getFontClassName(restaurant.font_family);
+
+  // Apply light scrollbar for this template
+  useEffect(() => {
+    document.body.classList.add('scrollbar-light');
+    return () => {
+      document.body.classList.remove('scrollbar-light');
+    };
+  }, []);
 
   return (
     <>

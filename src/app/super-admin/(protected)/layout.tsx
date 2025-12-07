@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { useSuperAdmin } from '@/hooks/useSuperAdmin';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { LandingLanguageSwitcher } from '@/components/layout/LandingLanguageSwitcher';
 
 export default function SuperAdminLayout({
     children,
@@ -14,6 +16,7 @@ export default function SuperAdminLayout({
     const { t } = useTranslation();
     const { isSuperAdmin, loading } = useSuperAdmin();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         if (!loading && !isSuperAdmin) {
@@ -34,36 +37,26 @@ export default function SuperAdminLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
             <nav className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
-                            <div className="flex-shrink-0 flex items-center gap-4">
-                                <h1 className="text-xl font-bold font-forum text-gray-900 cursor-pointer" onClick={() => router.push('/super-admin')}>
-                                    Ochel Super Admin
-                                </h1>
-                                <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Admin Access</span>
+                            <div className="flex-shrink-0 flex items-center gap-4 cursor-pointer" onClick={() => router.push('/super-admin')}>
+                                <img
+                                    src="/icons/ochellogofull.png"
+                                    alt="Ochel"
+                                    className="h-7 w-auto"
+                                />
+                                <span className="bg-[#F34A23]/10 text-[#F34A23] text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Super Admin</span>
                             </div>
-                            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                                <a
-                                    href="/super-admin"
-                                    className="border-transparent text-gray-500 hover:border-orange-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                                >
-                                    {t('superAdmin.nav.restaurants')}
-                                </a>
-                                <a
-                                    href="/super-admin/3d-models"
-                                    className="border-transparent text-gray-500 hover:border-orange-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                                >
-                                    {t('superAdmin.nav.3dModels')}
-                                </a>
-                            </div>
+
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-4">
+                            <LandingLanguageSwitcher />
                             <button
                                 onClick={() => router.push('/')}
-                                className="text-sm text-gray-600 hover:text-gray-900"
+                                className="text-sm font-medium text-gray-600 hover:text-[#F34A23] font-plus-jakarta-sans transition-colors"
                             >
                                 {t('superAdmin.nav.logout')}
                             </button>
@@ -71,7 +64,7 @@ export default function SuperAdminLayout({
                     </div>
                 </div>
             </nav>
-            <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <main className="max-w-[1460px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
                 {children}
             </main>
         </div>

@@ -64,15 +64,14 @@ export default function SuperAdminLoginPage() {
 
             <div className="pt-16 min-h-screen grid lg:grid-cols-2">
                 {/* Left Side - Cinematic Dark Mode View */}
-                <div className="hidden lg:block relative bg-gray-900">
+                <div className="hidden lg:block relative bg-gray-100">
                     <div
                         className="absolute inset-0 bg-cover bg-center"
                         style={{
-                            backgroundImage: 'url(https://images.unsplash.com/photo-1550966871-3ed3c47e2ce2?q=80&w=2070&auto=format&fit=crop)',
+                            backgroundImage: 'url(/assets/super_admin_login_bg.png)',
                         }}
                     ></div>
-                    {/* Subtle overlay for better feel but not obstructing */}
-                    <div className="absolute inset-0 bg-black/20"></div>
+
                 </div>
 
                 {/* Right Side - Form */}

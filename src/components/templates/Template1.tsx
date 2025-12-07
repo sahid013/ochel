@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { cn, getFontClassName } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
@@ -35,6 +36,48 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
   } = useMenuData(restaurant.id, demoItem);
 
   const fontClass = getFontClassName(restaurant.font_family);
+  const [selected3DItem, setSelected3DItem] = useState<{ glb: string | undefined, usdz: string | undefined, title: string } | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  // Apply light scrollbar for this template
+  useEffect(() => {
+    document.body.classList.add('scrollbar-light');
+    return () => {
+      document.body.classList.remove('scrollbar-light');
+    };
+  }, []);
+
+  const handle3DClick = (e: React.MouseEvent, item: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (item.model3DGlbUrl || item.model3DUsdzUrl) {
+      setSelected3DItem({
+        glb: item.model3DGlbUrl,
+        usdz: item.model3DUsdzUrl,
+        title: item.title
+      });
+    }
+  };
+
+  const closeModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelected3DItem(null);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  const handleARClick = () => {
+    if (!selected3DItem) return;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isIOS && selected3DItem.usdz) {
+      window.location.href = selected3DItem.usdz;
+    } else if (selected3DItem.glb) {
+      const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(selected3DItem.glb)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+      window.location.href = intent;
+    }
+  };
 
   return (
     <>
@@ -198,9 +241,24 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
 
                                 {/* Content */}
                                 <div className="p-5">
-                                  <h4 className="text-[20px] md:text-[22px] font-bold font-bold text-[#3D1F00] uppercase mb-2 leading-tight">
-                                    {item.title}
-                                  </h4>
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="text-[20px] md:text-[22px] font-bold font-bold text-[#3D1F00] uppercase leading-tight">
+                                      {item.title}
+                                    </h4>
+                                    {item.has3D && (
+                                      <button
+                                        onClick={(e) => handle3DClick(e, item)}
+                                        className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+                                        title="View in 3D"
+                                      >
+                                        <img
+                                          src="/icons/3d.svg"
+                                          alt="3D View"
+                                          className="w-full h-full"
+                                        />
+                                      </button>
+                                    )}
+                                  </div>
                                   {item.subtitle && (
                                     <p className="text-[14px] text-[#3D1F00]/70 line-clamp-2">
                                       {item.subtitle}
@@ -222,6 +280,52 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
           </div>
         </div>
       </div>
+
+      {/* 3D Model Modal */}
+      {selected3DItem && (
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}>
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
+            onClick={closeModal}
+          />
+          <div className={`relative bg-white rounded-2xl w-full max-w-3xl aspect-square md:aspect-video max-h-[90vh] p-4 flex flex-col transition-all duration-300 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={closeModal}
+                className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 rounded-xl overflow-hidden bg-gray-50 relative">
+              {/* @ts-ignore */}
+              <model-viewer
+                src={selected3DItem.glb || ''}
+                ios-src={selected3DItem.usdz || ''}
+                camera-controls
+                touch-action="pan-y"
+                exposure="1"
+                shadow-intensity="1"
+                alt={selected3DItem.title}
+                interaction-prompt="auto"
+                auto-rotate
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={handleARClick}
+                className="px-6 py-3 bg-[#F34A23] hover:bg-[#d63d1b] text-white font-bold rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl transform active:scale-95"
+              >
+                <span>View on Table (AR)</span>
+                <img src="/icons/3d.svg" alt="" className="w-5 h-5 invert brightness-0" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
