@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { cn, getFontClassName } from '@/lib';
+import { cn, parseFontConfig, getFontClass, getTemplateVariables } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData, DemoItem } from '@/hooks/useMenuData';
@@ -34,7 +34,13 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
     getTranslatedField,
   } = useMenuData(restaurant.id, demoItem);
 
-  const fontClass = getFontClassName(restaurant.font_family);
+  const { header, body } = parseFontConfig(restaurant.font_family);
+  const headerFontClass = getFontClass(header);
+  const bodyFontClass = getFontClass(body);
+  const variableStyles = getTemplateVariables(restaurant);
+
+  // const hasCustomBg = !!restaurant.background_color; // Restricted
+  // const hasCustomPrimary = !!restaurant.primary_color; // Keep primary logic if needed for specific overrides, but for BG we want default
 
   // Apply light scrollbar for this template
   useEffect(() => {
@@ -47,22 +53,38 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
   return (
     <>
       {/* Navigation */}
+      {/* Navigation */}
       <Navigation
-        showLanguageSwitcher={false}
-        logo={{
-          src: "/icons/MagnifikoLogo.png",
-          alt: restaurant.name,
-          width: 50,
-          height: 17
-        }}
+        restaurant={restaurant}
       />
 
       {/* Main Layout - Casual Colorful Theme */}
-      <div className={cn("bg-gradient-to-br from-orange-50 to-yellow-50 text-gray-900 min-h-screen", fontClass)}>
+      <div
+        className={cn(
+          "min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50",
+          bodyFontClass
+        )}
+        style={{
+          // backgroundColor: hasCustomBg ? 'var(--pixel-bg)' : undefined, // Restricted
+          color: 'var(--pixel-text, #111827)',
+          ...variableStyles
+        }}
+      >
         {/* Fun Header */}
-        <div className="relative bg-gradient-to-r from-[#F34A23] to-[#FF6B4A] text-white h-[276px] flex items-center justify-center">
+        <div
+          className={cn(
+            "relative h-[276px] flex items-center justify-center bg-cover bg-center",
+            !restaurant.primary_color && !restaurant.hero_image_url && "bg-gradient-to-r from-[#F34A23] to-[#FF6B4A]"
+          )}
+          style={{
+            backgroundColor: !restaurant.hero_image_url && restaurant.primary_color ? 'var(--pixel-primary)' : undefined,
+            backgroundImage: restaurant.hero_image_url ? `url('${restaurant.hero_image_url}')` : undefined,
+            color: 'white'
+          }}
+        >
+          {restaurant.hero_image_url && <div className="absolute inset-0 bg-black/40"></div>}
           <div className="max-w-6xl mx-auto px-6 text-center">
-            <h1 className="text-[56px] font-bold mb-4 font-loubag">
+            <h1 className={cn("text-[56px] font-bold mb-4", headerFontClass)}>
               {restaurant.name}
             </h1>
             <p className="text-xl font-medium">
@@ -84,9 +106,13 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
                     "text-base font-bold rounded-2xl py-4 px-6 transition-all duration-200",
                     "whitespace-nowrap shadow-md hover:shadow-lg",
                     activeTab === index
-                      ? "bg-[#F34A23] text-white scale-105"
-                      : "bg-white text-gray-700 hover:bg-orange-100"
+                      ? "text-white scale-105"
+                      : "bg-white hover:bg-opacity-90"
                   )}
+                  style={{
+                    backgroundColor: activeTab === index ? 'var(--pixel-primary, #F34A23)' : 'white',
+                    color: activeTab === index ? 'white' : 'var(--pixel-text, #111827)'
+                  }}
                 >
                   {getTranslatedField(category, 'title')}
                 </button>
@@ -97,7 +123,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
           {/* Category Title - Fun Style */}
           {currentCategory && (
             <div className="mb-10">
-              <h2 className="text-[22px] font-bold text-gray-900 mb-3">
+              <h2 className={cn("text-[22px] font-bold mb-3", headerFontClass)} style={{ color: 'var(--pixel-text, #111827)' }}>
                 {getTranslatedField(currentCategory, 'title')}
               </h2>
               {getTranslatedField(currentCategory, 'text') && (
@@ -133,7 +159,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
                     {/* Section Title - Bold & Colorful */}
                     {section.title && (
                       <div className="mb-6">
-                        <h3 className="text-[18px] font-bold text-[#F34A23] capitalize mb-2">
+                        <h3 className={cn("text-[18px] font-bold capitalize mb-2", headerFontClass)} style={{ color: 'var(--pixel-primary, #F34A23)' }}>
                           {section.title}
                         </h3>
                         {section.subtitle && (
@@ -162,10 +188,10 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
                           )}
                           <div className="p-5">
                             <div className="flex justify-between items-start mb-2">
-                              <h4 className="text-xl font-bold text-gray-900 flex-1">
+                              <h4 className={cn("text-xl font-bold flex-1", headerFontClass)} style={{ color: 'var(--pixel-text, #111827)' }}>
                                 {item.title}
                               </h4>
-                              <span className="text-xl font-bold text-[#F34A23] ml-3 whitespace-nowrap">
+                              <span className="text-xl font-bold ml-3 whitespace-nowrap" style={{ color: 'var(--pixel-primary, #F34A23)' }}>
                                 {item.price}
                               </span>
                             </div>

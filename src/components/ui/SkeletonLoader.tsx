@@ -41,3 +41,37 @@ export function TableSkeleton() {
         </div>
     );
 }
+
+export function AdminDashboardSkeleton() {
+    return (
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
+            {/* Navbar Skeleton */}
+            <nav className="bg-white border-b border-gray-200">
+                <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-16">
+                        <div className="flex items-center gap-4">
+                            {/* Logo */}
+                            <div className="h-7 w-24 bg-gray-200 rounded animate-pulse"></div>
+                            {/* Badge */}
+                            <div className="h-5 w-20 bg-gray-100 rounded-full animate-pulse"></div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            {/* Language Switcher */}
+                            <div className="h-8 w-16 bg-gray-100 rounded animate-pulse"></div>
+                            {/* Logout */}
+                            <div className="h-5 w-16 bg-gray-100 rounded animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            {/* Main Content Skeleton */}
+            <main className="max-w-[1460px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div className="space-y-6">
+                    {/* Reuse TableSkeleton logic or similar structure */}
+                    <TableSkeleton />
+                </div>
+            </main>
+        </div>
+    );
+}

@@ -2,6 +2,8 @@
 
 import { useEffect, useState, lazy, Suspense, ComponentType } from 'react';
 import { useParams, useSearchParams, notFound } from 'next/navigation';
+import { MenuSkeleton, FullPageMenuSkeleton } from '@/components/ui/MenuSkeleton';
+import { EmptyState } from '@/components/ui';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 
@@ -108,9 +110,9 @@ export default function RestaurantMenuPage() {
     }
   }, [slug]);
 
-  // Show blank page with appropriate background while loading (no flash)
+  // Show skeleton loader
   if (loading) {
-    return <div className="min-h-screen bg-white" />;
+    return <FullPageMenuSkeleton />;
   }
 
   if (error || !restaurant || (!restaurant.has_completed_onboarding && !searchParams.get('preview'))) {

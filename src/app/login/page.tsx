@@ -259,11 +259,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            {loginStatus && (
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <p className="text-sm text-blue-600 font-inter">{loginStatus}</p>
-              </div>
-            )}
+
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email */}

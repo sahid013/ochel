@@ -1,6 +1,7 @@
-export { AdminHeader } from './AdminHeader';
-export { MenuManagementTab } from './MenuManagementTab';
-export { default as TemplateSelector } from './TemplateSelector';
-export { default as CustomizeTab } from './CustomizeTab';
-export { FirstTimeMenuEditor } from './FirstTimeMenuEditor';
-export { PublishMenuButton } from './PublishMenuButton';
+export * from './AdminHeader';
+export * from './MenuManagementTab';
+export * from './TemplateSelector';
+export * from './CustomizeTab';
+export * from './FirstTimeMenuEditor';
+export * from './PublishMenuButton';
+export * from './SettingsTab';

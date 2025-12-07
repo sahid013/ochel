@@ -1,6 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 import { LandingLanguageSwitcher } from './LandingLanguageSwitcher';
+import { LandingProfileDropdown } from './LandingProfileDropdown';
 import { PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/contexts/LanguageContext';
 
@@ -20,18 +23,67 @@ export function Navbar() {
             />
           </a>
 
-          {/* Language Switcher + Login/Signup Buttons */}
+          {/* Language Switcher + Login/Signup Buttons or Profile */}
           <div className="flex items-center gap-3">
             <LandingLanguageSwitcher />
-            <PrimaryButton href="/login" variant="secondary" size="sm">
-              {t('nav.login')}
-            </PrimaryButton>
-            <PrimaryButton href="/signup" size="sm">
-              {t('nav.signup')}
-            </PrimaryButton>
+
+            <AuthButtons t={t} />
           </div>
         </div>
       </div>
     </nav>
+  );
+}
+
+function AuthButtons({ t }: { t: any }) {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (mounted) {
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking user:', error);
+        if (mounted) setLoading(false);
+      }
+    };
+
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (loading) return null; // Or a small spinner if preferred
+
+  if (user) {
+    return <LandingProfileDropdown />;
+  }
+
+  return (
+    <>
+      <PrimaryButton href="/login" variant="secondary" size="sm">
+        {t('nav.login')}
+      </PrimaryButton>
+      <PrimaryButton href="/signup" size="sm">
+        {t('nav.signup')}
+      </PrimaryButton>
+    </>
   );
 }

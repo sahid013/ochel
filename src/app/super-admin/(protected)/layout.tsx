@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useSuperAdmin } from '@/hooks/useSuperAdmin';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { AdminDashboardSkeleton } from '@/components/ui/SkeletonLoader';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { LandingLanguageSwitcher } from '@/components/layout/LandingLanguageSwitcher';
 
@@ -25,11 +25,7 @@ export default function SuperAdminLayout({
     }, [isSuperAdmin, loading, router]);
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <LoadingSpinner size="lg" />
-            </div>
-        );
+        return <AdminDashboardSkeleton />;
     }
 
     if (!isSuperAdmin) {

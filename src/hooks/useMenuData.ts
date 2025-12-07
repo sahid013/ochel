@@ -337,7 +337,7 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
 
       // Trigger fade in
       setTimeout(() => setIsFading(false), 50);
-    }, 150);
+    }, 50); // Reduced from 150ms for faster feel
   }, [activeTab, categories, locale, t, menuDataCache]);
 
   return {

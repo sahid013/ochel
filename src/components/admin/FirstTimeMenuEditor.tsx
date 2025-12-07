@@ -508,7 +508,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
             {/* Preview */}
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {selectedTemplate === 'template1' && (
-                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template1 restaurant={restaurant} demoItem={demoItem} />
                   </div>
@@ -524,7 +524,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
               )}
 
               {selectedTemplate === 'template3' && (
-                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template3 restaurant={restaurant} demoItem={demoItem} />
                   </div>
@@ -532,7 +532,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
               )}
 
               {selectedTemplate === 'template4' && (
-                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template4 restaurant={restaurant} demoItem={demoItem} />
                   </div>

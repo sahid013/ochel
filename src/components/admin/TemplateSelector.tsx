@@ -42,7 +42,7 @@ const templates = [
   },
 ];
 
-export default function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelectorProps) {
+export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelectorProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

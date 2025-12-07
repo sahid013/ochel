@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { cn, getFontClassName } from '@/lib';
+import { cn, parseFontConfig, getFontClass, getTemplateVariables } from '@/lib';
 import { Navigation } from '@/components/layout';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { useMenuData, DemoItem } from '@/hooks/useMenuData';
@@ -115,37 +115,35 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
     }
   };
 
-  const fontClass = getFontClassName(restaurant.font_family);
+  const { header, body } = parseFontConfig(restaurant.font_family);
+  const headerFontClass = getFontClass(header);
+  const bodyFontClass = getFontClass(body);
+  const variableStyles = getTemplateVariables(restaurant);
 
   return (
-    <div className="bg-[#000000]">
+    <div style={{ backgroundColor: 'var(--pixel-bg, #000000)', ...variableStyles }}>
+      {/* Navigation */}
       {/* Navigation */}
       <Navigation
-        showLanguageSwitcher={false}
-        logo={{
-          src: "/icons/MagnifikoLogo.png",
-          alt: restaurant.name,
-          width: 50,
-          height: 17
-        }}
+        restaurant={restaurant}
       />
 
       {/* Main Layout - Dark Theme */}
-      <div className={cn("bg-[#000000] text-white min-h-screen", fontClass)}>
+      <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #000000)', color: 'var(--pixel-text, white)' }}>
         {/* Hero Header */}
         <div
-          className="relative h-[276px] bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url("/images/menu-bg 2.webp")' }}
+          className="h-[240px] w-full bg-cover bg-center flex items-center justify-center relative"
+          style={{ backgroundImage: `url('${restaurant.hero_image_url || '/images/menu-bg 2.webp'}')` }}
         >
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-black/40"></div>
 
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center relative z-10">
-              <h1 className="text-[56px] font-bold text-white mb-4 font-loubag">
+              <h1 className={cn("text-[56px] font-bold mb-4", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
                 {restaurant.name}
               </h1>
-              <p className="text-xl text-white">{t('menuPage.title')}</p>
+              <p className="text-xl" style={{ color: 'var(--pixel-text, white)' }}>{t('menuPage.title')}</p>
             </div>
           </div>
         </div>
@@ -154,7 +152,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
         <div className="relative lg:flex">
           {/* Left Sidebar - Vertical Tabs (Sticky on Desktop) - Only show if there are categories */}
           {categories.length > 0 && (
-            <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen lg:w-64 bg-[#000000] border-r border-white/20 z-20 lg:overflow-y-auto flex-shrink-0">
+            <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen lg:w-64 border-r border-white/20 z-20 lg:overflow-y-auto flex-shrink-0" style={{ backgroundColor: 'var(--pixel-bg, #000000)' }}>
               <div className="p-4 lg:pt-8">
                 {/* Category Tabs - Vertical */}
                 <div className="space-y-2">
@@ -168,9 +166,13 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                       className={cn(
                         "w-full text-left font-medium rounded-xl py-4 px-4 transition-all duration-200",
                         activeTab === index
-                          ? "bg-[#F34A23] text-white shadow-lg"
-                          : "bg-white/10 text-white hover:bg-white/20"
+                          ? "text-white shadow-lg"
+                          : "bg-white/10 hover:bg-white/20"
                       )}
+                      style={{
+                        backgroundColor: activeTab === index ? 'var(--pixel-primary, #F34A23)' : undefined,
+                        color: activeTab === index ? 'white' : 'var(--pixel-text, white)'
+                      }}
                     >
                       {getTranslatedField(category, 'title')}
                     </button>
@@ -188,7 +190,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
             {/* Loading State - Skeleton */}
             {loading && (
               <div className="py-6">
-                <MenuSkeleton />
+                <MenuSkeleton itemClassName="bg-white/10" />
               </div>
             )}
 
@@ -203,7 +205,9 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
             {!loading && !error && (
               <div>
                 {categories.length === 0 ? (
-                  <EmptyState message={t('menu.noItems')} className="text-white" animationData={cookingBlackAnimation} />
+                  <div style={{ color: 'var(--pixel-text, white)' }}>
+                    <EmptyState message={t('menu.noItems')} animationData={cookingBlackAnimation} />
+                  </div>
                 ) : (
                   categories.map((category) => {
                     const menuData = allCategoriesData.get(category.id);
@@ -303,11 +307,11 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                       <div key={category.id} id={`category-${category.id}`} className="mb-16 scroll-mt-24">
                         {/* Category Title */}
                         <div className="mb-8">
-                          <h2 className="text-[22px] font-bold text-[#FFF2CC] mb-2">
+                          <h2 className={cn("text-[22px] font-bold mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #FFF2CC)' }}>
                             {getTranslatedField(category, 'title')}
                           </h2>
                           {getTranslatedField(category, 'text') && (
-                            <p className="text-lg text-[#FFD65A]/80">
+                            <p className="text-lg opacity-80" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>
                               {getTranslatedField(category, 'text')}
                             </p>
                           )}
@@ -319,11 +323,11 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                             {/* Section Title */}
                             {section.title && (
                               <div className="mb-6">
-                                <h3 className="text-[18px] font-bold text-[#FFF2CC] capitalize">
+                                <h3 className={cn("text-[18px] font-bold capitalize", headerFontClass)} style={{ color: 'var(--pixel-text, #FFF2CC)' }}>
                                   {section.title}
                                 </h3>
                                 {section.subtitle && (
-                                  <p className="text-md text-[#FFD65A] mt-1">
+                                  <p className="text-md mt-1" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>
                                     {section.subtitle}
                                   </p>
                                 )}
@@ -335,7 +339,8 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                               {section.items.map((item: any) => (
                                 <div
                                   key={item.id}
-                                  className="bg-[#1a1a1a] border border-white/20 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+                                  className="border border-white/20 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+                                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} // Light background for cards works well on dark or light
                                 >
                                   <div className="flex flex-col md:flex-row gap-4">
                                     {item.image && (
@@ -347,11 +352,11 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                                     )}
                                     <div className="flex-1">
                                       <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-xl font-semibold text-white">{item.title}</h4>
-                                        <span className="text-lg font-bold text-[#FFD65A] ml-4 whitespace-nowrap">{item.price}</span>
+                                        <h4 className={cn("text-xl font-semibold", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>{item.title}</h4>
+                                        <span className="text-lg font-bold ml-4 whitespace-nowrap" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>{item.price}</span>
                                       </div>
                                       {item.subtitle && (
-                                        <p className="text-sm text-white/70">{item.subtitle}</p>
+                                        <p className="text-sm opacity-70" style={{ color: 'var(--pixel-text, white)' }}>{item.subtitle}</p>
                                       )}
                                     </div>
                                   </div>

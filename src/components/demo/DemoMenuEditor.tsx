@@ -37,7 +37,7 @@ const MOCK_RESTAURANT: Restaurant = {
   slug: 'demo',
   email: 'demo@example.com',
   phone: '0000000000',
-  primary_color: '#000000',
+  // primary_color: undefined, // Let template defaults take over
   is_active: true,
   template: 'template1',
   created_at: new Date().toISOString(),
@@ -288,7 +288,7 @@ export function DemoMenuEditor() {
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {/* Template 1 */}
               {selectedTemplate === 'template1' && (
-                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template1 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                   </div>
@@ -306,7 +306,7 @@ export function DemoMenuEditor() {
 
               {/* Template 3 */}
               {selectedTemplate === 'template3' && (
-                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template3 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                   </div>
@@ -315,7 +315,7 @@ export function DemoMenuEditor() {
 
               {/* Template 4 */}
               {selectedTemplate === 'template4' && (
-                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
+                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template4 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
                   </div>

@@ -214,10 +214,33 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 }
 
 // Font class mapping helper
+// Font class mapping helper
 export function getFontClassName(font: string | undefined | null): string {
   if (!font) return 'font-plus-jakarta-sans';
 
-  switch (font.toLowerCase()) {
+  // Check if font is a JSON string (new format)
+  if (font.startsWith('{') && font.includes('}')) {
+    try {
+      const parsed = JSON.parse(font);
+      // Return the body font class by default for backward compatibility if used directly
+      // But typically this function should be used with a specific type if changed, 
+      // or we just return both classes?? 
+      // Let's return body for general container usage, but this might be risky.
+      // Better: Keep this for legacy single strings, and add specific helpers.
+      return getFontClass(parsed.body || parsed.font || 'plus-jakarta-sans');
+    } catch (e) {
+      // If parse fails, treat as simple string
+    }
+  }
+
+  return getFontClass(font);
+}
+
+// Single font class mapper
+export function getFontClass(fontName: string): string {
+  if (!fontName) return 'font-plus-jakarta-sans';
+
+  switch (fontName.toLowerCase()) {
     case 'forum':
       return 'font-forum';
     case 'satoshi':
@@ -232,7 +255,39 @@ export function getFontClassName(font: string | undefined | null): string {
       return 'font-loubag';
     case 'plus-jakarta-sans':
       return 'font-plus-jakarta-sans';
+    case 'sans-serif':
+      return 'font-sans';
+    case 'serif':
+      return 'font-serif';
     default:
       return 'font-plus-jakarta-sans';
   }
+}
+
+// Helper to parse font configuration securely
+export function parseFontConfig(fontConfig: string | undefined | null): { header: string; body: string } {
+  if (!fontConfig) {
+    return { header: 'loubag', body: 'plus-jakarta-sans' };
+  }
+
+  // Try parsing as JSON
+  if (fontConfig.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(fontConfig);
+      return {
+        header: parsed.header || 'loubag',
+        body: parsed.body || 'plus-jakarta-sans'
+      };
+    } catch (e) {
+      // Fallback to treating it as a legacy single string
+      // If it's a legacy string, we use it for both or just header?
+      // Usually legacy was 'forum' (header-ish) or others. 
+      // Let's assume legacy uses it for both to be safe, or split defaults.
+      // Actually, legacy applied to the whole body.
+      return { header: fontConfig, body: fontConfig };
+    }
+  }
+
+  // It's a simple string (legacy)
+  return { header: fontConfig, body: fontConfig };
 }

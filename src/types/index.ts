@@ -9,7 +9,8 @@ export interface Restaurant {
   phone: string;
   owner_id: string;
   logo_url?: string | null;
-  primary_color: string;
+  hero_image_url?: string | null;
+  primary_color?: string;
   accent_color?: string;
   background_color?: string;
   text_color?: string;

@@ -155,16 +155,17 @@ body {
 }
 
 /* Light scrollbar mode overrides for body */
-body.scrollbar-light::-webkit-scrollbar-track {
+/* Light scrollbar mode overrides for any element */
+.scrollbar-light::-webkit-scrollbar-track {
   background: #f5f5f5;
 }
 
-body.scrollbar-light::-webkit-scrollbar-thumb {
+.scrollbar-light::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 4px;
 }
 
-body.scrollbar-light::-webkit-scrollbar-thumb:hover {
+.scrollbar-light::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
 

@@ -9,6 +9,8 @@ export function LandingProfileDropdown() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [restaurantSlug, setRestaurantSlug] = useState<string | null>(null);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -26,15 +28,31 @@ export function LandingProfileDropdown() {
     };
   }, [isDropdownOpen]);
 
+  // Fetch restaurant slug on mount
+  useEffect(() => {
+    async function fetchRestaurant() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('restaurants')
+        .select('slug')
+        .eq('owner_id', user.id)
+        .single();
+
+      if (data && !error) {
+        setRestaurantSlug(data.slug);
+      }
+    }
+    fetchRestaurant();
+  }, []);
+
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     try {
       setIsDropdownOpen(false);
-
-      // Notify the auth error handler that this is an intentional logout
       window.dispatchEvent(new Event('logout-initiated'));
-
       await supabase.auth.signOut();
       window.location.href = '/';
     } catch (error) {
@@ -47,7 +65,9 @@ export function LandingProfileDropdown() {
     e.preventDefault();
     e.stopPropagation();
     setIsDropdownOpen(false);
-    // TODO: Navigate to settings page
+    if (restaurantSlug) {
+      router.push(`/${restaurantSlug}/admin?tab=settings`);
+    }
   };
 
   const handleMembership = (e: React.MouseEvent) => {
@@ -59,12 +79,12 @@ export function LandingProfileDropdown() {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Profile Button */}
+      {/* Profile Button - Matches Admin Panel */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="flex items-center justify-center w-10 h-10 rounded-full border-2 border-gray-300 hover:border-[#F34A23] transition-colors focus:outline-none focus:ring-2 focus:ring-[#F34A23]/50"
+        className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
-        <svg className="w-6 h-6 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="w-6 h-6 text-[#F34A23]" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
         </svg>
       </button>
@@ -94,6 +114,20 @@ export function LandingProfileDropdown() {
             </svg>
             Membership
           </button>
+          {restaurantSlug && (
+            <button
+              onClick={() => {
+                setIsDropdownOpen(false);
+                window.location.href = `/${restaurantSlug}/admin?onboarding=true`;
+              }}
+              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Visit onboarding flow
+            </button>
+          )}
           <div className="border-t border-gray-200 my-1"></div>
           <button
             onClick={handleLogout}
