@@ -92,12 +92,12 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
       />
 
       {/* Main Layout - Single Column */}
-      <div className={cn("min-h-screen pt-16", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #fff5f0)', color: 'var(--pixel-text, #3D1F00)', ...variableStyles }}>
+      <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #fff5f0)', color: 'var(--pixel-text, #3D1F00)', ...variableStyles }}>
         <div className="flex flex-col relative">
           {/* Hero Section - Top (Full Width) */}
           <div className='w-full flex-shrink-0 bg-white'>
             <div
-              className="relative flex flex-col justify-center items-center h-[276px] w-full px-4 bg-cover bg-center bg-no-repeat"
+              className="relative flex flex-col justify-center items-center h-[276px] w-full px-4 pt-16 bg-cover bg-center bg-no-repeat"
               style={{ backgroundImage: `url('${restaurant.hero_image_url || '/images/Template1HeroWhite.png'}')` }}
             >
               {/* Center Content */}

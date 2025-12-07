@@ -61,7 +61,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
       {/* Main Layout - Casual Colorful Theme */}
       <div
         className={cn(
-          "min-h-screen pt-16 bg-gradient-to-br from-orange-50 to-yellow-50",
+          "min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50",
           bodyFontClass
         )}
         style={{
@@ -73,7 +73,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
         {/* Fun Header */}
         <div
           className={cn(
-            "relative h-[276px] flex items-center justify-center bg-cover bg-center",
+            "relative h-[276px] flex items-center justify-center bg-cover bg-center pt-16",
             !restaurant.primary_color && !restaurant.hero_image_url && "bg-gradient-to-r from-[#F34A23] to-[#FF6B4A]"
           )}
           style={{
