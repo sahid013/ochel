@@ -248,7 +248,7 @@ export function DemoMenuEditor() {
                 onSubmit={handleFormSubmit}
                 onCancel={() => setIsEditing(false)}
                 isEditing={isEditing}
-                show3DInputs={false}
+                show3DInputs={true}
                 showDetailedImageUpload={true}
                 existingCategories={[]}
                 existingSubcategories={[]}

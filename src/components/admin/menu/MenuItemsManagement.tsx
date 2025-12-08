@@ -463,8 +463,18 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              3D Model URL (GLB - Android/Web)
+            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              3D Model URL
+              <div className="group relative">
+                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                  <p className="font-semibold mb-1 text-gray-900">What is GLB?</p>
+                  <p>GLB format for 3D preview on web and Android devices. Optional field.</p>
+                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                </div>
+              </div>
             </label>
             <Input
               type="url"
@@ -472,14 +482,21 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               onChange={(e) => setModel3dGlbUrl(e.target.value)}
               placeholder="https://example.com/model.glb"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              GLB format for Android and 3D web view
-            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              3D Model URL (USDZ - iOS AR)
+            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+              3D Model URL
+              <div className="group relative">
+                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                  <p className="font-semibold mb-1 text-gray-900">What is USDZ?</p>
+                  <p>USDZ format for iOS AR Quick Look experience. Optional field.</p>
+                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                </div>
+              </div>
             </label>
             <Input
               type="url"
@@ -487,9 +504,6 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
               onChange={(e) => setModel3dUsdzUrl(e.target.value)}
               placeholder="https://example.com/model.usdz"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              USDZ format for iOS augmented reality
-            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 mt-6">

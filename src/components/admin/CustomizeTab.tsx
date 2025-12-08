@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FontSelect } from './FontSelect';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
@@ -171,15 +172,15 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
   const resetBodyFont = () => setCustomization({ ...customization, bodyFont: '' });
 
   const fontOptions = [
-    { value: 'plus-jakarta-sans', label: 'Plus Jakarta Sans' },
-    { value: 'forum', label: 'Forum' },
-    { value: 'loubag', label: 'Loubag' },
-    { value: 'satoshi', label: 'Satoshi' },
-    { value: 'eb-garamond', label: 'EB Garamond' },
-    { value: 'oswald', label: 'Oswald' },
-    { value: 'inter', label: 'Inter' },
-    { value: 'sans-serif', label: 'Sans Serif' },
-    { value: 'serif', label: 'Serif' },
+    { value: 'plus-jakarta-sans', label: 'Plus Jakarta Sans', fontFamily: 'var(--font-plus-jakarta-sans)' },
+    { value: 'forum', label: 'Forum', fontFamily: 'var(--font-forum)' },
+    { value: 'loubag', label: 'Loubag', fontFamily: 'var(--font-loubag)' },
+    { value: 'satoshi', label: 'Satoshi', fontFamily: 'var(--font-satoshi)' },
+    { value: 'eb-garamond', label: 'EB Garamond', fontFamily: 'var(--font-eb-garamond)' },
+    { value: 'oswald', label: 'Oswald', fontFamily: 'var(--font-oswald)' },
+    { value: 'inter', label: 'Inter', fontFamily: 'var(--font-inter)' },
+    { value: 'sans-serif', label: 'Sans Serif', fontFamily: 'var(--font-sans)' },
+    { value: 'serif', label: 'Serif', fontFamily: 'var(--font-serif)' },
   ];
 
   const inputStyle = "w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400";
@@ -215,8 +216,18 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               {/* Logo Upload */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                     Restaurant Logo
+                    <div className="group relative">
+                      <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                        <p className="font-semibold mb-1">Brand Logo</p>
+                        <p>Upload your restaurant's logo. This will be displayed in the navigation bar.</p>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
                   </label>
                   {logoImages.length > 0 && (logoImages[0] !== null) && (
                     <button onClick={resetLogo} className="text-xs text-red-500 hover:text-red-700 underline">
@@ -232,6 +243,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                     loadingText="Uploading..."
                     placeholderText="Upload Logo"
                     aspectRatio="h-20 w-40" // Rectangular for logos
+                    instanceId="logo-uploader"
                   />
                   <p className="mt-2 text-sm text-gray-500">
                     Upload your restaurant logo (PNG, JPG). Will be displayed on the navbar.
@@ -242,8 +254,18 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               {/* Hero Image Upload */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                     Hero Background Image
+                    <div className="group relative">
+                      <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                        <p className="font-semibold mb-1">Hero Section Background</p>
+                        <p>Customize the main banner image at the top of your menu.</p>
+                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
                   </label>
                   {heroImages.length > 0 && (heroImages[0] !== null) && (
                     <button onClick={resetHero} className="text-xs text-red-500 hover:text-red-700 underline">
@@ -259,6 +281,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                     loadingText="Uploading..."
                     placeholderText="Upload Hero Image"
                     aspectRatio="h-32 w-full" // Wider aspect ratio for hero
+                    instanceId="hero-uploader"
                   />
                   <p className="mt-2 text-sm text-gray-500">
                     Upload a background image for the top section. This will replace the default background.
@@ -268,8 +291,18 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
 
               {/* Contact Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   Contact Email
+                  <div className="group relative">
+                    <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                    </svg>
+                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                      <p className="font-semibold mb-1">Contact Information</p>
+                      <p>The email address where customers can reach you.</p>
+                      <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  </div>
                 </label>
                 <input
                   type="email"
@@ -292,8 +325,18 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           {/* Header Font */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                 Header Font (H1, Titles)
+                <div className="group relative">
+                  <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                    <p className="font-semibold mb-1">Typography</p>
+                    <p>Choose a font for headings and major titles.</p>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                </div>
               </label>
               {customization.headerFont && (
                 <button onClick={resetHeaderFont} className="text-xs text-red-500 hover:text-red-700 underline">
@@ -301,17 +344,14 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                 </button>
               )}
             </div>
-            <select
+            <FontSelect
               value={customization.headerFont}
-              onChange={(e) => setCustomization({ ...customization, headerFont: e.target.value })}
+              onChange={(value) => setCustomization({ ...customization, headerFont: value })}
+              options={fontOptions}
               className={inputStyle}
               style={inputBorderColor}
-            >
-              <option value="">Default</option> {/* Added default option */}
-              {fontOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
+              placeholder="Default"
+            />
             <p className="mt-1 text-sm text-gray-500">
               Font for restaurant name and section titles
             </p>
@@ -320,8 +360,18 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           {/* Body Font */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                 Body Font (Text, Menu Items)
+                <div className="group relative">
+                  <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                    <p className="font-semibold mb-1">Typography</p>
+                    <p>Choose a font for the main content and descriptions.</p>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                </div>
               </label>
               {customization.bodyFont && (
                 <button onClick={resetBodyFont} className="text-xs text-red-500 hover:text-red-700 underline">
@@ -329,17 +379,14 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                 </button>
               )}
             </div>
-            <select
+            <FontSelect
               value={customization.bodyFont}
-              onChange={(e) => setCustomization({ ...customization, bodyFont: e.target.value })}
+              onChange={(value) => setCustomization({ ...customization, bodyFont: value })}
+              options={fontOptions}
               className={inputStyle}
               style={inputBorderColor}
-            >
-              <option value="">Default</option> {/* Added default option */}
-              {fontOptions.map(option => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
+              placeholder="Default"
+            />
             <p className="mt-1 text-sm text-gray-500">
               Font for descriptions, prices, and general text
             </p>
@@ -351,8 +398,18 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           {/* Primary Color */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                 Primary Color
+                <div className="group relative">
+                  <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                  <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
+                    <p className="font-semibold mb-1">Theme Color</p>
+                    <p>Sets the main color for buttons, links, and important elements.</p>
+                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                </div>
               </label>
               {customization.primaryColor && (
                 <button onClick={resetPrimaryColor} className="text-xs text-red-500 hover:text-red-700 underline">

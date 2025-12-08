@@ -5,6 +5,9 @@ import { useTranslation } from '@/contexts/LanguageContext';
 import { PrimaryButton } from '@/components/ui';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 
+const SAMPLE_GLB_URL = 'https://plats.ochel.fr/le-chalet/glb/carpaccio_boeuf.glb';
+const SAMPLE_USDZ_URL = 'https://plats.ochel.fr/le-chalet/usdz/carpaccio_boeuf.usdz';
+
 export interface MenuEditorFormData {
     title: string;
     description: string;
@@ -61,6 +64,8 @@ export function MenuEditorForm({
         initialValues?.selectedImages || [null, null, null, null]
     );
 
+    const [copiedLink, setCopiedLink] = useState<'glb' | 'usdz' | null>(null);
+
     // Update state when initialValues change (e.g. when editing a different item)
     useEffect(() => {
         if (initialValues) {
@@ -94,6 +99,13 @@ export function MenuEditorForm({
         });
     };
 
+    const handleCopySample = (url: string, type: 'glb' | 'usdz', e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent label activation
+        navigator.clipboard.writeText(url);
+        setCopiedLink(type);
+        setTimeout(() => setCopiedLink(null), 2000);
+    };
+
     // Filter categories based on input
     const filteredCategories = category.trim() === '' ? [] : existingCategories
         .filter(c => c.toLowerCase().includes(category.toLowerCase()))
@@ -114,10 +126,10 @@ export function MenuEditorForm({
                             <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                             </svg>
-                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                                <p className="font-semibold mb-1">{t('home.demo.addItem.categoryHelpTitle')}</p>
+                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                                <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.categoryHelpTitle')}</p>
                                 <p>{t('home.demo.addItem.categoryHelpText')}</p>
-                                <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
                             </div>
                         </div>
                     </label>
@@ -154,10 +166,10 @@ export function MenuEditorForm({
                             <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                             </svg>
-                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                                <p className="font-semibold mb-1">{t('home.demo.addItem.subcategoryHelpTitle')}</p>
+                            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                                <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.subcategoryHelpTitle')}</p>
                                 <p>{t('home.demo.addItem.subcategoryHelpText')}</p>
-                                <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
                             </div>
                         </div>
                     </label>
@@ -255,8 +267,42 @@ export function MenuEditorForm({
             {show3DInputs && (
                 <>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('home.demo.addItem.modelGlb') || '3D Model URL (GLB - Android/Web)'}
+                        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                            {t('home.demo.addItem.modelGlb') || '3D Model URL'}
+                            <div className="group relative">
+                                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                </svg>
+                                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                                    <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.modelGlbHelpTitle')}</p>
+                                    <p>{t('home.demo.addItem.modelGlbHelpText')}</p>
+                                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={(e) => handleCopySample(SAMPLE_GLB_URL, 'glb', e)}
+                                className={`ml-auto text-xs flex items-center gap-1 font-medium px-2 py-1 rounded-md transition-colors ${copiedLink === 'glb'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-orange-50 text-[#F34A23] hover:text-[#d63e1b]'
+                                    }`}
+                            >
+                                {copiedLink === 'glb' ? (
+                                    <>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Lien copié !
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
+                                        Copier lien exemple
+                                    </>
+                                )}
+                            </button>
                         </label>
                         <input
                             type="url"
@@ -266,14 +312,45 @@ export function MenuEditorForm({
                             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
                             style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                            {t('home.demo.addItem.modelGlbHelp') || 'Optional: GLB format for 3D preview on web and Android'}
-                        </p>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('home.demo.addItem.modelUsdz') || '3D Model URL (USDZ - iOS AR)'}
+                        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                            {t('home.demo.addItem.modelUsdz') || '3D Model URL'}
+                            <div className="group relative">
+                                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                </svg>
+                                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                                    <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.modelUsdzHelpTitle')}</p>
+                                    <p>{t('home.demo.addItem.modelUsdzHelpText')}</p>
+                                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={(e) => handleCopySample(SAMPLE_USDZ_URL, 'usdz', e)}
+                                className={`ml-auto text-xs flex items-center gap-1 font-medium px-2 py-1 rounded-md transition-colors ${copiedLink === 'usdz'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-orange-50 text-[#F34A23] hover:text-[#d63e1b]'
+                                    }`}
+                            >
+                                {copiedLink === 'usdz' ? (
+                                    <>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Lien copié !
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                        </svg>
+                                        Copier lien exemple
+                                    </>
+                                )}
+                            </button>
                         </label>
                         <input
                             type="url"
@@ -283,9 +360,6 @@ export function MenuEditorForm({
                             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
                             style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                            {t('home.demo.addItem.modelUsdzHelp') || 'Optional: USDZ format for iOS AR Quick Look'}
-                        </p>
                     </div>
                 </>
             )}

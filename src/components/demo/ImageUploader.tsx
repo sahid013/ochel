@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 
 interface ImageUploaderProps {
     images: (File | string | null)[];
@@ -9,6 +9,7 @@ interface ImageUploaderProps {
     placeholderText?: string;
     className?: string;
     aspectRatio?: string;
+    instanceId?: string;
 }
 
 export function ImageUploader({
@@ -20,9 +21,12 @@ export function ImageUploader({
     placeholderText,
     className = '',
     aspectRatio,
+    instanceId,
 }: ImageUploaderProps) {
     const [loadingImages, setLoadingImages] = useState<boolean[]>(new Array(maxImages).fill(false));
     const ratioClass = aspectRatio || (maxImages === 1 ? 'aspect-video' : 'aspect-square');
+    const autoId = useId();
+    const uniqueIdBase = instanceId || autoId;
 
     const handleFileChange = (index: number, file: File) => {
         // Set loading state
@@ -60,7 +64,7 @@ export function ImageUploader({
                     <div className={`relative ${ratioClass}`}>
                         <input
                             type="file"
-                            id={`file-upload-${index}-${maxImages}`} // Unique ID based on maxImages to avoid conflicts
+                            id={`file-upload-${uniqueIdBase}-${index}`}
                             className="hidden"
                             accept="image/*"
                             onChange={(e) => {
@@ -107,7 +111,7 @@ export function ImageUploader({
                             </div>
                         ) : (
                             <label
-                                htmlFor={`file-upload-${index}-${maxImages}`}
+                                htmlFor={`file-upload-${uniqueIdBase}-${index}`}
                                 className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[#F34A23] hover:bg-gray-50 transition-all group"
                             >
                                 <div className="relative">

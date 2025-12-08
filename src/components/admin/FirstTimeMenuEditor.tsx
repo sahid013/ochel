@@ -470,7 +470,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
               onSubmit={handleFormSubmit}
               isLoading={loading}
               submitLabel={loading ? 'Adding...' : 'Add Item'}
-              show3DInputs={false}
+              show3DInputs={true}
               showDetailedImageUpload={true}
               existingCategories={categories}
               existingSubcategories={subcategories}

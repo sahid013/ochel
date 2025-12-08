@@ -58,7 +58,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
       <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #FAF8F3)', color: 'var(--pixel-text, #2C2416)', ...variableStyles }}>
         {/* Elegant Header */}
         <div
-          className="relative h-[276px] flex items-center justify-center p-6 pt-16 text-center bg-cover bg-center"
+          className="relative h-[276px] flex items-center justify-center px-6 pt-16 pb-16 text-center bg-cover bg-center"
           style={{
             backgroundImage: restaurant.hero_image_url ? `url('${restaurant.hero_image_url}')` : undefined,
             backgroundColor: restaurant.hero_image_url ? undefined : 'var(--pixel-text, #2C2416)',

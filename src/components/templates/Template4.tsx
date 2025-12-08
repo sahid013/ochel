@@ -73,7 +73,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
         {/* Fun Header */}
         <div
           className={cn(
-            "relative h-[276px] flex items-center justify-center bg-cover bg-center pt-16",
+            "relative h-[276px] flex items-center justify-center bg-cover bg-center pt-16 pb-16",
             !restaurant.primary_color && !restaurant.hero_image_url && "bg-gradient-to-r from-[#F34A23] to-[#FF6B4A]"
           )}
           style={{
