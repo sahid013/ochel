@@ -105,6 +105,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           logo_url: finalLogoUrl as any,
           hero_image_url: finalHeroUrl as any,
           email: customization.contactEmail,
+          primary_color: customization.primaryColor || null,
           // accent_color: customization.accentColor, // Restricted
           // background_color: customization.backgroundColor, // Restricted
           // text_color: customization.textColor, // Restricted

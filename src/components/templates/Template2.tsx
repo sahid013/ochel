@@ -35,6 +35,40 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
 
   // State for all categories data
   const [allCategoriesData, setAllCategoriesData] = useState<Map<number, any>>(new Map());
+  const [selected3DItem, setSelected3DItem] = useState<{ glb: string | undefined, usdz: string | undefined, title: string } | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handle3DClick = (e: React.MouseEvent, item: any) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (item.model3DGlbUrl || item.model3DUsdzUrl) {
+      setSelected3DItem({
+        glb: item.model3DGlbUrl,
+        usdz: item.model3DUsdzUrl,
+        title: item.title
+      });
+    }
+  };
+
+  const closeModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelected3DItem(null);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  const handleARClick = () => {
+    if (!selected3DItem) return;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (isIOS && selected3DItem.usdz) {
+      window.location.href = selected3DItem.usdz;
+    } else if (selected3DItem.glb) {
+      const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(selected3DItem.glb)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+      window.location.href = intent;
+    }
+  };
 
   // Load all menu data for all categories
   useEffect(() => {
@@ -237,6 +271,9 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                             title: getFieldTranslation(item, 'title', locale),
                             subtitle: getFieldTranslation(item, 'text', locale) || getFieldTranslation(item, 'description', locale),
                             price: `${item.price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`,
+                            model3DGlbUrl: item.model_3d_url,
+                            model3DUsdzUrl: item.redirect_3d_url,
+                            has3D: !!(item.model_3d_url || item.redirect_3d_url)
                           })),
                         });
                       }
@@ -262,6 +299,9 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                             title: getFieldTranslation(item, 'title', locale),
                             subtitle: getFieldTranslation(item, 'text', locale) || getFieldTranslation(item, 'description', locale),
                             price: `${item.price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`,
+                            model3DGlbUrl: item.model_3d_url,
+                            model3DUsdzUrl: item.redirect_3d_url,
+                            has3D: !!(item.model_3d_url || item.redirect_3d_url)
                           })),
                         });
                       }
@@ -282,6 +322,9 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                           title: getFieldTranslation(item, 'title', locale),
                           subtitle: getFieldTranslation(item, 'text', locale) || getFieldTranslation(item, 'description', locale),
                           price: `${item.price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`,
+                          model3DGlbUrl: item.model_3d_url,
+                          model3DUsdzUrl: item.redirect_3d_url,
+                          has3D: !!(item.model_3d_url || item.redirect_3d_url)
                         })),
                       });
                     }
@@ -299,6 +342,9 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                           title: getFieldTranslation(addon, 'title', locale),
                           subtitle: getFieldTranslation(addon, 'description', locale) || undefined,
                           price: `${addon.price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`,
+                          model3DGlbUrl: undefined,
+                          model3DUsdzUrl: undefined,
+                          has3D: false
                         })),
                       });
                     }
@@ -352,7 +398,23 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
                                     )}
                                     <div className="flex-1">
                                       <div className="flex justify-between items-start mb-2">
-                                        <h4 className={cn("text-xl font-semibold", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>{item.title}</h4>
+                                        <div className="flex items-center gap-2">
+                                          <h4 className={cn("text-xl font-semibold", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>{item.title}</h4>
+                                          {item.has3D && (
+                                            <button
+                                              onClick={(e) => handle3DClick(e, item)}
+                                              className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                              title="View in 3D"
+                                              style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
+                                            >
+                                              <img
+                                                src="/icons/3d.svg"
+                                                alt="3D View"
+                                                className="w-full h-full invert brightness-0"
+                                              />
+                                            </button>
+                                          )}
+                                        </div>
                                         <span className="text-lg font-bold ml-4 whitespace-nowrap" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>{item.price}</span>
                                       </div>
                                       {item.subtitle && (
@@ -374,6 +436,53 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
           </div>
         </div>
       </div>
+
+      {/* 3D Model Modal */}
+      {selected3DItem && (
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isClosing ? 'opacity-0' : 'opacity-100'}`}>
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
+            onClick={closeModal}
+          />
+          <div className={`relative bg-white rounded-2xl w-full max-w-3xl aspect-square md:aspect-video max-h-[90vh] p-4 flex flex-col transition-all duration-300 ${isClosing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={closeModal}
+                className="text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 rounded-xl overflow-hidden bg-gray-50 relative">
+              {/* @ts-ignore */}
+              <model-viewer
+                src={selected3DItem.glb || ''}
+                ios-src={selected3DItem.usdz || ''}
+                camera-controls
+                touch-action="pan-y"
+                exposure="1"
+                shadow-intensity="1"
+                alt={selected3DItem.title}
+                interaction-prompt="auto"
+                auto-rotate
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+
+            <div className="mt-4 flex justify-center">
+              <button
+                onClick={handleARClick}
+                className="px-6 py-3 text-white font-bold rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl transform active:scale-95"
+                style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
+              >
+                <span>View on Table (AR)</span>
+                <img src="/icons/3d.svg" alt="" className="w-5 h-5 invert brightness-0" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

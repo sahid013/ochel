@@ -256,13 +256,14 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                                     {item.has3D && (
                                       <button
                                         onClick={(e) => handle3DClick(e, item)}
-                                        className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+                                        className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
                                         title="View in 3D"
+                                        style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
                                       >
                                         <img
                                           src="/icons/3d.svg"
                                           alt="3D View"
-                                          className="w-full h-full"
+                                          className="w-full h-full invert brightness-0"
                                         />
                                       </button>
                                     )}

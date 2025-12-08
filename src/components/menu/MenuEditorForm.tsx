@@ -5,8 +5,8 @@ import { useTranslation } from '@/contexts/LanguageContext';
 import { PrimaryButton } from '@/components/ui';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 
-const SAMPLE_GLB_URL = 'https://plats.ochel.fr/le-chalet/glb/carpaccio_boeuf.glb';
-const SAMPLE_USDZ_URL = 'https://plats.ochel.fr/le-chalet/usdz/carpaccio_boeuf.usdz';
+const SAMPLE_GLB_URL = 'https://plats.ochel.fr/le-chalet/glb/pave_de_boeuf.glb';
+const SAMPLE_USDZ_URL = 'https://plats.ochel.fr/le-chalet/usdz/pave_de_boeuf.usdz';
 
 export interface MenuEditorFormData {
     title: string;
