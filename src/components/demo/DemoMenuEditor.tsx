@@ -187,7 +187,7 @@ export function DemoMenuEditor() {
       </div>
 
       <div className="px-5 pb-12">
-        <div className="grid gap-8 items-start" style={{ gridTemplateColumns: '0.6fr 1fr' }}>
+        <div className="grid gap-8 items-start grid-cols-1 md:grid-cols-[0.6fr_1fr]">
           {/* Left Column - Add Your First Item */}
           <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
@@ -257,13 +257,13 @@ export function DemoMenuEditor() {
           </div>
 
           {/* Right Column - Choose Your Template */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit sticky top-[100px]" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit md:sticky md:top-[100px]" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
               {t('home.demo.template.title')}
             </h3>
 
             {/* Template Selector */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
               {['template1', 'template2', 'template3', 'template4'].map((template) => (
                 <button
                   key={template}
