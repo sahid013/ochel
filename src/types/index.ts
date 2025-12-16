@@ -20,6 +20,7 @@ export interface Restaurant {
   has_completed_onboarding?: boolean;
   subscription_plan?: string | null;
   subscription_status?: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete' | 'incomplete_expired';
+  credits_left?: number;
   stripe_customer_id?: string | null;
   stripe_subscription_id?: string | null;
   created_at: string;

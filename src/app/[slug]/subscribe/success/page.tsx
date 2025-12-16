@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { PrimaryButton } from '@/components/ui';
 import AnimateIn from '@/components/ui/AnimateIn';
 
 export default function SubscriptionSuccessPage() {
@@ -14,6 +15,7 @@ export default function SubscriptionSuccessPage() {
 
     const [status, setStatus] = useState('Verifying your payment...');
     const [error, setError] = useState<string | null>(null);
+    const [isVerified, setIsVerified] = useState(false);
 
     useEffect(() => {
         if (!slug || !sessionId) {
@@ -34,11 +36,8 @@ export default function SubscriptionSuccessPage() {
                 const data = await res.json();
 
                 if (data.success) {
-                    setStatus('Payment verified! Redirecting to your dashboard...');
-                    // Small delay to show success message
-                    setTimeout(() => {
-                        router.push(`/${slug}/admin`);
-                    }, 1500);
+                    setStatus('Payment verified! You can now access your dashboard.');
+                    setIsVerified(true);
                 } else {
                     setError(data.error || 'Payment verification failed');
                 }
@@ -75,7 +74,16 @@ export default function SubscriptionSuccessPage() {
                             </p>
 
                             <div className="flex justify-center">
-                                <LoadingSpinner size="md" />
+                                {isVerified ? (
+                                    <PrimaryButton
+                                        onClick={() => router.push(`/${slug}/admin`)}
+                                        className="bg-[#F34A23] hover:bg-[#d63e1b] text-white font-bold py-3 px-8 text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                                    >
+                                        Visit Dashboard
+                                    </PrimaryButton>
+                                ) : (
+                                    <LoadingSpinner size="md" />
+                                )}
                             </div>
                         </>
                     ) : (

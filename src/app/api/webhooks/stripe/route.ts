@@ -38,15 +38,49 @@ export async function POST(req: Request) {
                     break;
                 }
 
-                // Update restaurant with subscription details
+                // Determine credits based on plan ID (ProductId)
+                // Standard: prod_Tbyu0kjYbAO1GU -> 5 (minus 1 for landing page request = 4)
+                // Essential: prod_Tbyv6lbtixiI8D -> 15 (minus 1 = 14)
+                // Advanced: prod_TbyvP5fQfg2Dbh -> 25 (minus 1 = 24)
+                const planId = session.metadata?.planId;
+                let creditsToAdd = 0;
+                let subscriptionPlan = 'free';
+
+                if (planId === 'prod_Tbyu0kjYbAO1GU') {
+                    creditsToAdd = 5; // Start with full quota
+                    subscriptionPlan = 'Standard';
+                } else if (planId === 'prod_Tbyv6lbtixiI8D') {
+                    creditsToAdd = 15;
+                    subscriptionPlan = 'Essentielle';
+                } else if (planId === 'prod_TbyvP5fQfg2Dbh') {
+                    creditsToAdd = 25;
+                    subscriptionPlan = 'Avancée';
+                }
+
+                // Check if user has already submitted a 3D request (uploaded 4 images)
+                // We check if any menu item has 'additional_image_url' populated
+                const { data: existingItems, error: itemsError } = await supabaseAdmin
+                    .from('menu_items')
+                    .select('id')
+                    .eq('restaurant_id', restaurantId)
+                    .not('additional_image_url', 'is', null)
+                    .limit(1);
+
+                // If user has pending 3D request (items with 4 images), deduct 1 credit
+                // Note: We check if any check returned true
+                if (existingItems && existingItems.length > 0) {
+                    creditsToAdd = Math.max(0, creditsToAdd - 1);
+                }
+
+                // Update restaurant with subscription details and credits
                 const { error } = await supabaseAdmin
                     .from('restaurants')
                     .update({
                         stripe_customer_id: session.customer as string,
                         stripe_subscription_id: session.subscription as string,
-                        subscription_status: 'active', // Assume active upon successful checkout
-                        // You might want to map price ID to plan name here if needed
-                        subscription_plan: 'pro', // Placeholder logic, ideally derive from line items
+                        subscription_status: 'active',
+                        subscription_plan: subscriptionPlan,
+                        credits_left: creditsToAdd,
                     })
                     .eq('id', restaurantId);
 

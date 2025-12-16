@@ -185,7 +185,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
         subcategoryData.data = newSubcategory;
       }
 
-      // Handle image upload
+      // Handle Main Image Upload
       let imagePath = null;
       if (demoItem.image && demoItem.image.startsWith('data:image')) {
         try {
@@ -194,6 +194,23 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
           imagePath = uploadResult.publicUrl; // Use publicUrl for image_path as expected by templates
         } catch (imgErr) {
           console.error('Failed to upload demo image:', imgErr);
+        }
+      }
+
+      // Handle Detailed Images Upload (4 images)
+      const additionalImagePaths: string[] = [];
+      if (demoItem.selectedImages && demoItem.selectedImages.length > 0) {
+        for (let i = 0; i < demoItem.selectedImages.length; i++) {
+          const imgBase64 = demoItem.selectedImages[i];
+          if (imgBase64 && typeof imgBase64 === 'string' && imgBase64.startsWith('data:image')) {
+            try {
+              const file = base64ToFile(imgBase64, `demo-detail-${i}-${Date.now()}.png`);
+              const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
+              additionalImagePaths.push(uploadResult.publicUrl);
+            } catch (detailImgErr) {
+              console.error('Failed to upload detail image:', detailImgErr);
+            }
+          }
         }
       }
 
@@ -209,6 +226,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
           description_en: demoItem.description || '',
           price: parseFloat(demoItem.price) || 0,
           image_path: imagePath,
+          additional_image_url: additionalImagePaths.length > 0 ? JSON.stringify(additionalImagePaths) : null,
           model_3d_url: demoItem.model3dGlbUrl || null,
           redirect_3d_url: demoItem.model3dUsdzUrl || null,
           order: 0,
@@ -472,10 +490,11 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
               onSubmit={handleFormSubmit}
               isLoading={loading}
               submitLabel={loading ? 'Adding...' : 'Add Item'}
-              show3DInputs={true}
+
               showDetailedImageUpload={true}
               existingCategories={categories}
               existingSubcategories={subcategories}
+              creditsLeft={restaurant.credits_left ?? 0}
             />
           </div>
 

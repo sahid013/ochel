@@ -23,7 +23,8 @@ interface DemoMenuItem {
   image?: string;
   model3dGlbUrl?: string;
   model3dUsdzUrl?: string;
-  images?: string[]; // Store filenames for display
+  images?: string[]; // Store filenames or base64 for display/migration
+  selectedImages?: (string | null)[]; // Store exact state for editor inputs
 }
 
 const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
@@ -134,6 +135,23 @@ export function DemoMenuEditor() {
       // So valid logic is above: if data.previewImage[0] exists, use it.
     }
 
+    // Handle detailed images (Base64 conversion)
+    const processedImages: (string | null)[] = [null, null, null, null];
+    if (data.selectedImages) {
+      for (let i = 0; i < 4; i++) {
+        const img = data.selectedImages[i];
+        if (typeof img === 'string') {
+          processedImages[i] = img;
+        } else if (img instanceof File) {
+          try {
+            processedImages[i] = await fileToBase64(img);
+          } catch (error) {
+            console.error("Error converting detail image to base64", error);
+          }
+        }
+      }
+    }
+
     const newItem: DemoMenuItem = {
       id: demoItem?.id || Date.now().toString(), // Keep ID if editing
       title: data.title,
@@ -144,7 +162,10 @@ export function DemoMenuEditor() {
       image: imageBase64,
       model3dGlbUrl: data.model3dGlbUrl?.trim() || undefined,
       model3dUsdzUrl: data.model3dUsdzUrl?.trim() || undefined,
-      images: [], // We don't really store the 4 images in demo anymore as files are hard to persist
+      images: processedImages.filter(img => img !== null) as string[], // Store base64 strings
+      // We also store the full array including nulls if we want to preserve position, 
+      // but the interface says images?: string[]. Let's populate it for migration.
+      selectedImages: processedImages // Store with nulls for editor state restoration
     };
 
     // Save to state and cache
@@ -185,7 +206,7 @@ export function DemoMenuEditor() {
     model3dGlbUrl: demoItem.model3dGlbUrl,
     model3dUsdzUrl: demoItem.model3dUsdzUrl,
     previewImage: demoItem.image ? [demoItem.image] : [null], // string passes here
-    selectedImages: [null, null, null, null]
+    selectedImages: demoItem.selectedImages || [null, null, null, null]
   } : undefined;
 
   return (
@@ -268,6 +289,7 @@ export function DemoMenuEditor() {
                 showDetailedImageUpload={true}
                 existingCategories={[]}
                 existingSubcategories={[]}
+                isLockedDemoMode={true}
               />
             )}
           </div>

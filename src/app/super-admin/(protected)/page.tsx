@@ -12,6 +12,7 @@ interface RestaurantWithModels extends Restaurant {
     menu_items: {
         model_3d_url: string | null;
         redirect_3d_url: string | null;
+        additional_image_url: string | null;
     }[];
 }
 
@@ -34,7 +35,7 @@ export default function SuperAdminDashboard() {
             setLoading(true);
             const { data, error } = await supabase
                 .from('restaurants')
-                .select('*, menu_items(model_3d_url, redirect_3d_url)')
+                .select('*, menu_items(model_3d_url, redirect_3d_url, additional_image_url)')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -58,8 +59,17 @@ export default function SuperAdminDashboard() {
 
     const get3DStatus = (restaurant: RestaurantWithModels) => {
         if (!restaurant.menu_items || restaurant.menu_items.length === 0) return 'no_items';
-        const hasPending = restaurant.menu_items.some(item => !item.model_3d_url || !item.redirect_3d_url);
-        return hasPending ? 'pending' : 'completed';
+        // Pending if: Has additional images uploaded but NO model generated
+        const hasPending = restaurant.menu_items.some(item =>
+            item.additional_image_url && !item.model_3d_url
+        );
+        if (hasPending) return 'pending';
+
+        // Completed if checking for at least one model? Or just default to completed if not pending?
+        // Let's say if it has items and none are pending, it's either completed or just normal items.
+        // If we want to highlight "Completed 3D", maybe check if any model exists?
+        const hasCompleted = restaurant.menu_items.some(item => item.model_3d_url);
+        return hasCompleted ? 'completed' : 'no_items';
     };
 
     const getPlanTag = (restaurant: RestaurantWithModels) => {

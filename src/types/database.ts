@@ -46,6 +46,7 @@ export interface Database {
           is_active: boolean
           subscription_plan: string | null
           subscription_status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'incomplete' | 'incomplete_expired'
+          credits_left?: number
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
           created_at: string
@@ -61,6 +62,7 @@ export interface Database {
           logo_url?: string | null
           primary_color?: string
           is_active?: boolean
+          credits_left?: number
           created_at?: string
           updated_at?: string
         }
@@ -74,6 +76,7 @@ export interface Database {
           logo_url?: string | null
           primary_color?: string
           is_active?: boolean
+          credits_left?: number
           created_at?: string
           updated_at?: string
         }

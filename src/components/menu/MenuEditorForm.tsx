@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { PrimaryButton } from '@/components/ui';
 import { ImageUploader } from '@/components/demo/ImageUploader';
@@ -30,7 +31,10 @@ interface MenuEditorFormProps {
     show3DInputs?: boolean;
     showDetailedImageUpload?: boolean;
     existingCategories?: string[];
+
     existingSubcategories?: string[];
+    isLockedDemoMode?: boolean;
+    creditsLeft?: number;
 }
 
 export function MenuEditorForm({
@@ -43,9 +47,15 @@ export function MenuEditorForm({
     show3DInputs = false,
     showDetailedImageUpload = true,
     existingCategories = [],
-    existingSubcategories = []
+
+    existingSubcategories = [],
+    isLockedDemoMode = false,
+    creditsLeft
 }: MenuEditorFormProps) {
     const { t } = useTranslation();
+    const router = useRouter();
+    const params = useParams();
+    const slug = params.slug as string;
 
     // Form State
     const [title, setTitle] = useState(initialValues?.title || '');
@@ -53,8 +63,12 @@ export function MenuEditorForm({
     const [price, setPrice] = useState(initialValues?.price || '');
     const [category, setCategory] = useState(initialValues?.category || '');
     const [subcategory, setSubcategory] = useState(initialValues?.subcategory || '');
-    const [model3dGlbUrl, setModel3dGlbUrl] = useState(initialValues?.model3dGlbUrl || '');
-    const [model3dUsdzUrl, setModel3dUsdzUrl] = useState(initialValues?.model3dUsdzUrl || '');
+    const [model3dGlbUrl, setModel3dGlbUrl] = useState(
+        initialValues?.model3dGlbUrl || (isLockedDemoMode ? SAMPLE_GLB_URL : '')
+    );
+    const [model3dUsdzUrl, setModel3dUsdzUrl] = useState(
+        initialValues?.model3dUsdzUrl || (isLockedDemoMode ? SAMPLE_USDZ_URL : '')
+    );
 
     // Image State
     const [previewImage, setPreviewImage] = useState<(File | string | null)[]>(
@@ -97,8 +111,9 @@ export function MenuEditorForm({
             setPrice(initialValues.price || '');
             setCategory(initialValues.category || '');
             setSubcategory(initialValues.subcategory || '');
-            setModel3dGlbUrl(initialValues.model3dGlbUrl || '');
-            setModel3dUsdzUrl(initialValues.model3dUsdzUrl || '');
+            setSubcategory(initialValues.subcategory || '');
+            setModel3dGlbUrl(initialValues.model3dGlbUrl || (isLockedDemoMode ? SAMPLE_GLB_URL : ''));
+            setModel3dUsdzUrl(initialValues.model3dUsdzUrl || (isLockedDemoMode ? SAMPLE_USDZ_URL : ''));
             // Note: We typically don't reset images from initialValues unless they are File objects, 
             // which persist. If they are URLs, this component needs logic to handle initial URLs vs Files.
             // For now, assuming parent handles passing Files or we start empty.
@@ -306,98 +321,105 @@ export function MenuEditorForm({
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                             {t('home.demo.addItem.modelGlb') || '3D Model URL'}
-                            <div className="group relative">
-                                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                                </svg>
-                                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
-                                    <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.modelGlbHelpTitle')}</p>
-                                    <p>{t('home.demo.addItem.modelGlbHelpText')}</p>
-                                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
-                                </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={(e) => handleCopySample(SAMPLE_GLB_URL, 'glb', e)}
-                                className={`ml-auto text-xs flex items-center gap-1 font-medium px-2 py-1 rounded-md transition-colors ${copiedLink === 'glb'
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-orange-50 text-[#F34A23] hover:text-[#d63e1b]'
-                                    }`}
-                            >
-                                {copiedLink === 'glb' ? (
-                                    <>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            {!isLockedDemoMode && (
+                                <>
+                                    <div className="group relative">
+                                        <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                                         </svg>
-                                        Lien copié !
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                        </svg>
-                                        Copier lien exemple
-                                    </>
-                                )}
-                            </button>
+                                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                                            <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.modelGlbHelpTitle')}</p>
+                                            <p>{t('home.demo.addItem.modelGlbHelpText')}</p>
+                                            <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => handleCopySample(SAMPLE_GLB_URL, 'glb', e)}
+                                        className={`ml-auto text-xs flex items-center gap-1 font-medium px-2 py-1 rounded-md transition-colors ${copiedLink === 'glb'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-orange-50 text-[#F34A23] hover:text-[#d63e1b]'
+                                            }`}
+                                    >
+                                        {copiedLink === 'glb' ? (
+                                            <>
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Lien copié !
+                                            </>
+                                        ) : (
+                                            <>
+                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                                Copier lien exemple
+                                            </>
+                                        )}
+                                    </button>
+                                </>
+                            )}
                         </label>
                         <input
                             type="url"
                             value={model3dGlbUrl}
                             onChange={(e) => setModel3dGlbUrl(e.target.value)}
-                            placeholder={t('home.demo.addItem.modelGlbPlaceholder') || 'https://example.com/model.glb'}
-                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
+                            readOnly={isLockedDemoMode}
+                            placeholder={!isLockedDemoMode ? (t('home.demo.addItem.modelGlbPlaceholder') || 'https://example.com/model.glb') : ''}
+                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400 ${isLockedDemoMode ? 'bg-gray-100 text-gray-500 cursor-not-allowed pointer-events-none' : ''}`}
                             style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                            {t('home.demo.addItem.modelUsdz') || '3D Model URL'}
-                            <div className="group relative">
-                                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                                </svg>
-                                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
-                                    <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.modelUsdzHelpTitle')}</p>
-                                    <p>{t('home.demo.addItem.modelUsdzHelpText')}</p>
-                                    <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                    {!isLockedDemoMode && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                                {t('home.demo.addItem.modelUsdz') || '3D Model URL'}
+                                <div className="group relative">
+                                    <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                    </svg>
+                                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
+                                        <p className="font-semibold mb-1 text-gray-900">{t('home.demo.addItem.modelUsdzHelpTitle')}</p>
+                                        <p>{t('home.demo.addItem.modelUsdzHelpText')}</p>
+                                        <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={(e) => handleCopySample(SAMPLE_USDZ_URL, 'usdz', e)}
-                                className={`ml-auto text-xs flex items-center gap-1 font-medium px-2 py-1 rounded-md transition-colors ${copiedLink === 'usdz'
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-orange-50 text-[#F34A23] hover:text-[#d63e1b]'
-                                    }`}
-                            >
-                                {copiedLink === 'usdz' ? (
-                                    <>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Lien copié !
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                        </svg>
-                                        Copier lien exemple
-                                    </>
-                                )}
-                            </button>
-                        </label>
-                        <input
-                            type="url"
-                            value={model3dUsdzUrl}
-                            onChange={(e) => setModel3dUsdzUrl(e.target.value)}
-                            placeholder={t('home.demo.addItem.modelUsdzPlaceholder') || 'https://example.com/model.usdz'}
-                            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                            style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                        />
-                    </div>
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleCopySample(SAMPLE_USDZ_URL, 'usdz', e)}
+                                    className={`ml-auto text-xs flex items-center gap-1 font-medium px-2 py-1 rounded-md transition-colors ${copiedLink === 'usdz'
+                                        ? 'bg-green-100 text-green-700'
+                                        : 'bg-orange-50 text-[#F34A23] hover:text-[#d63e1b]'
+                                        }`}
+                                >
+                                    {copiedLink === 'usdz' ? (
+                                        <>
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Lien copié !
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                            </svg>
+                                            Copier lien exemple
+                                        </>
+                                    )}
+                                </button>
+                            </label>
+                            <input
+                                type="url"
+                                value={model3dUsdzUrl}
+                                onChange={(e) => setModel3dUsdzUrl(e.target.value)}
+                                placeholder={t('home.demo.addItem.modelUsdzPlaceholder') || 'https://example.com/model.usdz'}
+                                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
+                                style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
+                            />
+                        </div>
+                    )}
                 </>
             )}
 
@@ -407,19 +429,35 @@ export function MenuEditorForm({
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         {t('home.demo.addItem.images.title')}
                     </label>
-                    <ImageUploader
-                        images={selectedImages}
-                        onImagesChange={setSelectedImages}
-                        maxImages={4}
-                        labels={[
-                            t('home.demo.addItem.images.views.top'),
-                            t('home.demo.addItem.images.views.right'),
-                            t('home.demo.addItem.images.views.bottom'),
-                            t('home.demo.addItem.images.views.left')
-                        ]}
-                        loadingText={t('home.demo.addItem.images.uploading')}
-                        aspectRatio="h-32 w-full"
-                    />
+                    <div className="relative">
+                        <div className={creditsLeft === 0 ? "pointer-events-none opacity-50" : ""}>
+                            <ImageUploader
+                                images={selectedImages}
+                                onImagesChange={setSelectedImages}
+                                maxImages={4}
+                                labels={[
+                                    t('home.demo.addItem.images.views.top'),
+                                    t('home.demo.addItem.images.views.right'),
+                                    t('home.demo.addItem.images.views.bottom'),
+                                    t('home.demo.addItem.images.views.left')
+                                ]}
+                                loadingText={t('home.demo.addItem.images.uploading')}
+                                aspectRatio="h-32 w-full"
+                            />
+                        </div>
+                        {creditsLeft === 0 && (
+                            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-lg border border-dashed border-gray-300">
+                                <p className="text-sm font-semibold text-gray-800 mb-3">You don't have credit left</p>
+                                <button
+                                    type="button"
+                                    onClick={() => router.push(`/${slug}/admin?tab=membership&skip_onboarding=true`)}
+                                    className="px-4 py-2 bg-[#F34A23] border border-[#F34A23] text-white text-xs font-semibold rounded-lg hover:bg-[#d63e1b] transition-colors shadow-sm"
+                                >
+                                    Purchase credit
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <p className="text-xs text-gray-500 mt-2">
                         {t('home.demo.addItem.images.info')}
                     </p>

@@ -15,7 +15,10 @@ export function AdminHeader() {
   const [planTag, setPlanTag] = useState<{ label: string; color: string }>({ label: 'Free', color: 'bg-gray-100 text-gray-600' });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch subscription plan
+  // Fetch subscription plan and credits
+  const [creditsLeft, setCreditsLeft] = useState<number>(0);
+  const [showCredits, setShowCredits] = useState<boolean>(false);
+
   useEffect(() => {
     async function fetchPlan() {
       const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
@@ -23,41 +26,57 @@ export function AdminHeader() {
 
       const { data, error } = await supabase
         .from('restaurants')
-        .select('subscription_plan, subscription_status')
+        .select('subscription_plan, subscription_status, credits_left')
         .eq('slug', slug)
         .single();
 
       if (data && !error) {
         const status = data.subscription_status;
         const plan = data.subscription_plan?.toLowerCase() || '';
+        const credits = data.credits_left ?? 0;
+
+        setCreditsLeft(credits);
 
         if (status !== 'active' && status !== 'trialing') {
           setPlanTag({ label: 'Free', color: 'bg-white text-gray-700 border-gray-200' });
+          setShowCredits(false);
           return;
         }
 
+        // Match the plan names as stored in the database
+        // Plans can be: 'Standard', 'Essentielle', 'Avancée' OR 'basic', 'pro', 'enterprise'
+        let isPaidPlan = false;
         switch (plan) {
+          case 'standard':
           case 'basic':
             setPlanTag({
               label: 'Standard',
               color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
             });
+            isPaidPlan = true;
             break;
+          case 'essentielle':
           case 'pro':
             setPlanTag({
               label: 'Essentielle',
               color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
             });
+            isPaidPlan = true;
             break;
+          case 'avancée':
           case 'enterprise':
             setPlanTag({
               label: 'Avancée',
               color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
             });
+            isPaidPlan = true;
             break;
           default:
             setPlanTag({ label: 'Free', color: 'bg-white text-gray-700 border-gray-200' });
         }
+
+        // Show credits for paid plans
+        setShowCredits(isPaidPlan);
       }
     }
     fetchPlan();
@@ -137,6 +156,14 @@ export function AdminHeader() {
 
           <div className="flex items-center gap-4">
             <LandingLanguageSwitcher />
+
+            {/* 3D Credit Tag - Only show for paid plans */}
+            {showCredits && (
+              <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border bg-white text-gray-700 border-gray-200 cursor-default flex items-center gap-1`}>
+                <span className="text-gray-400">3d credit left:</span>
+                <span className={creditsLeft > 0 ? "text-[#F34A23]" : "text-gray-900"}>{creditsLeft}</span>
+              </div>
+            )}
 
             {/* Plan Tag */}
             <button

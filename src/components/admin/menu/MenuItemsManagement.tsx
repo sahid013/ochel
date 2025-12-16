@@ -8,6 +8,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
 import { menuItemService, categoryService, subcategoryService, MenuItem, Category, Subcategory } from '@/services';
 import { ImageUpload } from './ImageUpload';
+import { ImageUploader } from '@/components/demo/ImageUploader';
+import { uploadImage } from '@/lib/storage';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LanguageTabs } from './translation/LanguageTabs';
 import { TranslationField } from './translation/TranslationField';
@@ -86,9 +88,29 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
 
   const [price, setPrice] = useState(menuItem?.price?.toString() || '');
   const [imagePath, setImagePath] = useState(menuItem?.image_path || '');
-  const [model3dGlbUrl, setModel3dGlbUrl] = useState(menuItem?.model_3d_url || '');
-  const [model3dUsdzUrl, setModel3dUsdzUrl] = useState(menuItem?.redirect_3d_url || '');
   const [isSpecial, setIsSpecial] = useState(menuItem?.is_special || false);
+
+  // Initialize 4 images from additional_image_url
+  const initializeImages = (): (File | string | null)[] => {
+    if (menuItem?.additional_image_url) {
+      try {
+        const parsed = JSON.parse(menuItem.additional_image_url);
+        if (Array.isArray(parsed)) {
+          // Pad to 4 images
+          const images = [...parsed];
+          while (images.length < 4) {
+            images.push(null);
+          }
+          return images.slice(0, 4);
+        }
+      } catch (e) {
+        console.error('Failed to parse additional_image_url:', e);
+      }
+    }
+    return [null, null, null, null];
+  };
+
+  const [selectedImages, setSelectedImages] = useState<(File | string | null)[]>(initializeImages());
   const [categoryId, setCategoryId] = useState<number>(0);
   const [subcategoryId, setSubcategoryId] = useState<number>(0);
   const [filteredSubcategories, setFilteredSubcategories] = useState<Subcategory[]>([]);
@@ -181,6 +203,24 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         }
       }
 
+      // Handle Detailed Images Upload (4 images)
+      const additionalImagePaths: string[] = [];
+      if (selectedImages && selectedImages.length > 0) {
+        for (const img of selectedImages) {
+          if (img instanceof File) {
+            try {
+              const uploadResult = await uploadImage(img, 'menu-item', restaurantId);
+              additionalImagePaths.push(uploadResult.publicUrl);
+            } catch (detailImgErr) {
+              console.error('Failed to upload detail image:', detailImgErr);
+            }
+          } else if (typeof img === 'string') {
+            // Keep existing URL if any
+            additionalImagePaths.push(img);
+          }
+        }
+      }
+
       await onSave({
         title: title.trim(),
         text: text.trim() || null,
@@ -196,9 +236,9 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         description_es: descriptionEs.trim() || null,
         price: parseFloat(price),
         image_path: imagePath.trim() || null,
-        model_3d_url: model3dGlbUrl.trim() || null,
-        redirect_3d_url: model3dUsdzUrl.trim() || null,
-        additional_image_url: null,
+        model_3d_url: null,
+        redirect_3d_url: null,
+        additional_image_url: additionalImagePaths.length > 0 ? JSON.stringify(additionalImagePaths) : null,
         is_special: isSpecial,
         subcategory_id: finalSubcategoryId,
         status: menuItem?.status || 'active',
@@ -463,47 +503,20 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              3D Model URL
-              <div className="group relative">
-                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                </svg>
-                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
-                  <p className="font-semibold mb-1 text-gray-900">What is GLB?</p>
-                  <p>GLB format for 3D preview on web and Android devices. Optional field.</p>
-                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
-                </div>
-              </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Detailed Images (4 angles)
             </label>
-            <Input
-              type="url"
-              value={model3dGlbUrl}
-              onChange={(e) => setModel3dGlbUrl(e.target.value)}
-              placeholder="https://example.com/model.glb"
+            <ImageUploader
+              images={selectedImages}
+              onImagesChange={setSelectedImages}
+              maxImages={4}
+              labels={['Top View', 'Right View', 'Bottom View', 'Left View']}
+              loadingText="Uploading..."
+              aspectRatio="h-32 w-full"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              3D Model URL
-              <div className="group relative">
-                <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                </svg>
-                <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-white text-gray-700 text-xs rounded-lg shadow-lg border border-gray-200 z-10">
-                  <p className="font-semibold mb-1 text-gray-900">What is USDZ?</p>
-                  <p>USDZ format for iOS AR Quick Look experience. Optional field.</p>
-                  <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
-                </div>
-              </div>
-            </label>
-            <Input
-              type="url"
-              value={model3dUsdzUrl}
-              onChange={(e) => setModel3dUsdzUrl(e.target.value)}
-              placeholder="https://example.com/model.usdz"
-            />
+            <p className="text-xs text-gray-500 mt-2">
+              Upload 4 images showing different angles of the dish for 3D model generation
+            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 mt-6">

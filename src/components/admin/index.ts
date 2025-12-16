@@ -7,3 +7,4 @@ export * from './CustomizeTab';
 export * from './FirstTimeMenuEditor';
 export * from './PublishMenuButton';
 export * from './SettingsTab';
+export * from './ThreeDRequestsTab';

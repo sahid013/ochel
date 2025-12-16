@@ -92,6 +92,7 @@ export async function POST(req: Request) {
             cancel_url: `${baseUrl}/${slug}/subscribe`,
             metadata: {
                 restaurantId,
+                planId: priceId, // Store the Product ID (or Price ID) passed from client
             },
         });
 

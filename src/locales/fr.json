@@ -38,7 +38,7 @@
         "descriptionPlaceholder": "ex: Mozzarella fraîche, sauce tomate et basilic",
         "price": "Prix",
         "pricePlaceholder": "12.50",
-        "modelGlb": "URL du modèle 3D (.glb)",
+        "modelGlb": "Votre menu 3D",
         "modelGlbPlaceholder": "https://exemple.com/modele.glb",
         "modelGlbHelpTitle": "Qu'est-ce que GLB ?",
         "modelGlbHelpText": "Format GLB pour l'aperçu 3D sur le web et les appareils Android. Champ optionnel.",

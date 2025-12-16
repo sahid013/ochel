@@ -172,7 +172,9 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
             const { url } = await response.json();
 
             if (url) {
-                window.location.href = url;
+                window.open(url, '_blank');
+                // Since this opens in a new tab, we should clear the loading state here so the user can continue using the current tab if needed
+                setLoading(null);
             } else {
                 throw new Error('No checkout URL returned');
             }
@@ -226,7 +228,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                     <AnimateIn animation="slide" delay={200}>
                         <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4 font-loubag tracking-normal leading-tight">
                             {currentPlan?.status === 'active' || currentPlan?.status === 'trialing'
-                                ? <>Une tarification simple pour gérer <span className="text-[#F34A23]">votre</span> abonnement</>
+                                ? <>Une tarification simple pour gérer<br /> <span className="text-[#F34A23]">votre</span> abonnement</>
                                 : <>Une tarification simple pour activer <span className="text-[#F34A23]">votre</span> menu digital <span className="text-[#F34A23]">3D</span>,</>}
                         </h1>
                         <p className="text-lg md:text-xl text-secondary max-w-3xl mx-auto font-plus-jakarta-sans italic">

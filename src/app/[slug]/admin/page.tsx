@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layout';
-import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton, SettingsTab, AdminTabs, MembershipTab } from '@/components/admin';
+import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton, SettingsTab, AdminTabs, MembershipTab, ThreeDRequestsTab } from '@/components/admin';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
 import { PrimaryButton } from '@/components/ui';
@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { useFirstTimeUser } from '@/hooks/useFirstTimeUser';
 
-type AdminTab = 'menu' | 'template' | 'customize' | 'settings' | 'membership';
+type AdminTab = 'menu' | 'template' | 'customize' | 'settings' | 'membership' | '3d-requests';
 
 // Check if user has completed onboarding 
 export default function RestaurantAdminPage() {
@@ -230,6 +230,10 @@ export default function RestaurantAdminPage() {
 
           {activeTab === 'settings' && (
             <SettingsTab restaurant={restaurant} />
+          )}
+
+          {activeTab === '3d-requests' && (
+            <ThreeDRequestsTab restaurant={restaurant} />
           )}
 
           {activeTab === 'membership' && (
