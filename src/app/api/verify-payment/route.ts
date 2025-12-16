@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server';
+
 export async function POST(req: Request) {
     if (!process.env.STRIPE_SECRET_KEY) {
         return NextResponse.json({ error: 'Missing STRIPE_SECRET_KEY in server environment' }, { status: 500 });
