@@ -89,13 +89,35 @@ export default function SubscriptionSuccessPage() {
                         <LoadingSpinner size="md" />
                     </div>
 
-                    {retries > 15 && (
-                        <button
-                            onClick={() => router.push(`/${slug}/admin`)}
-                            className="mt-8 text-sm text-gray-500 hover:text-primary underline"
-                        >
-                            Click here if you are not redirected automatically
-                        </button>
+                    {retries > 5 && (
+                        <div className="flex flex-col items-center gap-2 mt-8">
+                            <p className="text-sm text-gray-500">
+                                Stripe webhook might be delayed.
+                            </p>
+                            <button
+                                onClick={async () => {
+                                    setStatus('Force verifying payment...');
+                                    try {
+                                        const res = await fetch('/api/verify-payment', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ sessionId, slug })
+                                        });
+                                        const data = await res.json();
+                                        if (data.success) {
+                                            router.push(`/${slug}/admin`);
+                                        } else {
+                                            setStatus('Verification failed: ' + (data.error || 'Unknown error'));
+                                        }
+                                    } catch (e) {
+                                        setStatus('Verification error');
+                                    }
+                                }}
+                                className="bg-primary text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-primary/90 transition-colors"
+                            >
+                                Force Verification
+                            </button>
+                        </div>
                     )}
                 </AnimateIn>
             </div>
