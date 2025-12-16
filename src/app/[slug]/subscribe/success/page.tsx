@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import AnimateIn from '@/components/ui/AnimateIn';
 
@@ -13,111 +12,97 @@ export default function SubscriptionSuccessPage() {
     const slug = params.slug as string;
     const sessionId = searchParams.get('session_id');
 
-    const [status, setStatus] = useState('Verifying subscription...');
-    const [retries, setRetries] = useState(0);
+    const [status, setStatus] = useState('Verifying your payment...');
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!slug) return;
+        if (!slug || !sessionId) {
+            setError('Missing payment information');
+            return;
+        }
 
-        let intervalId: NodeJS.Timeout;
-
-        const checkSubscriptionStatus = async () => {
+        const verifyPayment = async () => {
             try {
-                // Fetch restaurant subscription status
-                const { data: restaurant, error } = await supabase
-                    .from('restaurants')
-                    .select('subscription_status')
-                    .eq('slug', slug)
-                    .single();
+                setStatus('Verifying your payment...');
 
-                if (error) {
-                    console.error('Error fetching status:', error);
-                    return;
-                }
+                const res = await fetch('/api/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId, slug })
+                });
 
-                // Check if active or trialing
-                if (restaurant && (restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing')) {
-                    setStatus('Subscription active! Redirecting...');
-                    clearInterval(intervalId);
+                const data = await res.json();
 
-                    // Add a small delay for user to see success message
+                if (data.success) {
+                    setStatus('Payment verified! Redirecting to your dashboard...');
+                    // Small delay to show success message
                     setTimeout(() => {
                         router.push(`/${slug}/admin`);
-                    }, 1000);
+                    }, 1500);
                 } else {
-                    // Still waiting for webhook
-                    setRetries(prev => prev + 1);
-                    if (retries > 10) {
-                        setStatus('This is taking longer than usual...');
-                    }
+                    setError(data.error || 'Payment verification failed');
                 }
             } catch (err) {
-                console.error('Polling error:', err);
+                console.error('Verification error:', err);
+                setError('An error occurred while verifying your payment');
             }
         };
 
-        // Poll every 2 seconds
-        intervalId = setInterval(checkSubscriptionStatus, 2000);
-
-        // Initial check
-        checkSubscriptionStatus();
-
-        return () => clearInterval(intervalId);
-    }, [slug, router, retries]);
+        // Verify payment immediately on page load
+        verifyPayment();
+    }, [slug, sessionId, router]);
 
     return (
         <div className="min-h-screen bg-white flex items-center justify-center p-4">
             <div className="max-w-md w-full text-center">
                 <AnimateIn animation="fade">
-                    <div className="mb-8 flex justify-center">
-                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                        </div>
-                    </div>
+                    {!error ? (
+                        <>
+                            <div className="mb-8 flex justify-center">
+                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                            </div>
 
-                    <h1 className="text-3xl font-bold text-gray-900 mb-4 font-loubag">
-                        Payment Successful!
-                    </h1>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-4 font-loubag">
+                                Payment Successful!
+                            </h1>
 
-                    <p className="text-gray-600 mb-8 font-plus-jakarta-sans">
-                        {status}
-                    </p>
-
-                    <div className="flex justify-center">
-                        <LoadingSpinner size="md" />
-                    </div>
-
-                    {retries > 5 && (
-                        <div className="flex flex-col items-center gap-2 mt-8">
-                            <p className="text-sm text-gray-500">
-                                Stripe webhook might be delayed.
+                            <p className="text-gray-600 mb-8 font-plus-jakarta-sans">
+                                {status}
                             </p>
+
+                            <div className="flex justify-center">
+                                <LoadingSpinner size="md" />
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="mb-8 flex justify-center">
+                                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+                                    <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <h1 className="text-3xl font-bold text-gray-900 mb-4 font-loubag">
+                                Verification Failed
+                            </h1>
+
+                            <p className="text-gray-600 mb-8 font-plus-jakarta-sans">
+                                {error}
+                            </p>
+
                             <button
-                                onClick={async () => {
-                                    setStatus('Force verifying payment...');
-                                    try {
-                                        const res = await fetch('/api/verify-payment', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ sessionId, slug })
-                                        });
-                                        const data = await res.json();
-                                        if (data.success) {
-                                            router.push(`/${slug}/admin`);
-                                        } else {
-                                            setStatus('Verification failed: ' + (data.error || 'Unknown error'));
-                                        }
-                                    } catch (e) {
-                                        setStatus('Verification error');
-                                    }
-                                }}
-                                className="bg-primary text-white px-6 py-2 rounded-full font-bold shadow-md hover:bg-primary/90 transition-colors"
+                                onClick={() => router.push(`/${slug}/subscribe`)}
+                                className="bg-primary text-white px-6 py-3 rounded-full font-bold shadow-md hover:bg-primary/90 transition-colors"
                             >
-                                Force Verification
+                                Back to Subscribe
                             </button>
-                        </div>
+                        </>
                     )}
                 </AnimateIn>
             </div>
