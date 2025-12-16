@@ -150,7 +150,7 @@ export function AdminHeader() {
               {/* Dropdown Menu */}
               {isDropdownOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200"
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-[100] border border-gray-200"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
@@ -232,7 +232,7 @@ export function AdminHeader() {
               {/* Dropdown Menu - Mobile */}
               {isDropdownOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200"
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-[100] border border-gray-200"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
