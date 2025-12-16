@@ -4,6 +4,7 @@ import { Restaurant } from '@/types';
 import { getTemplateVariables } from '@/lib/dynamicStyles';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/contexts/LanguageContext';
+import { LandingLanguageSwitcher } from './LandingLanguageSwitcher';
 
 interface NavigationProps {
   restaurant: Restaurant;
@@ -41,7 +42,8 @@ export default function Navigation({ restaurant, demoLogo }: NavigationProps) {
           </div>
 
           {/* Right: Contact Button */}
-          <div className="flex items-center ml-4">
+          <div className="flex items-center gap-3 ml-4">
+            <LandingLanguageSwitcher />
             <a
               href={`mailto:${contactEmail}`}
               className={cn(
