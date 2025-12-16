@@ -4,9 +4,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { PrimaryButton } from '@/components/ui';
-import { ImageUploader } from '@/components/demo/ImageUploader';
-import { uploadImage } from '@/lib/storage';
 
 interface ThreeDRequestsTabProps {
     restaurant: Restaurant;
@@ -24,9 +21,6 @@ interface RequestItem {
 export function ThreeDRequestsTab({ restaurant }: ThreeDRequestsTabProps) {
     const [requests, setRequests] = useState<RequestItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [editingItem, setEditingItem] = useState<RequestItem | null>(null);
-    const [selectedImages, setSelectedImages] = useState<(File | string | null)[]>([null, null, null, null]);
-    const [uploading, setUploading] = useState(false);
 
     const fetchRequests = async () => {
         try {
@@ -56,60 +50,6 @@ export function ThreeDRequestsTab({ restaurant }: ThreeDRequestsTabProps) {
     useEffect(() => {
         fetchRequests();
     }, [restaurant.id]);
-
-    const handleEditClick = (item: RequestItem) => {
-        setEditingItem(item);
-        try {
-            const images = item.additional_image_url ? JSON.parse(item.additional_image_url) : [null, null, null, null];
-            // Fill up to 4 items
-            while (images.length < 4) images.push(null);
-            setSelectedImages(images);
-        } catch (e) {
-            setSelectedImages([null, null, null, null]);
-        }
-    };
-
-    const handleImageChange = (index: number, file: File | null) => {
-        const newImages = [...selectedImages];
-        newImages[index] = file;
-        setSelectedImages(newImages);
-    };
-
-    const handleUpdateImages = async () => {
-        if (!editingItem) return;
-
-        try {
-            setUploading(true);
-            const newImageUrls: string[] = [];
-
-            for (const img of selectedImages) {
-                if (img instanceof File) {
-                    const { publicUrl } = await uploadImage(img, 'menu-item', restaurant.id);
-                    newImageUrls.push(publicUrl);
-                } else if (typeof img === 'string') {
-                    newImageUrls.push(img);
-                }
-            }
-
-            const { error } = await supabase
-                .from('menu_items')
-                .update({
-                    additional_image_url: JSON.stringify(newImageUrls)
-                })
-                .eq('id', editingItem.id);
-
-            if (error) throw error;
-
-            await fetchRequests();
-            setEditingItem(null);
-            setSelectedImages([null, null, null, null]);
-        } catch (err) {
-            console.error('Error updating images:', err);
-            alert('Failed to update images. Please try again.');
-        } finally {
-            setUploading(false);
-        }
-    };
 
     if (loading) {
         return (
@@ -141,77 +81,68 @@ export function ThreeDRequestsTab({ restaurant }: ThreeDRequestsTabProps) {
                 </div>
             ) : (
                 <div className="grid gap-4">
-                    {requests.map((item) => (
-                        <div key={item.id} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                            <div>
-                                <h3 className="text-lg font-bold font-plus-jakarta-sans text-gray-900">{item.title}</h3>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${item.status === 'completed'
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-yellow-100 text-yellow-700'
-                                        }`}>
-                                        {item.status === 'completed' ? 'Completed' : 'Pending'}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                        Requested on {new Date(item.created_at).toLocaleDateString()}
-                                    </span>
+                    {requests.map((item) => {
+                        // Parse the images
+                        let images: string[] = [];
+                        try {
+                            images = item.additional_image_url ? JSON.parse(item.additional_image_url) : [];
+                        } catch (e) {
+                            console.error('Failed to parse images:', e);
+                        }
+
+                        return (
+                            <div key={item.id} className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                    {/* Left side - Info */}
+                                    <div className="flex-shrink-0">
+                                        <h3 className="text-lg font-bold font-plus-jakarta-sans text-gray-900">{item.title}</h3>
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${item.status === 'completed'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-yellow-100 text-yellow-700'
+                                                }`}>
+                                                {item.status === 'completed' ? 'Completed' : 'Pending'}
+                                            </span>
+                                            <span className="text-xs text-gray-500">
+                                                Requested on {new Date(item.created_at).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Right side - Images (desktop: 1 row, mobile: 2x2 below) */}
+                                    {images.length > 0 && (
+                                        <div className="w-full md:w-auto">
+                                            {/* Desktop: horizontal row */}
+                                            <div className="hidden md:flex gap-2">
+                                                {images.slice(0, 4).map((imgUrl, index) => (
+                                                    <div key={index} className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                                        <img
+                                                            src={imgUrl}
+                                                            alt={`${item.title} angle ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Mobile: 2x2 grid */}
+                                            <div className="grid grid-cols-2 gap-2 md:hidden">
+                                                {images.slice(0, 4).map((imgUrl, index) => (
+                                                    <div key={index} className="w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                                        <img
+                                                            src={imgUrl}
+                                                            alt={`${item.title} angle ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-
-                            {item.status === 'pending' && (
-                                <button
-                                    onClick={() => handleEditClick(item)}
-                                    className="text-sm font-medium text-[#F34A23] hover:text-[#d63e1b] underline font-plus-jakarta-sans"
-                                >
-                                    View / Update Images
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Edit Modal */}
-            {editingItem && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
-                        <h3 className="text-xl font-bold mb-4 font-loubag">Update Images for "{editingItem.title}"</h3>
-
-                        <div className="mb-6">
-                            <p className="text-sm text-gray-600 mb-4 font-plus-jakarta-sans">
-                                Upload 4 high-quality images of your dish from different angles.
-                            </p>
-                            <div className="grid grid-cols-2 gap-4">
-                                {[0, 1, 2, 3].map((index) => (
-                                    <div key={index} className="flex flex-col gap-2">
-                                        <span className="text-xs font-medium text-gray-500 text-center">Angle {index + 1}</span>
-                                        <ImageUploader
-                                            images={[selectedImages[index]]}
-                                            onImagesChange={(newImages) => handleImageChange(index, newImages[0] as File | null)}
-                                            maxImages={1}
-                                            loadingText="Uploading..."
-                                            className="h-32"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setEditingItem(null)}
-                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <PrimaryButton
-                                onClick={handleUpdateImages}
-                                disabled={uploading || selectedImages.some(img => !img)}
-                            >
-                                {uploading ? 'Updating...' : 'Update Images'}
-                            </PrimaryButton>
-                        </div>
-                    </div>
+                        );
+                    })}
                 </div>
             )}
         </div>
