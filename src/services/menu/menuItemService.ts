@@ -65,6 +65,13 @@ export const menuItemService = {
                 .eq('id', menuItem.restaurant_id);
 
             if (updateError) throw updateError;
+
+            // Notify all tabs that credits have changed
+            if (typeof window !== 'undefined') {
+                const creditUpdateChannel = new BroadcastChannel('credit-updates');
+                creditUpdateChannel.postMessage('invalidate');
+                creditUpdateChannel.close();
+            }
         }
 
         // Get the max order value within this subcategory to assign next order
@@ -125,6 +132,13 @@ export const menuItemService = {
                 .eq('id', restaurantId);
 
             if (updateError) throw updateError;
+
+            // Notify all tabs that credits have changed
+            if (typeof window !== 'undefined') {
+                const creditUpdateChannel = new BroadcastChannel('credit-updates');
+                creditUpdateChannel.postMessage('invalidate');
+                creditUpdateChannel.close();
+            }
         }
 
         // If updating image_path, delete the old image from storage

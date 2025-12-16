@@ -235,6 +235,11 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
           .eq('id', restaurant.id);
 
         if (updateError) throw updateError;
+
+        // Notify all tabs that credits have changed
+        const creditUpdateChannel = new BroadcastChannel('credit-updates');
+        creditUpdateChannel.postMessage('invalidate');
+        creditUpdateChannel.close();
       }
 
       // Create menu item
@@ -402,6 +407,11 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
           .eq('id', restaurant.id);
 
         if (updateError) throw updateError;
+
+        // Notify all tabs that credits have changed
+        const creditUpdateChannel = new BroadcastChannel('credit-updates');
+        creditUpdateChannel.postMessage('invalidate');
+        creditUpdateChannel.close();
       }
 
       // Create menu item

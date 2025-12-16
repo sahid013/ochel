@@ -80,6 +80,16 @@ export function AdminHeader() {
       }
     }
     fetchPlan();
+
+    // Listen for credit updates via BroadcastChannel
+    const creditUpdateChannel = new BroadcastChannel('credit-updates');
+    creditUpdateChannel.onmessage = () => {
+      fetchPlan(); // Re-fetch when credits change
+    };
+
+    return () => {
+      creditUpdateChannel.close();
+    };
   }, [params.slug]);
 
   // Close dropdown when clicking outside
