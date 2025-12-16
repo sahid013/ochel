@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { LandingLanguageSwitcher } from './LandingLanguageSwitcher';
-import { LandingProfileDropdown } from './LandingProfileDropdown';
 import { PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/contexts/LanguageContext';
 
@@ -73,7 +72,7 @@ function AuthButtons({ t }: { t: any }) {
   if (loading) return null; // Or a small spinner if preferred
 
   if (user) {
-    return <LandingProfileDropdown />;
+    return null;
   }
 
   return (

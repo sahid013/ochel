@@ -51,6 +51,7 @@ export default function AdminLayout({
             }
 
             // 2. Check subscription status
+            /* 
             const allowedStatuses = ['active', 'trialing'];
 
             if (!restaurant.subscription_status || !allowedStatuses.includes(restaurant.subscription_status)) {
@@ -62,6 +63,7 @@ export default function AdminLayout({
                     return;
                 }
             }
+            */
 
             setLoading(false);
         };

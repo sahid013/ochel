@@ -121,7 +121,10 @@ export default function RestaurantMenuPage() {
 
   // Determine which template to render
   const selectedTemplate = previewTemplate || restaurant.template || 'template1';
-  const isPreviewMode = !!previewTemplate;
+
+  // Preview mode if explicit param OR if subscription is not active
+  const isSubscriptionActive = restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing';
+  const isPreviewMode = !!previewTemplate || !isSubscriptionActive;
 
   // Template router
   const renderTemplate = () => {
@@ -152,14 +155,25 @@ export default function RestaurantMenuPage() {
     <>
       {/* Preview Mode Banner */}
       {isPreviewMode && (
-        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50 font-medium text-sm">
-          ⚠️ PREVIEW MODE - This is a test preview. Changes are not saved to your public menu.
-          <a
-            href={`/${restaurant.slug}`}
-            className="ml-4 underline hover:no-underline font-semibold"
-          >
-            Exit Preview
-          </a>
+        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50 font-medium text-sm flex justify-center items-center gap-2">
+          <span>⚠️ {isSubscriptionActive ? 'PREVIEW MODE' : 'SITE NOT LIVE'} - {isSubscriptionActive ? 'Changes are not saved to your public menu.' : 'Subscribe to publish your menu.'}</span>
+          {!isSubscriptionActive && (
+            <a
+              href={`/${restaurant.slug}/subscribe`}
+              className="bg-black text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-gray-800 transition-colors"
+              target="_blank"
+            >
+              Go Live Now
+            </a>
+          )}
+          {isSubscriptionActive && (
+            <a
+              href={`/${restaurant.slug}`}
+              className="ml-4 underline hover:no-underline font-semibold"
+            >
+              Exit Preview
+            </a>
+          )}
         </div>
       )}
 

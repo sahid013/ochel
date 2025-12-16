@@ -176,6 +176,7 @@ export default function RestaurantAdminPage() {
                   restaurantId={restaurant.id}
                   restaurantSlug={slug}
                   currentTemplate={restaurant.template || 'template1'}
+                  subscriptionStatus={restaurant.subscription_status}
                   onPublishComplete={checkAgain}
                 />
               </div>

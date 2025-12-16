@@ -9,14 +9,16 @@ interface PublishMenuButtonProps {
   restaurantId: string;
   restaurantSlug: string;
   currentTemplate: string;
+  subscriptionStatus?: string | null;
   onPublishComplete?: () => void;
 }
 
 /**
- * Button to mark onboarding as complete and redirect to public menu
- * Items are already in the database, this just completes the onboarding flow
+ * Button to mark onboarding as complete.
+ * If subscribed -> Live.
+ * If not -> Redirect to subscribe.
  */
-export function PublishMenuButton({ restaurantId, restaurantSlug, currentTemplate, onPublishComplete }: PublishMenuButtonProps) {
+export function PublishMenuButton({ restaurantId, restaurantSlug, currentTemplate, subscriptionStatus, onPublishComplete }: PublishMenuButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,13 +54,22 @@ export function PublishMenuButton({ restaurantId, restaurantSlug, currentTemplat
 
       if (updateError) throw updateError;
 
-      // Call the callback if provided
+      // Call the callback if provided (refreshes parent state)
       if (onPublishComplete) {
         onPublishComplete();
       }
 
-      // Redirect to public menu page
-      router.push(`/${restaurantSlug}`);
+      // Check subscription status
+      const isActive = subscriptionStatus === 'active' || subscriptionStatus === 'trialing';
+
+      if (isActive) {
+        // Redirect to public menu page
+        router.push(`/${restaurantSlug}`);
+      } else {
+        // Redirect to subscription page
+        router.push(`/${restaurantSlug}/subscribe`);
+      }
+
     } catch (err) {
       console.error('Error publishing menu:', err);
       setError(err instanceof Error ? err.message : 'Failed to publish menu');

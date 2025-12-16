@@ -1,5 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { DemoMenuEditor } from '@/components/demo/DemoMenuEditor';
 import { Navbar } from '@/components/layout/Navbar';
 import { PrimaryButton } from '@/components/ui';
@@ -8,6 +11,38 @@ import { useTranslation } from '@/contexts/LanguageContext';
 
 export default function Home() {
   const { t } = useTranslation();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function checkAuthAndRedirect() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          // Check if user has a restaurant and onboarding status
+          const { data: restaurantData, error } = await supabase
+            .from('restaurants')
+            .select('slug, has_completed_onboarding')
+            .eq('owner_id', user.id)
+            .single();
+
+          const restaurant = restaurantData as any;
+
+          if (restaurant && !error) {
+            if (restaurant.has_completed_onboarding) {
+              router.push(`/${restaurant.slug}/admin`);
+            } else {
+              router.push(`/${restaurant.slug}/admin?onboarding=true`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error checking auth redirect:', error);
+      }
+    }
+
+    checkAuthAndRedirect();
+  }, [router]);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-beige)' }}>

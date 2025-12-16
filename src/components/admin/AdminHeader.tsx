@@ -12,7 +12,46 @@ export function AdminHeader() {
   const router = useRouter();
   const params = useParams();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [planTag, setPlanTag] = useState<{ label: string; color: string }>({ label: 'Free', color: 'bg-gray-100 text-gray-600' });
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Fetch subscription plan
+  useEffect(() => {
+    async function fetchPlan() {
+      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+      if (!slug) return;
+
+      const { data, error } = await supabase
+        .from('restaurants')
+        .select('subscription_plan, subscription_status')
+        .eq('slug', slug)
+        .single();
+
+      if (data && !error) {
+        const status = data.subscription_status;
+        const plan = data.subscription_plan?.toLowerCase() || '';
+
+        if (status !== 'active' && status !== 'trialing') {
+          setPlanTag({ label: 'Free', color: 'bg-white text-gray-700 border-gray-200' });
+          return;
+        }
+
+        switch (plan) {
+          case 'basic':
+          case 'pro':
+          case 'enterprise':
+            setPlanTag({
+              label: plan.charAt(0).toUpperCase() + plan.slice(1),
+              color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
+            });
+            break;
+          default:
+            setPlanTag({ label: 'Free', color: 'bg-white text-gray-700 border-gray-200' });
+        }
+      }
+    }
+    fetchPlan();
+  }, [params.slug]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -65,7 +104,10 @@ export function AdminHeader() {
     e.preventDefault();
     e.stopPropagation();
     setIsDropdownOpen(false);
-    // TODO: Navigate to membership page
+    // Use proper SPA navigation if possible, but the button below handles query params update
+    if (params.slug) {
+      router.push(`/${params.slug}/admin?tab=membership`);
+    }
   };
 
   return (
@@ -85,6 +127,15 @@ export function AdminHeader() {
 
           <div className="flex items-center gap-4">
             <LandingLanguageSwitcher />
+
+            {/* Plan Tag */}
+            <button
+              onClick={handleMembership}
+              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${planTag.color} hover:opacity-80 transition-opacity cursor-pointer`}
+            >
+              {planTag.label}
+            </button>
+
             {/* Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
