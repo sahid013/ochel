@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layout';
-import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton, SettingsTab } from '@/components/admin';
+import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton, SettingsTab, AdminTabs, MembershipTab } from '@/components/admin';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Alert } from '@/components/ui/Alert';
 import { PrimaryButton } from '@/components/ui';
@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { useFirstTimeUser } from '@/hooks/useFirstTimeUser';
 
-type AdminTab = 'menu' | 'template' | 'customize' | 'settings';
+type AdminTab = 'menu' | 'template' | 'customize' | 'settings' | 'membership';
 
 // Check if user has completed onboarding 
 export default function RestaurantAdminPage() {
@@ -33,7 +33,7 @@ export default function RestaurantAdminPage() {
 
   // Sync active tab with URL param
   useEffect(() => {
-    if (tabParam && ['menu', 'template', 'customize', 'settings'].includes(tabParam)) {
+    if (tabParam && ['menu', 'template', 'customize', 'settings', 'membership'].includes(tabParam)) {
       setActiveTab(tabParam as AdminTab);
     }
   }, [tabParam]);
@@ -201,40 +201,11 @@ export default function RestaurantAdminPage() {
         <AdminHeader />
 
         {/* Tabs Navigation */}
-        <div className="border-b border-gray-200 bg-white">
-          <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex space-x-8">
-              <button
-                onClick={() => handleTabChange('menu')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'menu'
-                  ? 'border-[#F34A23] text-[#F34A23]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-              >
-                Menu Management
-              </button>
-              <button
-                onClick={() => handleTabChange('template')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'template'
-                  ? 'border-[#F34A23] text-[#F34A23]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-              >
-                Template Settings
-              </button>
-              <button
-                onClick={() => handleTabChange('customize')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === 'customize'
-                  ? 'border-[#F34A23] text-[#F34A23]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-              >
-                Customize
-              </button>
-
-            </nav>
-          </div>
-        </div>
+        <AdminTabs
+          activeTab={activeTab}
+          slug={slug}
+          onTabChange={handleTabChange}
+        />
 
         {/* Tab Content */}
         <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -258,6 +229,10 @@ export default function RestaurantAdminPage() {
 
           {activeTab === 'settings' && (
             <SettingsTab restaurant={restaurant} />
+          )}
+
+          {activeTab === 'membership' && (
+            <MembershipTab restaurant={restaurant} slug={slug} />
           )}
         </div>
       </div>

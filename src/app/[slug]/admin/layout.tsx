@@ -1,45 +1,80 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
-export const dynamic = 'force-dynamic'; // Ensure we always get fresh data
-
-export default async function AdminLayout({
+export default function AdminLayout({
     children,
-    params,
 }: {
     children: React.ReactNode;
-    params: Promise<{ slug: string }>;
 }) {
-    const { slug } = await params;
+    const params = useParams();
+    const slug = params.slug as string;
+    const router = useRouter();
+    const [loading, setLoading] = useState(true);
 
-    // 1. Get current restaurant
-    const { data, error } = await supabase
-        .from('restaurants')
-        .select('subscription_status, owner_id')
-        .eq('slug', slug)
-        .single();
+    useEffect(() => {
+        const checkAccess = async () => {
+            if (!slug) return;
 
-    if (error) {
-        console.error('Error fetching restaurant in AdminLayout:', error);
-    }
+            // 1. Get current user first
+            const { data: { user } } = await supabase.auth.getUser();
 
-    const restaurant = data as any;
-    console.log(`[AdminLayout] Checking subscription for ${slug}. Status: ${restaurant?.subscription_status}`);
+            if (!user) {
+                // Not authenticated, RLS will fail or return nothing.
+                // Redirect to login or landing.
+                return;
+            }
 
-    if (!restaurant) {
-        redirect('/'); // Or 404
-    }
+            // 2. Get current restaurant
+            // Use maybeSingle to avoid 406/PGRST116 error if not found
+            const { data: restaurant, error } = await supabase
+                .from('restaurants')
+                .select('subscription_status, owner_id')
+                .eq('slug', slug)
+                .maybeSingle();
 
-    // 2. Check subscription status
-    // Allow 'active' and 'trialing'.
-    // You might want to allow 'past_due' with a warning, but for now strict gate.
-    const allowedStatuses = ['active', 'trialing'];
+            if (error) {
+                console.error('Error fetching restaurant in AdminLayout:', error.message);
+                setLoading(false);
+                return;
+            }
 
-    if (!restaurant.subscription_status || !allowedStatuses.includes(restaurant.subscription_status)) {
-        console.log(`[AdminLayout] Subscription invalid (${restaurant.subscription_status}). Redirecting to subscribe.`);
-        // Check if it's the owner (optional, but good for debugging/demo bypass if needed)
-        // For now, strict redirect to subscribe
-        redirect(`/${slug}/subscribe`);
+            if (!restaurant) {
+                // Restaurant not found or user has no access (Row Level Security)
+                // We can redirect to 404 or home
+                console.log('[AdminLayout] Restaurant not found or access denied');
+                router.push('/');
+                return;
+            }
+
+            // 2. Check subscription status
+            const allowedStatuses = ['active', 'trialing'];
+
+            if (!restaurant.subscription_status || !allowedStatuses.includes(restaurant.subscription_status)) {
+                // Check if it's the owner (optional, but good for debugging/demo bypass if needed)
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user && restaurant.owner_id === user.id) {
+                    console.log(`[AdminLayout] Subscription invalid (${restaurant.subscription_status}). Redirecting to subscribe.`);
+                    router.push(`/${slug}/subscribe`);
+                    return;
+                }
+            }
+
+            setLoading(false);
+        };
+
+        checkAccess();
+    }, [slug, router]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <LoadingSpinner size="lg" />
+            </div>
+        );
     }
 
     return (

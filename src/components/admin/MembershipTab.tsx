@@ -3,25 +3,64 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
-import { PrimaryButton } from '@/components/ui';
-import { Button } from '@/components/ui/Button';
-import { AdminHeader, AdminTabs } from '@/components/admin';
-import { supabase } from '@/lib/supabase';
+import { PrimaryButton, Button } from '@/components/ui';
 import AnimateIn from '@/components/ui/AnimateIn';
+import { supabase } from '@/lib/supabase';
+import { Restaurant } from '@/types';
 
-// Initialize Stripe (replace key with env var in real app)
+// Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
-import { useParams } from 'next/navigation';
+interface MembershipTabProps {
+    restaurant: Restaurant;
+    slug: string;
+}
 
-export default function SubscribePage() {
-    const params = useParams();
-    const slug = params.slug as string;
+export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
     const router = useRouter();
     const [loading, setLoading] = useState<string | null>(null);
     const [error, setError] = useState('');
-    const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>(null);
+    const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>({
+        status: restaurant.subscription_status || 'inactive',
+        plan: restaurant.subscription_plan || 'free'
+    });
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
+
+    // Sync state with prop if it updates
+    useEffect(() => {
+        async function fetchSubscriptionStatus() {
+            try {
+                // Fetch real-time data from our new API
+                const res = await fetch('/api/get-subscription-details', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slug })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setCurrentPlan(data);
+                } else {
+                    // Fallback to basic DB check if API fails
+                    const { data, error } = await supabase
+                        .from('restaurants')
+                        .select('subscription_status, subscription_plan')
+                        .eq('slug', slug)
+                        .single();
+
+                    if (data && !error) {
+                        setCurrentPlan({
+                            status: data.subscription_status || 'inactive',
+                            plan: data.subscription_plan || 'free'
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching plan:', error);
+            }
+        }
+        fetchSubscriptionStatus();
+    }, [slug]);
 
     const plans = [
         {
@@ -67,24 +106,30 @@ export default function SubscribePage() {
         }
     ];
 
-    useEffect(() => {
-        const fetchSubscriptionStatus = async () => {
-            if (!slug) return;
-            const { data } = await supabase
-                .from('restaurants')
-                .select('subscription_status, subscription_plan')
-                .eq('slug', slug)
-                .single();
+    const handleManageSubscription = async () => {
+        setLoading('portal');
+        try {
+            const response = await fetch('/api/create-portal-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug }),
+            });
 
-            if (data) {
-                setCurrentPlan({
-                    status: data.subscription_status,
-                    plan: data.subscription_plan // e.g., 'pro', 'basic'
-                });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create portal session');
             }
-        };
-        fetchSubscriptionStatus();
-    }, [slug]);
+
+            const { url } = await response.json();
+            window.location.href = url;
+
+        } catch (err: any) {
+            console.error('Portal error:', err);
+            setError(err.message);
+        } finally {
+            setLoading(null);
+        }
+    };
 
     const handleSubscribe = async (priceId: string) => {
         setLoading(priceId);
@@ -98,18 +143,7 @@ export default function SubscribePage() {
                 throw new Error('Please log in to subscribe.');
             }
 
-            // 2. Get restaurant details
-            const { data: restaurant } = await supabase
-                .from('restaurants')
-                .select('id, email')
-                .eq('slug', slug)
-                .single();
-
-            if (!restaurant) {
-                throw new Error('Restaurant not found.');
-            }
-
-            // 3. Create Checkout Session
+            // 2. Create Checkout Session
             const response = await fetch('/api/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -145,31 +179,53 @@ export default function SubscribePage() {
         }
     };
 
-    // ... (existing imports)
+    // Tier Hierarchy for Logic
+    const TIER_LEVELS: Record<string, number> = {
+        'Basic': 1,
+        'Pro': 2,
+        'Enterprise': 3
+    };
+
+    // Helper to determine button text
+    const getButtonText = (planName: string) => {
+        if (!currentPlan) return 'Select Plan';
+
+        const currentTier = TIER_LEVELS[currentPlan.plan || ''] || 0;
+        const targetTier = TIER_LEVELS[planName] || 0;
+        const isActive = currentPlan.status === 'active' || currentPlan.status === 'trialing';
+
+        if (!isActive) return 'Select Plan';
+
+        if (targetTier > currentTier) return 'Upgrade';
+        if (targetTier < currentTier) return 'Downgrade';
+
+        // Same tier
+        // Note: currentPlan.interval might be undefined if we didn't fetch it yet or DB fallback
+        // The API returns 'interval' but our state type definition needs to support it.
+        // We handle that in a separate edit or cast here.
+        if ((currentPlan as any).interval === 'month' && billingCycle === 'year') {
+            return 'Switch to Annual';
+        }
+
+        return 'Current Plan';
+    };
 
     return (
-        <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
-            {/* Show Admin Navigation if user has an active subscription or is trialing */}
-            {currentPlan && (currentPlan.status === 'active' || currentPlan.status === 'trialing') && (
-                <>
-                    <AdminHeader />
-                    <AdminTabs
-                        activeTab="membership"
-                        slug={slug}
-                    />
-                </>
-            )}
-
-            <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
+        <div className="py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
                 <div className="text-center mb-10">
                     <AnimateIn animation="slide" delay={200}>
                         <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6 font-loubag uppercase tracking-wide">
-                            Choose Your Plan
+                            {currentPlan?.status === 'active' || currentPlan?.status === 'trialing'
+                                ? 'Manage Subscription'
+                                : 'Choose Your Plan'}
                         </h1>
                         <p className="text-xl text-secondary max-w-2xl mx-auto font-plus-jakarta-sans">
-                            Unlock the power of 3D menus. Select the plan that fits your restaurant's needs.
+                            {currentPlan?.status === 'active' || currentPlan?.status === 'trialing'
+                                ? 'Upgrade, downgrade, or cancel your plan at any time.'
+                                : 'Unlock the power of 3D menus. Select the plan that fits your restaurant\'s needs.'}
                         </p>
                     </AnimateIn>
                 </div>
@@ -259,65 +315,63 @@ export default function SubscribePage() {
                                     ))}
                                 </ul>
 
-                                {isCurrentPlan ? (
-                                    <Button
-                                        disabled
-                                        className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
-                                    >
-                                        Current Plan
-                                    </Button>
-                                ) : plan.popular ? (
-                                    <PrimaryButton
-                                        onClick={() => handleSubscribe(plan.id)}
-                                        disabled={loading === plan.id || loading !== null}
-                                        fullWidth
-                                    >
-                                        {loading === plan.id ? 'Processing...' : 'Select Plan'}
-                                    </PrimaryButton>
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => handleSubscribe(plan.id)}
-                                        disabled={loading === plan.id || loading !== null}
-                                        className="w-full border-gray-900"
-                                    >
-                                        {loading === plan.id ? 'Processing...' : 'Select Plan'}
-                                    </Button>
-                                )}
+                                {(() => {
+                                    const btnText = getButtonText(plan.name);
+                                    const isCurrent = btnText === 'Current Plan';
+
+                                    if (isCurrent) {
+                                        return (
+                                            <Button
+                                                disabled
+                                                className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
+                                            >
+                                                Current Plan
+                                            </Button>
+                                        );
+                                    }
+
+                                    // If active subscription, show manage button with custom text
+                                    if (currentPlan?.status === 'active' || currentPlan?.status === 'trialing') {
+                                        return (
+                                            <Button
+                                                onClick={handleManageSubscription}
+                                                disabled={loading === 'portal' || loading !== null}
+                                                className="w-full border-gray-900"
+                                            >
+                                                {loading === 'portal' ? 'Loading...' : btnText}
+                                            </Button>
+                                        );
+                                    }
+
+                                    // Default Select Plan buttons for new users
+                                    if (plan.popular) {
+                                        return (
+                                            <PrimaryButton
+                                                onClick={() => handleSubscribe(plan.id)}
+                                                disabled={loading === plan.id || loading !== null}
+                                                fullWidth
+                                            >
+                                                {loading === plan.id ? 'Processing...' : 'Select Plan'}
+                                            </PrimaryButton>
+                                        );
+                                    }
+
+                                    return (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => handleSubscribe(plan.id)}
+                                            disabled={loading === plan.id || loading !== null}
+                                            className="w-full border-gray-900"
+                                        >
+                                            {loading === plan.id ? 'Processing...' : 'Select Plan'}
+                                        </Button>
+                                    );
+                                })()}
+
                             </AnimateIn>
                         )
                     })}
                 </div>
-
-                {/* Custom Website Section */}
-                <AnimateIn animation="blur" delay={600} className="max-w-4xl mx-auto">
-                    <div className="bg-[#1a1a1a] rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
-                        {/* Background decorative elements */}
-                        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
-                            <div className="absolute top-0 left-0 w-64 h-64 bg-[#F34A23] rounded-full filter blur-[100px] transform -translate-x-1/2 -translate-y-1/2"></div>
-                            <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-600 rounded-full filter blur-[100px] transform translate-x-1/2 translate-y-1/2"></div>
-                        </div>
-
-                        <div className="relative z-10">
-                            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 font-loubag uppercase">
-                                Need a Custom Website?
-                            </h2>
-                            <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto font-plus-jakarta-sans">
-                                Don't want to use a template? Our team of experts can build a fully custom, high-performance website tailored exactly to your brand's unique identity.
-                            </p>
-                            <a
-                                href="mailto:contact@ochel.com"
-                                className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-colors shadow-lg font-plus-jakarta-sans"
-                            >
-                                Contact Us
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </AnimateIn>
-
             </div>
         </div>
     );

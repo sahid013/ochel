@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { supabase } from '@/lib/supabase';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     // Use default API version from package
@@ -7,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
     try {
-        const { priceId, restaurantId, email, slug } = await req.json();
+        const { priceId, restaurantId, email, slug, interval = 'month' } = await req.json();
 
         if (!priceId || !restaurantId || !email) {
             return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
@@ -17,27 +18,34 @@ export async function POST(req: Request) {
         try {
             const account = await stripe.accounts.retrieve();
             console.log(`[Stripe Diagnostic] Using Account ID: ${account.id}`);
-            console.log(`[Stripe Diagnostic] Account Type: ${account.type}`);
-            console.log(`[Stripe Diagnostic] Charges Enabled: ${account.charges_enabled}`);
-            console.log(`[Stripe Diagnostic] Looking for Product ID: ${priceId}`);
+            console.log(`[Stripe Diagnostic] Looking for Product ID: ${priceId} with interval: ${interval}`);
         } catch (authError) {
-            console.error('[Stripe Diagnostic] Failed to retrieve account details. Check API Key.', authError);
+            console.error('[Stripe Diagnostic] Failed to check account.', authError);
         }
 
         let targetPriceId = priceId;
 
-        // If a Product ID is provided (starts with 'prod_'), find the associated Price
+        // If a Product ID is provided (starts with 'prod_'), find the associated Price by interval
         if (priceId.startsWith('prod_')) {
             const prices = await stripe.prices.list({
                 product: priceId,
                 active: true,
-                limit: 1,
+                limit: 20, // Fetch enough prices to hopefully find both monthly and yearly
+                expand: ['data.recurring']
             });
 
-            if (prices.data.length === 0) {
-                return NextResponse.json({ error: `No active price found for product: ${priceId}` }, { status: 400 });
+            // Find price with matching interval
+            const matchedPrice = prices.data.find(p => p.recurring?.interval === interval);
+
+            if (!matchedPrice) {
+                console.error(`[Stripe Error] No ${interval} price found for product ${priceId}`);
+                // Fallback to searching just for any price if specific interval missing? 
+                // No, better to error so user knows setup is wrong.
+                return NextResponse.json({
+                    error: `No ${interval} price found for this product. Please check your Stripe configurations.`
+                }, { status: 400 });
             }
-            targetPriceId = prices.data[0].id;
+            targetPriceId = matchedPrice.id;
         }
 
         // Determine the base URL
@@ -54,8 +62,25 @@ export async function POST(req: Request) {
         // Ensure no trailing slash
         baseUrl = baseUrl.replace(/\/$/, '');
 
+        // 1. Check for existing Stripe Customer ID
+
+        // We need to fetch the restaurant to check for stripe_customer_id
+        // Using the service role key would be better for reliability but let's try direct query if RLS allows or if we switch this file to use admin client
+        // Actually, create-checkout-session usually runs on server, we should use a proper client. 
+        // For now, let's assume we can fetch it via the same supabase client used elsewhere or raw stripe search if needed.
+        // Better: Use Supabase to get it.
+        const { data: restaurant } = await supabase
+            .from('restaurants')
+            .select('stripe_customer_id')
+            .eq('id', restaurantId)
+            .single();
+
+        const existingCustomerId = restaurant?.stripe_customer_id;
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
+            customer: existingCustomerId || undefined, // Use existing if available
+            customer_email: existingCustomerId ? undefined : email, // Only set email if creating new customer
             line_items: [
                 {
                     price: targetPriceId,
@@ -65,7 +90,6 @@ export async function POST(req: Request) {
             mode: 'subscription',
             success_url: `${baseUrl}/${slug}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${baseUrl}/${slug}/subscribe`,
-            customer_email: email,
             metadata: {
                 restaurantId,
             },
