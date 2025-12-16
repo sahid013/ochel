@@ -1,12 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export function useSuperAdmin() {
     const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [checking, setChecking] = useState<boolean>(true);
+    const timeoutRef = useRef<NodeJS.Timeout>();
 
     useEffect(() => {
+        // Set a timeout to prevent infinite loading
+        timeoutRef.current = setTimeout(() => {
+            console.log('[useSuperAdmin] Loading timeout - setting loading to false');
+            setLoading(false);
+            setChecking(false);
+            setIsSuperAdmin(false);
+        }, 5000); // 5 second timeout
+
         const checkSuperAdmin = async () => {
             try {
                 setLoading(true);
@@ -31,6 +40,11 @@ export function useSuperAdmin() {
                 } else {
                     setIsSuperAdmin(true);
                 }
+
+                // Clear timeout if we got here successfully
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                }
             } catch (error) {
                 console.error('Error checking super admin status:', error);
                 setIsSuperAdmin(false);
@@ -41,6 +55,13 @@ export function useSuperAdmin() {
         };
 
         checkSuperAdmin();
+
+        // Cleanup timeout on unmount
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
     }, []);
 
     return { isSuperAdmin, loading: checking };

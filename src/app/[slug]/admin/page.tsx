@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PageLayout } from '@/components/layout';
 import { AdminHeader, MenuManagementTab, TemplateSelector, CustomizeTab, FirstTimeMenuEditor, PublishMenuButton, SettingsTab, AdminTabs, MembershipTab, ThreeDRequestsTab } from '@/components/admin';
@@ -13,7 +13,7 @@ import { useFirstTimeUser } from '@/hooks/useFirstTimeUser';
 
 type AdminTab = 'menu' | 'template' | 'customize' | 'settings' | 'membership' | '3d-requests';
 
-// Check if user has completed onboarding 
+// Check if user has completed onboarding
 export default function RestaurantAdminPage() {
   const params = useParams();
   const router = useRouter();
@@ -27,18 +27,25 @@ export default function RestaurantAdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('menu');
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   // Check if user has completed onboarding
   const { isFirstTime, loading: checkingFirstTime, checkAgain } = useFirstTimeUser(restaurant);
 
   // Sync active tab with URL param
   useEffect(() => {
-    if (tabParam && ['menu', 'template', 'customize', 'settings', 'membership'].includes(tabParam)) {
+    if (tabParam && ['menu', 'template', 'customize', 'settings', 'membership', '3d-requests'].includes(tabParam)) {
       setActiveTab(tabParam as AdminTab);
     }
   }, [tabParam]);
 
   useEffect(() => {
+    // Set a timeout to prevent infinite loading
+    timeoutRef.current = setTimeout(() => {
+      console.log('[AdminPage] Loading timeout - redirecting to home');
+      window.location.href = '/';
+    }, 5000); // 5 second timeout
+
     async function checkAccess() {
       try {
         setLoading(true);
@@ -63,6 +70,10 @@ export default function RestaurantAdminPage() {
         if (restaurantError || !restaurantData) {
           setError('Restaurant not found');
           setLoading(false);
+          // Clear timeout before redirecting
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
           return;
         }
 
@@ -70,6 +81,10 @@ export default function RestaurantAdminPage() {
         if (restaurantData.owner_id !== user.id) {
           setError('You do not have permission to access this restaurant\'s admin panel');
           setLoading(false);
+          // Clear timeout before showing error
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
           return;
         }
 
@@ -77,16 +92,32 @@ export default function RestaurantAdminPage() {
         setRestaurant(restaurantData as Restaurant);
         setIsAuthorized(true);
         setLoading(false);
+
+        // Clear timeout on success
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
       } catch (err) {
         console.error('Error checking access:', err);
         setError('Failed to verify access');
         setLoading(false);
+        // Clear timeout on error
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
       }
     }
 
     if (slug) {
       checkAccess();
     }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [slug]);
 
   const handleTabChange = (tab: AdminTab) => {
