@@ -214,6 +214,29 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
         }
       }
 
+      // Check if this is a 3D request (has 4 images) and deduct credits
+      if (additionalImagePaths.length > 0) {
+        const { data: restaurantData, error: restaurantError } = await supabase
+          .from('restaurants')
+          .select('credits_left')
+          .eq('id', restaurant.id)
+          .single();
+
+        if (restaurantError) throw restaurantError;
+
+        if (!restaurantData || (restaurantData.credits_left ?? 0) < 1) {
+          throw new Error('Insufficient credits. Please upgrade your subscription to add 3D menu requests.');
+        }
+
+        // Deduct 1 credit
+        const { error: updateError } = await supabase
+          .from('restaurants')
+          .update({ credits_left: (restaurantData.credits_left ?? 0) - 1 })
+          .eq('id', restaurant.id);
+
+        if (updateError) throw updateError;
+      }
+
       // Create menu item
       const { error: itemError } = await supabase
         .from('menu_items')
@@ -356,6 +379,29 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
             additionalImagePaths.push(img);
           }
         }
+      }
+
+      // Check if this is a 3D request (has 4 images) and deduct credits
+      if (additionalImagePaths.length > 0) {
+        const { data: restaurantData, error: restaurantError } = await supabase
+          .from('restaurants')
+          .select('credits_left')
+          .eq('id', restaurant.id)
+          .single();
+
+        if (restaurantError) throw restaurantError;
+
+        if (!restaurantData || (restaurantData.credits_left ?? 0) < 1) {
+          throw new Error('Insufficient credits. Please upgrade your subscription to add 3D menu requests.');
+        }
+
+        // Deduct 1 credit
+        const { error: updateError } = await supabase
+          .from('restaurants')
+          .update({ credits_left: (restaurantData.credits_left ?? 0) - 1 })
+          .eq('id', restaurant.id);
+
+        if (updateError) throw updateError;
       }
 
       // Create menu item

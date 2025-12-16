@@ -41,6 +41,32 @@ export const menuItemService = {
     },
 
     async create(menuItem: Omit<MenuItem, 'id' | 'created_at' | 'updated_at' | 'order'>): Promise<MenuItem> {
+        // Check if this is a 3D request (has 4 images)
+        const is3DRequest = menuItem.additional_image_url && menuItem.additional_image_url !== 'null';
+
+        if (is3DRequest) {
+            // Check if restaurant has credits
+            const { data: restaurant, error: restaurantError } = await supabase
+                .from('restaurants')
+                .select('credits_left')
+                .eq('id', menuItem.restaurant_id)
+                .single();
+
+            if (restaurantError) throw restaurantError;
+
+            if (!restaurant || (restaurant.credits_left ?? 0) < 1) {
+                throw new Error('Insufficient credits. Please upgrade your subscription to add 3D menu requests.');
+            }
+
+            // Deduct 1 credit
+            const { error: updateError } = await supabase
+                .from('restaurants')
+                .update({ credits_left: (restaurant.credits_left ?? 0) - 1 })
+                .eq('id', menuItem.restaurant_id);
+
+            if (updateError) throw updateError;
+        }
+
         // Get the max order value within this subcategory to assign next order
         const { data: maxOrderData } = await supabase
             .from('menu_items')
@@ -71,6 +97,34 @@ export const menuItemService = {
         const existing = await this.getById(id);
         if (!existing || existing.restaurant_id !== restaurantId) {
             throw new Error('Unauthorized: Cannot update menu item from another restaurant');
+        }
+
+        // Check if this is a NEW 3D request (didn't have images before, now has them)
+        const hadImages = existing.additional_image_url && existing.additional_image_url !== 'null';
+        const hasNewImages = menuItem.additional_image_url && menuItem.additional_image_url !== 'null';
+        const isNew3DRequest = !hadImages && hasNewImages;
+
+        if (isNew3DRequest) {
+            // Check if restaurant has credits
+            const { data: restaurant, error: restaurantError } = await supabase
+                .from('restaurants')
+                .select('credits_left')
+                .eq('id', restaurantId)
+                .single();
+
+            if (restaurantError) throw restaurantError;
+
+            if (!restaurant || (restaurant.credits_left ?? 0) < 1) {
+                throw new Error('Insufficient credits. Please upgrade your subscription to add 3D menu requests.');
+            }
+
+            // Deduct 1 credit
+            const { error: updateError } = await supabase
+                .from('restaurants')
+                .update({ credits_left: (restaurant.credits_left ?? 0) - 1 })
+                .eq('id', restaurantId);
+
+            if (updateError) throw updateError;
         }
 
         // If updating image_path, delete the old image from storage
