@@ -40,6 +40,20 @@ export async function POST(req: Request) {
             targetPriceId = prices.data[0].id;
         }
 
+        // Determine the base URL
+        let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+        if (!baseUrl) {
+            if (process.env.VERCEL_URL) {
+                baseUrl = `https://${process.env.VERCEL_URL}`;
+            } else {
+                baseUrl = 'http://localhost:3000';
+            }
+        }
+
+        // Ensure no trailing slash
+        baseUrl = baseUrl.replace(/\/$/, '');
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [
@@ -49,8 +63,8 @@ export async function POST(req: Request) {
                 },
             ],
             mode: 'subscription',
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/${slug}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/${slug}/subscribe`,
+            success_url: `${baseUrl}/${slug}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${baseUrl}/${slug}/subscribe`,
             customer_email: email,
             metadata: {
                 restaurantId,
