@@ -60,7 +60,7 @@ export default function SuperAdminLayout({
                     </div>
                 </div>
             </nav>
-            <main className="max-w-[1460px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <main className="max-w-[1460px] mx-auto pb-8 pt-0 px-4 sm:px-6 lg:px-8">
                 {children}
             </main>
         </div>

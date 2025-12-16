@@ -20,12 +20,14 @@ export default function SuperAdminDashboard() {
     const [restaurants, setRestaurants] = useState<RestaurantWithModels[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'completed'>('all');
+    const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'completed' | 'subscriber'>('all');
     const router = useRouter();
 
     useEffect(() => {
         fetchRestaurants();
     }, []);
+
+    // ... (rest of fetchRestaurants) and helpers logic is fine, no changes needed there
 
     const fetchRestaurants = async () => {
         try {
@@ -60,6 +62,36 @@ export default function SuperAdminDashboard() {
         return hasPending ? 'pending' : 'completed';
     };
 
+    const getPlanTag = (restaurant: RestaurantWithModels) => {
+        const { subscription_plan, subscription_status } = restaurant;
+        const plan = (subscription_plan || '').toLowerCase();
+
+        // Logic from AdminHeader
+        if (subscription_status !== 'active' && subscription_status !== 'trialing') {
+            return { label: 'Free', color: 'bg-white text-gray-700 border-gray-200' };
+        }
+
+        switch (plan) {
+            case 'basic':
+                return {
+                    label: 'Standard',
+                    color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
+                };
+            case 'pro':
+                return {
+                    label: 'Essentielle',
+                    color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
+                };
+            case 'enterprise':
+                return {
+                    label: 'Avancée',
+                    color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
+                };
+            default:
+                return { label: 'Free', color: 'bg-white text-gray-700 border-gray-200' };
+        }
+    };
+
     const filteredRestaurants = restaurants.filter(restaurant => {
         const matchesSearch =
             restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -67,6 +99,10 @@ export default function SuperAdminDashboard() {
             restaurant.phone?.includes(searchQuery);
 
         if (!matchesSearch) return false;
+
+        if (filterStatus === 'subscriber') {
+            return restaurant.subscription_status === 'active';
+        }
 
         const status = get3DStatus(restaurant);
 
@@ -82,7 +118,7 @@ export default function SuperAdminDashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-16">
                 <div>
                     <h2 className="text-3xl font-bold font-loubag text-[#3D1F00] uppercase">{t('superAdmin.dashboard.title')}</h2>
                     <p className="text-[#3D1F00]/70 mt-1 font-plus-jakarta-sans">
@@ -113,8 +149,8 @@ export default function SuperAdminDashboard() {
                     <button
                         onClick={() => setFilterStatus('all')}
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors font-plus-jakarta-sans ${filterStatus === 'all'
-                                ? 'bg-[#F34A23] text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[#F34A23] text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         All
@@ -122,8 +158,8 @@ export default function SuperAdminDashboard() {
                     <button
                         onClick={() => setFilterStatus('pending')}
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors font-plus-jakarta-sans ${filterStatus === 'pending'
-                                ? 'bg-[#F34A23] text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[#F34A23] text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         Pending 3D
@@ -131,11 +167,20 @@ export default function SuperAdminDashboard() {
                     <button
                         onClick={() => setFilterStatus('completed')}
                         className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors font-plus-jakarta-sans ${filterStatus === 'completed'
-                                ? 'bg-[#F34A23] text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[#F34A23] text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         Completed 3D
+                    </button>
+                    <button
+                        onClick={() => setFilterStatus('subscriber')}
+                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors font-plus-jakarta-sans ${filterStatus === 'subscriber'
+                            ? 'bg-[#F34A23] text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                    >
+                        Subscriber
                     </button>
                 </div>
             </div>
@@ -146,6 +191,9 @@ export default function SuperAdminDashboard() {
                         <tr>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-[#F34A23] uppercase tracking-wider font-plus-jakarta-sans">
                                 {t('superAdmin.dashboard.columns.name')}
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-[#F34A23] uppercase tracking-wider font-plus-jakarta-sans">
+                                Plan
                             </th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-[#F34A23] uppercase tracking-wider font-plus-jakarta-sans">
                                 {t('superAdmin.dashboard.columns.status')}
@@ -161,13 +209,14 @@ export default function SuperAdminDashboard() {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {filteredRestaurants.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="px-6 py-12 text-center text-sm text-gray-500 font-plus-jakarta-sans">
+                                <td colSpan={5} className="px-6 py-12 text-center text-sm text-gray-500 font-plus-jakarta-sans">
                                     No restaurants found matching your criteria
                                 </td>
                             </tr>
                         ) : (
                             filteredRestaurants.map((restaurant) => {
                                 const status3D = get3DStatus(restaurant);
+                                const planTag = getPlanTag(restaurant);
                                 return (
                                     <tr
                                         key={restaurant.id}
@@ -202,6 +251,11 @@ export default function SuperAdminDashboard() {
                                                     </div>
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${planTag.color}`}>
+                                                {planTag.label}
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${restaurant.is_active

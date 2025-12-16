@@ -195,26 +195,23 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
     // Helper to determine button text
     const getButtonText = (planName: string) => {
-        if (!currentPlan) return 'Select Plan';
+        if (!currentPlan) return 'Choisir ce plan';
 
         const currentPlanName = (currentPlan.plan || '').toLowerCase();
-        const targetPlanName = planName.toLowerCase();
+        let normalizedPlanName = planName.toLowerCase();
 
         const currentTier = TIER_LEVELS[currentPlanName] || 0;
-        const targetTier = TIER_LEVELS[targetPlanName] || 0;
+        const targetTier = TIER_LEVELS[normalizedPlanName] || 0;
         const isActive = currentPlan.status === 'active' || currentPlan.status === 'trialing';
 
-        if (!isActive) return 'Select Plan';
+        if (!isActive) return 'Choisir ce plan';
 
-        if (targetTier > currentTier) return 'Upgrade';
-        if (targetTier < currentTier) return 'Downgrade';
+        if (targetTier > currentTier) return 'Améliorer';
+        if (targetTier < currentTier) return 'Rétrograder';
 
         // Same tier
-        // Note: currentPlan.interval might be undefined if we didn't fetch it yet or DB fallback
-        // The API returns 'interval' but our state type definition needs to support it.
-        // We handle that in a separate edit or cast here.
         if ((currentPlan as any).interval === 'month' && billingCycle === 'year') {
-            return 'Switch to Annual';
+            return 'Passer à l\'annuel';
         }
 
         return 'Current Plan';
@@ -383,16 +380,18 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                 </div>
 
                                 {/* Footer Note Outside Box */}
-                                <div className="text-center px-4">
-                                    <div className="flex flex-col items-center justify-center gap-2">
-                                        <svg className="w-6 h-6 text-[#F34A23]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                                        </svg>
-                                        <p className="text-[#F34A23] text-sm font-medium font-plus-jakarta-sans">
-                                            Conçue pour les restaurants qui exploitent pleinement leur menu au quotidien.
-                                        </p>
+                                {plan.footerNote && (
+                                    <div className="text-center px-4">
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <svg className="w-6 h-6 text-[#F34A23]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                            </svg>
+                                            <p className="text-[#F34A23] text-sm font-medium font-plus-jakarta-sans">
+                                                {plan.footerNote}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </AnimateIn>
                         )
                     })}

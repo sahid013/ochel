@@ -11,7 +11,7 @@ type Locale = 'fr' | 'en' | 'it' | 'es';
 interface LanguageContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string) => string;
+  t: (key: string) => any;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -51,29 +51,24 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Translation function with nested key support
-  const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: any = translations[locale];
+  // Helper to resolve nested keys
+  const resolvePath = (obj: any, path: string) => {
+    return path.split('.').reduce((prev, curr) => {
+      return (prev && prev[curr] !== undefined) ? prev[curr] : undefined;
+    }, obj);
+  };
 
-    for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
-      } else {
-        // Fallback to French if translation not found
-        value = translations['fr'];
-        for (const fallbackKey of keys) {
-          if (value && typeof value === 'object') {
-            value = value[fallbackKey];
-          } else {
-            return key; // Return key if not found
-          }
-        }
-        return value || key;
-      }
+  // Translation function with nested key support
+  const t = (key: string): any => {
+    // Try current locale
+    let value = resolvePath(translations[locale], key);
+
+    // Fallback to French if not found and we're not already using French
+    if (value === undefined && locale !== 'fr') {
+      value = resolvePath(translations['fr'], key);
     }
 
-    return value || key;
+    return value !== undefined ? value : key;
   };
 
   if (!isLoaded) {

@@ -38,10 +38,20 @@ export function AdminHeader() {
 
         switch (plan) {
           case 'basic':
+            setPlanTag({
+              label: 'Standard',
+              color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
+            });
+            break;
           case 'pro':
+            setPlanTag({
+              label: 'Essentielle',
+              color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
+            });
+            break;
           case 'enterprise':
             setPlanTag({
-              label: plan.charAt(0).toUpperCase() + plan.slice(1),
+              label: 'Avancée',
               color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
             });
             break;

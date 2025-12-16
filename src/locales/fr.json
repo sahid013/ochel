@@ -524,6 +524,72 @@
       "modelUrl": "URL du Modèle 3D",
       "save": "Enregistrer",
       "saving": "Enregistrement..."
+    },
+    "membership": {
+      "title": {
+        "active": "Une tarification simple pour gérer <span class=\"text-[#F34A23]\">votre</span> abonnement",
+        "inactive": "Une tarification simple pour activer <span class=\"text-[#F34A23]\">votre</span> menu digital <span class=\"text-[#F34A23]\">3D</span>,"
+      },
+      "subtitle": {
+        "active": "Modifiez, améliorez ou annulez votre abonnement à tout moment.",
+        "inactive": "Gérez votre menu en temps réel depuis un dashboard, sans dépendre de personne."
+      },
+      "billing": {
+        "monthly": "Mensuel",
+        "annual": "Annuel",
+        "discount": "-20%"
+      },
+      "plans": {
+        "popularTag": "LE PLUS POPULAIRE",
+        "subscription": "Abonnement :",
+        "period": {
+          "month": "/mois"
+        },
+        "standard": {
+          "name": "Standard",
+          "footer": "Pensée pour une gestion fluide et autonome du menu, sans complexité.",
+          "features": [
+            "Menu digital Ochel **prêt à l'emploi**",
+            "Accès à **tous les templates** de site menu, personnalisables à l'image de votre restaurant",
+            "**Accès à un dashboard de gestion du menu**",
+            "Jusqu'à **5 plats en 3D**",
+            "QR code unique pour votre établissement",
+            "Modification **instantanée** & illimitée du menu (ajouts, suppressions, prix, descriptions)",
+            "Menu multilingue (option +9 € / mois)",
+            "Hébergement & maintenance inclus",
+            "Menu accessible partout (QR, lien, Google, réseaux sociaux)"
+          ]
+        },
+        "essential": {
+          "name": "Essentielle",
+          "footer": "Conçue pour les restaurants qui exploitent pleinement leur menu au quotidien.",
+          "features": [
+            "**Tout ce qui est inclus dans l'offre Standard**",
+            "Jusqu'à **15 plats en 3D**",
+            "Menu multilingue (option +9 € / mois)",
+            "Gestion quotidienne du menu depuis le dashboard Ochel"
+          ]
+        },
+        "advanced": {
+          "name": "Avancée",
+          "footer": "Adaptée aux restaurants dont le menu est un véritable levier de performance.",
+          "features": [
+            "**Tout ce qui est inclus dans l'offre Essentielle**",
+            "Jusqu'à **25 plats en 3D**",
+            "Gestion avancée et fréquente du menu (cartes évolutives, rotations, volumes, performance)",
+            "Menu multilingue (option +9 € / mois)"
+          ]
+        }
+      },
+      "buttons": {
+        "currentPlan": "Plan Actuel",
+        "upgrade": "Mettre à niveau",
+        "downgrade": "Rétrograder",
+        "switchToAnnual": "Passer à l'annuel",
+        "selectPlan": "Choisir ce plan",
+        "loading": "Chargement...",
+        "processing": "Traitement..."
+      }
     }
   }
 }
