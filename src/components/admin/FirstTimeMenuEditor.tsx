@@ -216,25 +216,19 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
 
       // Check if this is a 3D request (has 4 images) and deduct credits
       if (additionalImagePaths.length > 0) {
-        const { data: restaurantData, error: restaurantError } = await supabase
-          .from('restaurants')
-          .select('credits_left')
-          .eq('id', restaurant.id)
-          .single();
+        // Deduct credit via API route (server-side with admin permissions)
+        const response = await fetch('/api/deduct-credit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ restaurantId: restaurant.id }),
+        });
 
-        if (restaurantError) throw restaurantError;
-
-        if (!restaurantData || (restaurantData.credits_left ?? 0) < 1) {
-          throw new Error('Insufficient credits. Please upgrade your subscription to add 3D menu requests.');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to deduct credit');
         }
-
-        // Deduct 1 credit
-        const { error: updateError } = await supabase
-          .from('restaurants')
-          .update({ credits_left: (restaurantData.credits_left ?? 0) - 1 })
-          .eq('id', restaurant.id);
-
-        if (updateError) throw updateError;
 
         // Notify all tabs that credits have changed
         const creditUpdateChannel = new BroadcastChannel('credit-updates');
@@ -388,25 +382,19 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
 
       // Check if this is a 3D request (has 4 images) and deduct credits
       if (additionalImagePaths.length > 0) {
-        const { data: restaurantData, error: restaurantError } = await supabase
-          .from('restaurants')
-          .select('credits_left')
-          .eq('id', restaurant.id)
-          .single();
+        // Deduct credit via API route (server-side with admin permissions)
+        const response = await fetch('/api/deduct-credit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ restaurantId: restaurant.id }),
+        });
 
-        if (restaurantError) throw restaurantError;
-
-        if (!restaurantData || (restaurantData.credits_left ?? 0) < 1) {
-          throw new Error('Insufficient credits. Please upgrade your subscription to add 3D menu requests.');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to deduct credit');
         }
-
-        // Deduct 1 credit
-        const { error: updateError } = await supabase
-          .from('restaurants')
-          .update({ credits_left: (restaurantData.credits_left ?? 0) - 1 })
-          .eq('id', restaurant.id);
-
-        if (updateError) throw updateError;
 
         // Notify all tabs that credits have changed
         const creditUpdateChannel = new BroadcastChannel('credit-updates');
