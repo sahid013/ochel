@@ -138,7 +138,10 @@ export default function RestaurantAdminPage() {
   }
 
   // Show first-time menu editor if user has no menu items or explicitly requested via query param
-  if (isFirstTime || isOnboardingView) {
+  // But allow skipping if skip_onboarding is true
+  const skipOnboarding = searchParams.get('skip_onboarding') === 'true';
+
+  if (((isFirstTime && !skipOnboarding) || isOnboardingView)) {
     return (
       <PageLayout showHeader={false} showFooter={false}>
         <div className="min-h-screen font-plus-jakarta-sans" style={{ backgroundColor: 'var(--color-bg-beige)' }}>
@@ -151,7 +154,13 @@ export default function RestaurantAdminPage() {
                 <h1 className="text-2xl font-bold text-primary font-loubag uppercase">
                   Welcome to Ochel!
                 </h1>
-
+                <PrimaryButton
+                  onClick={() => router.push(`/${slug}/admin?skip_onboarding=true`)}
+                  size="sm"
+                  className="mt-2"
+                >
+                  Gérer mon menu
+                </PrimaryButton>
               </div>
               <div className="flex items-end gap-3">
                 <PrimaryButton

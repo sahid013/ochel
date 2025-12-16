@@ -113,7 +113,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
         </div>
 
         {/* Content Container - Spacious */}
-        <div className="max-w-4xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           {/* Category Pills - Elegant Style */}
           <div className="mb-12">
             <div className="flex flex-wrap justify-center gap-3">
@@ -144,13 +144,13 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
           {/* Category Title - Elegant */}
           {
             currentCategory && (
-              <div className="mb-12 text-center">
+              <div className="mb-12 text-left">
                 <h2 className={cn("text-[22px] mb-4 tracking-wide", headerFontClass)} style={{ color: 'var(--pixel-text, #2C2416)' }}>
                   {getTranslatedField(currentCategory, 'title')}
                 </h2>
-                <div className="w-16 h-1 mx-auto mb-4" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>
+                <div className="w-16 h-1 mb-4" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>
                 {getTranslatedField(currentCategory, 'text') && (
-                  <p className="text-lg text-gray-600 italic max-w-2xl mx-auto">
+                  <p className="text-lg text-gray-600 italic max-w-2xl">
                     {getTranslatedField(currentCategory, 'text')}
                   </p>
                 )}
@@ -187,11 +187,11 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
                     <div key={sectionIndex} className="mb-16">
                       {/* Section Title - Elegant */}
                       {section.title && (
-                        <div className="mb-8 text-center">
+                        <div className="mb-8 text-left">
                           <h3 className={cn("text-[18px] capitalize mb-3", headerFontClass)} style={{ color: 'var(--pixel-text, #2C2416)' }}>
                             {section.title}
                           </h3>
-                          <div className="w-12 h-0.5 mx-auto" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>
+                          <div className="w-12 h-0.5" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>
                           {section.subtitle && (
                             <p className="text-md text-gray-600 italic mt-3">
                               {section.subtitle}
@@ -201,14 +201,14 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
                       )}
 
                       {/* Menu Items - Clean List */}
-                      <div className="space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {section.items.map((item) => (
                           <div
                             key={item.id}
-                            className="bg-white rounded-lg p-8 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
                           >
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex items-center gap-2">
+                            <div className="mb-3">
+                              <div className="flex items-center gap-2 mb-1">
                                 <h4 className={cn("text-2xl tracking-wide", headerFontClass)} style={{ color: 'var(--pixel-text, #2C2416)' }}>
                                   {item.title}
                                 </h4>
@@ -227,7 +227,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
                                   </button>
                                 )}
                               </div>
-                              <span className="text-xl font-semibold ml-6 whitespace-nowrap" style={{ color: 'var(--pixel-primary, #D4AF37)' }}>
+                              <span className="text-xl font-semibold block" style={{ color: 'var(--pixel-primary, #D4AF37)' }}>
                                 {item.price}
                               </span>
                             </div>
@@ -238,7 +238,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
                               <img
                                 src={item.image}
                                 alt={item.title}
-                                className="w-full h-64 object-cover rounded-lg mt-4"
+                                className="w-full aspect-[4/3] object-cover rounded-lg mt-4"
                               />
                             )}
                           </div>

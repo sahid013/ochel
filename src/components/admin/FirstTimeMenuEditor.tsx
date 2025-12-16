@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { MenuEditorForm, MenuEditorFormData } from '@/components/menu/MenuEditorForm';
@@ -31,6 +32,7 @@ interface FirstTimeMenuEditorProps {
  * Fetches menu items from database and allows adding more before publishing
  */
 export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeMenuEditorProps) {
+  const router = useRouter();
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -619,10 +621,10 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
 
             <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
               <button
-                onClick={() => setShowItemsModal(false)}
-                className="w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-xl transition-colors"
+                onClick={() => router.push(`/${restaurant.slug}/admin?skip_onboarding=true`)}
+                className="w-full py-3 bg-[#F34A23] hover:bg-[#d63e1b] text-white font-semibold rounded-xl transition-colors"
               >
-                Close
+                Gérer mon menu
               </button>
             </div>
           </div>

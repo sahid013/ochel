@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { PrimaryButton } from '@/components/ui';
 import { ImageUploader } from '@/components/demo/ImageUploader';
@@ -66,6 +66,29 @@ export function MenuEditorForm({
 
     const [copiedLink, setCopiedLink] = useState<'glb' | 'usdz' | null>(null);
 
+    // Dropdown visibility state
+    const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
+    const [showSubcategorySuggestions, setShowSubcategorySuggestions] = useState(false);
+    const categoryRef = useRef<HTMLDivElement>(null);
+    const subcategoryRef = useRef<HTMLDivElement>(null);
+
+    // Click outside handler
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) {
+                setShowCategorySuggestions(false);
+            }
+            if (subcategoryRef.current && !subcategoryRef.current.contains(event.target as Node)) {
+                setShowSubcategorySuggestions(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     // Update state when initialValues change (e.g. when editing a different item)
     useEffect(() => {
         if (initialValues) {
@@ -119,7 +142,7 @@ export function MenuEditorForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-                <div className="relative">
+                <div className="relative" ref={categoryRef}>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                         {t('home.demo.addItem.category')} <span className="text-red-500">*</span>
                         <div className="group relative">
@@ -136,20 +159,27 @@ export function MenuEditorForm({
                     <input
                         type="text"
                         value={category}
-                        onChange={(e) => setCategory(e.target.value)}
+                        onChange={(e) => {
+                            setCategory(e.target.value);
+                            setShowCategorySuggestions(true);
+                        }}
+                        onFocus={() => setShowCategorySuggestions(true)}
                         placeholder={t('home.demo.addItem.categoryPlaceholder')}
                         className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
                         style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                         required
                     />
                     {/* Category Dropdown */}
-                    {filteredCategories.length > 0 && (
+                    {showCategorySuggestions && filteredCategories.length > 0 && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
                             {filteredCategories.map((cat, idx) => (
                                 <button
                                     key={idx}
                                     type="button"
-                                    onClick={() => setCategory(cat)}
+                                    onClick={() => {
+                                        setCategory(cat);
+                                        setShowCategorySuggestions(false);
+                                    }}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
                                 >
                                     {cat}
@@ -159,7 +189,7 @@ export function MenuEditorForm({
                     )}
                 </div>
 
-                <div className="relative">
+                <div className="relative" ref={subcategoryRef}>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                         {t('home.demo.addItem.subcategory')}
                         <div className="group relative">
@@ -176,19 +206,26 @@ export function MenuEditorForm({
                     <input
                         type="text"
                         value={subcategory}
-                        onChange={(e) => setSubcategory(e.target.value)}
+                        onChange={(e) => {
+                            setSubcategory(e.target.value);
+                            setShowSubcategorySuggestions(true);
+                        }}
+                        onFocus={() => setShowSubcategorySuggestions(true)}
                         placeholder={t('home.demo.addItem.subcategoryPlaceholder')}
                         className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
                         style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
                     />
                     {/* Subcategory Dropdown */}
-                    {filteredSubcategories.length > 0 && (
+                    {showSubcategorySuggestions && filteredSubcategories.length > 0 && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
                             {filteredSubcategories.map((sub, idx) => (
                                 <button
                                     key={idx}
                                     type="button"
-                                    onClick={() => setSubcategory(sub)}
+                                    onClick={() => {
+                                        setSubcategory(sub);
+                                        setShowSubcategorySuggestions(false);
+                                    }}
                                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
                                 >
                                     {sub}

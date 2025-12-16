@@ -28,6 +28,9 @@ interface DemoMenuItem {
 
 const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
 const DEMO_TEMPLATE_KEY = 'ochel_demo_template';
+// Bump this version to force-clear cache for all users
+const CACHE_VERSION = 'v1.0';
+const CACHE_VERSION_KEY = 'ochel_cache_version';
 
 // Mock restaurant object for template previews
 const MOCK_RESTAURANT: Restaurant = {
@@ -62,19 +65,32 @@ export function DemoMenuEditor() {
 
   // Load cached demo item on mount
   useEffect(() => {
-    const cached = localStorage.getItem(DEMO_CACHE_KEY);
-    const cachedTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
+    // Check cache version
+    const storedVersion = localStorage.getItem(CACHE_VERSION_KEY);
 
-    if (cached) {
-      try {
-        setDemoItem(JSON.parse(cached));
-      } catch (e) {
-        console.error('Failed to parse cached demo item');
+    if (storedVersion !== CACHE_VERSION) {
+      // Version mismatch or no version stored - clear cache
+      console.log(`Cache version mismatch (stored: ${storedVersion}, current: ${CACHE_VERSION}). Clearing demo cache.`);
+      localStorage.removeItem(DEMO_CACHE_KEY);
+      localStorage.removeItem(DEMO_TEMPLATE_KEY);
+      localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+      // We don't return here because we want the clean state to just proceed normally (variables are null/default)
+    } else {
+      // Version matches - try to load cached data
+      const cached = localStorage.getItem(DEMO_CACHE_KEY);
+      const cachedTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
+
+      if (cached) {
+        try {
+          setDemoItem(JSON.parse(cached));
+        } catch (e) {
+          console.error('Failed to parse cached demo item');
+        }
       }
-    }
 
-    if (cachedTemplate) {
-      setSelectedTemplate(cachedTemplate);
+      if (cachedTemplate) {
+        setSelectedTemplate(cachedTemplate);
+      }
     }
   }, []);
 
@@ -235,7 +251,7 @@ export function DemoMenuEditor() {
                     <p className="text-sm text-gray-600 mb-3">
                       {t('home.demo.addItem.moreItems')}
                     </p>
-                    <PrimaryButton onClick={() => setShowModal(true)} fullWidth>
+                    <PrimaryButton onClick={() => router.push('/signup')} fullWidth>
                       {t('home.demo.addItem.continueSignup')}
                     </PrimaryButton>
                   </div>

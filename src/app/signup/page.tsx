@@ -227,9 +227,9 @@ export default function SignupPage() {
       // Success!
       setSuccess(true);
       setTimeout(() => {
-        const adminUrl = `/${slug}/admin`;
-        console.log('Redirecting to', adminUrl);
-        window.location.href = adminUrl;
+        const subscribeUrl = `/${slug}/subscribe`;
+        console.log('Redirecting to', subscribeUrl);
+        window.location.href = subscribeUrl;
       }, 2000);
 
     } catch (err: any) {
