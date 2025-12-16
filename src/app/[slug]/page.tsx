@@ -1,165 +1,110 @@
-'use client';
-
-import { useEffect, useState, lazy, Suspense, ComponentType } from 'react';
-import { useParams, useSearchParams, notFound } from 'next/navigation';
-import { MenuSkeleton, FullPageMenuSkeleton } from '@/components/ui/MenuSkeleton';
-import { EmptyState } from '@/components/ui';
-import { supabase } from '@/lib/supabase';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+import { notFound } from 'next/navigation';
+import { FullPageMenuSkeleton } from '@/components/ui/MenuSkeleton';
+import { createClient } from '@supabase/supabase-js';
 import { Restaurant } from '@/types';
 
-// Lazy load templates for code splitting - only load the template being used
-const Template1 = lazy(() => import('@/components/templates/Template1'));
-const Template2 = lazy(() => import('@/components/templates/Template2'));
-const Template3 = lazy(() => import('@/components/templates/Template3'));
-const Template4 = lazy(() => import('@/components/templates/Template4'));
+// Dynamic imports for templates
+const Template1 = dynamic(() => import('@/components/templates/Template1'), {
+  loading: () => <FullPageMenuSkeleton />,
+});
+const Template2 = dynamic(() => import('@/components/templates/Template2'), {
+  loading: () => <FullPageMenuSkeleton />,
+});
+const Template3 = dynamic(() => import('@/components/templates/Template3'), {
+  loading: () => <FullPageMenuSkeleton />,
+});
+const Template4 = dynamic(() => import('@/components/templates/Template4'), {
+  loading: () => <FullPageMenuSkeleton />,
+});
+
+// Initialize Supabase client for Server Component
+// persistSession: false is critical for server-side usage
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    auth: {
+      persistSession: false,
+    },
+  }
+);
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
 /**
- * Restaurant Public Menu Page
- * Routes to different template components based on restaurant.template setting
- * Supports preview mode via ?preview=template2 URL parameter
- * Optimized with:
- * - Code splitting: Only loads the template being used
- * - Browser caching: Caches restaurant data
- * - Lazy loading: Templates load on-demand
+ * Restaurant Public Menu Page (Server Component)
+ * Fetches data on the server for instant initial paint (SSR)
+ * eliminating client-side data fetching waterfalls.
  */
-export default function RestaurantMenuPage() {
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const slug = params.slug as string;
-  const previewTemplate = searchParams.get('preview');
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function RestaurantMenuPage({ params, searchParams }: PageProps) {
+  const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const previewTemplate = resolvedSearchParams.preview as string | undefined;
 
-  useEffect(() => {
-    // Ensure proper scrolling context for sticky positioning
-    document.body.style.setProperty('overflow-x', 'hidden', 'important');
-    document.body.style.setProperty('overflow-y', 'auto', 'important');
-    document.documentElement.style.setProperty('overflow-x', 'hidden', 'important');
-    document.documentElement.style.setProperty('overflow-y', 'auto', 'important');
-    document.body.style.setProperty('max-width', '100vw', 'important');
-    document.documentElement.style.setProperty('max-width', '100vw', 'important');
+  // Fetch restaurant data
+  const { data: restaurant, error } = await supabase
+    .from('restaurants')
+    .select('*')
+    .eq('slug', slug)
+    .single();
 
-    return () => {
-      document.body.style.removeProperty('overflow-x');
-      document.body.style.removeProperty('overflow-y');
-      document.documentElement.style.removeProperty('overflow-x');
-      document.documentElement.style.removeProperty('overflow-y');
-      document.body.style.removeProperty('max-width');
-      document.documentElement.style.removeProperty('max-width');
-    };
-  }, []);
-
-  useEffect(() => {
-    async function fetchRestaurant() {
-      try {
-        // Try to get from browser cache first (sessionStorage for current session)
-        const cacheKey = `restaurant_${slug}`;
-        const cachedData = sessionStorage.getItem(cacheKey);
-
-        if (cachedData) {
-          try {
-            const parsed = JSON.parse(cachedData);
-            // Check if cache is less than 5 minutes old
-            if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
-              setRestaurant(parsed.data as Restaurant);
-              setLoading(false);
-              return;
-            }
-          } catch {
-            // Invalid cache, continue to fetch
-            sessionStorage.removeItem(cacheKey);
-          }
-        }
-
-        // Fetch from database (don't set loading=true, show optimistically)
-        const { data, error: fetchError } = await supabase
-          .from('restaurants')
-          .select('*')
-          .eq('slug', slug)
-          .single();
-
-        if (fetchError) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Error fetching restaurant:', fetchError);
-          }
-          setError('Restaurant not found');
-          setLoading(false);
-          return;
-        }
-
-        // Cache the result
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          data,
-          timestamp: Date.now()
-        }));
-
-        setRestaurant(data as Restaurant);
-        setLoading(false);
-      } catch (err) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Unexpected error:', err);
-        }
-        setError('Failed to load restaurant');
-        setLoading(false);
-      }
-    }
-
-    if (slug) {
-      fetchRestaurant();
-    }
-  }, [slug]);
-
-  // Show skeleton loader
-  if (loading) {
-    return <FullPageMenuSkeleton />;
+  if (error || !restaurant) {
+    if (error) console.error('Error fetching restaurant:', error);
+    notFound();
   }
 
-  if (error || !restaurant || (!restaurant.has_completed_onboarding && !searchParams.get('preview'))) {
+  // Cast to Restaurant type
+  const typedRestaurant = restaurant as Restaurant;
+
+  // Check onboarding status
+  if (!typedRestaurant.has_completed_onboarding && !previewTemplate) {
     notFound();
   }
 
   // Determine which template to render
-  const selectedTemplate = previewTemplate || restaurant.template || 'template1';
+  const selectedTemplate = previewTemplate || typedRestaurant.template || 'template1';
 
-  // Preview mode if explicit param OR if subscription is not active
-  const isSubscriptionActive = restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing';
+  // Preview logic
+  const isSubscriptionActive = typedRestaurant.subscription_status === 'active' || typedRestaurant.subscription_status === 'trialing';
   const isPreviewMode = !!previewTemplate || !isSubscriptionActive;
 
-  // Template router
-  const renderTemplate = () => {
-    switch (selectedTemplate) {
-      case 'template1':
-        return <Template1 restaurant={restaurant} />;
-      case 'template2':
-        return <Template2 restaurant={restaurant} />;
-      case 'template3':
-        return <Template3 restaurant={restaurant} />;
-      case 'template4':
-        return <Template4 restaurant={restaurant} />;
-      default:
-        return <Template1 restaurant={restaurant} />;
-    }
+  // Customization styles
+  const customization = {
+    primaryColor: typedRestaurant.primary_color || '#F34A23',
+    accentColor: typedRestaurant.accent_color || '#FFD65A',
+    backgroundColor: typedRestaurant.background_color || '#000000',
+    textColor: typedRestaurant.text_color || '#FFFFFF',
+    font: typedRestaurant.font_family || 'forum'
   };
 
-  // Get customization from restaurant settings
-  const customization = {
-    primaryColor: restaurant.primary_color || '#F34A23',
-    accentColor: restaurant.accent_color || '#FFD65A',
-    backgroundColor: restaurant.background_color || '#000000',
-    textColor: restaurant.text_color || '#FFFFFF',
-    font: restaurant.font_family || 'forum'
+  // Helper to render correct template
+  const renderTemplate = () => {
+    switch (selectedTemplate) {
+      case 'template1': return <Template1 restaurant={typedRestaurant} />;
+      case 'template2': return <Template2 restaurant={typedRestaurant} />;
+      case 'template3': return <Template3 restaurant={typedRestaurant} />;
+      case 'template4': return <Template4 restaurant={typedRestaurant} />;
+      default: return <Template1 restaurant={typedRestaurant} />;
+    }
   };
 
   return (
     <>
+      {/* Scroll lock styles - previously in useEffect, now inline valid style tag or wrapper styles ?? */}
+      {/* Actually simply setting style on the wrapper div is safer than injecting global styles from server component */}
+
       {/* Preview Mode Banner */}
       {isPreviewMode && (
         <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50 font-medium text-sm flex justify-center items-center gap-2">
           <span>⚠️ {isSubscriptionActive ? 'PREVIEW MODE' : 'SITE NOT LIVE'} - {isSubscriptionActive ? 'Changes are not saved to your public menu.' : 'Subscribe to publish your menu.'}</span>
           {!isSubscriptionActive && (
             <a
-              href={`/${restaurant.slug}/subscribe`}
+              href={`/${typedRestaurant.slug}/subscribe`}
               className="bg-black text-white px-3 py-1 rounded-full text-xs font-bold hover:bg-gray-800 transition-colors"
               target="_blank"
             >
@@ -168,7 +113,7 @@ export default function RestaurantMenuPage() {
           )}
           {isSubscriptionActive && (
             <a
-              href={`/${restaurant.slug}`}
+              href={`/${typedRestaurant.slug}`}
               className="ml-4 underline hover:no-underline font-semibold"
             >
               Exit Preview
@@ -177,7 +122,7 @@ export default function RestaurantMenuPage() {
         </div>
       )}
 
-      {/* Render the selected template */}
+      {/* Main Content Wrapper */}
       <div
         className={`min-h-screen ${isPreviewMode ? 'mt-10' : ''}`}
         style={{
@@ -186,13 +131,21 @@ export default function RestaurantMenuPage() {
             customization.font === 'satoshi' ? 'var(--font-satoshi)' :
               customization.font === 'eb-garamond' ? 'var(--font-eb-garamond)' :
                 customization.font,
+          // CSS Variables
+          // @ts-ignore - Custom properties
           '--primary-color': customization.primaryColor,
+          // @ts-ignore
           '--accent-color': customization.accentColor,
+          // @ts-ignore
           '--bg-color': customization.backgroundColor,
+          // @ts-ignore
           '--text-color': customization.textColor,
+          overflowX: 'hidden',
+          width: '100%',
+          maxWidth: '100vw'
         } as React.CSSProperties}
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={<FullPageMenuSkeleton />}>
           {renderTemplate()}
         </Suspense>
       </div>
