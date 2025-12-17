@@ -231,7 +231,7 @@ export function DemoMenuEditor() {
   return (
     <div className="w-full max-w-[1460px] mx-auto">
       {/* Header */}
-      <div className="text-center mb-12 pt-[80px] px-5">
+      <div className="text-center mb-12 pt-[80px]">
         <h2 className="text-xl md:text-[32px] font-bold text-primary mb-4 font-loubag uppercase flex flex-col md:flex-row items-center justify-center gap-2">
           <span>{t('home.demo.create')}</span>
           <TextRotator
