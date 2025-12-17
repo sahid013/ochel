@@ -138,7 +138,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     try {
       console.log('[Migration] Starting migration...');
       setIsMigrating(true);
-      setLoading(true); // Keep loading state true during migration
       const demoItem = JSON.parse(cached);
       console.log('[Migration] Parsed demo item:', {
         title: demoItem.title,
@@ -215,68 +214,43 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         console.log('[Migration] Using existing subcategory:', subcategoryData.data.id);
       }
 
-      // Upload ALL images in parallel for maximum speed
-      console.log('[Migration] Uploading all images in parallel...');
-
-      const imageUploadPromises: Promise<{ type: 'main' | 'detail', url: string | null, index?: number }>[] = [];
-
-      // Add main image upload promise
-      if (demoItem.image && demoItem.image.startsWith('data:image')) {
-        imageUploadPromises.push(
-          (async () => {
-            try {
-              const file = base64ToFile(demoItem.image, `demo-image-${Date.now()}.png`);
-              const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
-              console.log('[Migration] Main image uploaded successfully');
-              return { type: 'main' as const, url: uploadResult.publicUrl };
-            } catch (imgErr) {
-              console.error('[Migration] Failed to upload main image:', imgErr);
-              return { type: 'main' as const, url: null };
-            }
-          })()
-        );
-      }
-
-      // Add detailed images upload promises
-      if (demoItem.selectedImages && demoItem.selectedImages.length > 0) {
-        demoItem.selectedImages.forEach((imgBase64, i) => {
-          if (imgBase64 && typeof imgBase64 === 'string' && imgBase64.startsWith('data:image')) {
-            imageUploadPromises.push(
-              (async () => {
-                try {
-                  const file = base64ToFile(imgBase64, `demo-detail-${i}-${Date.now()}.png`);
-                  const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
-                  console.log(`[Migration] Detail image ${i + 1} uploaded successfully`);
-                  return { type: 'detail' as const, url: uploadResult.publicUrl, index: i };
-                } catch (detailImgErr) {
-                  console.error(`[Migration] Failed to upload detail image ${i + 1}:`, detailImgErr);
-                  return { type: 'detail' as const, url: null, index: i };
-                }
-              })()
-            );
-          }
-        });
-      }
-
-      // Wait for all images to upload
-      const uploadResults = await Promise.all(imageUploadPromises);
-
-      // Extract results
+      // Handle Main Image Upload
+      console.log('[Migration] Uploading main image...');
       let imagePath = null;
-      const additionalImagePaths: string[] = [];
-
-      uploadResults.forEach(result => {
-        if (result.type === 'main' && result.url) {
-          imagePath = result.url;
-        } else if (result.type === 'detail' && result.url) {
-          additionalImagePaths.push(result.url);
+      if (demoItem.image && demoItem.image.startsWith('data:image')) {
+        try {
+          const file = base64ToFile(demoItem.image, `demo-image-${Date.now()}.png`);
+          const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
+          imagePath = uploadResult.publicUrl; // Use publicUrl for image_path as expected by templates
+          console.log('[Migration] Main image uploaded successfully:', imagePath);
+        } catch (imgErr) {
+          console.error('[Migration] Failed to upload demo image:', imgErr);
         }
-      });
+      } else {
+        console.log('[Migration] No main image to upload');
+      }
 
-      console.log('[Migration] Image uploads complete:', {
-        mainImage: !!imagePath,
-        detailedImages: additionalImagePaths.length
-      });
+      // Handle Detailed Images Upload (4 images)
+      console.log('[Migration] Uploading detailed images...');
+      const additionalImagePaths: string[] = [];
+      if (demoItem.selectedImages && demoItem.selectedImages.length > 0) {
+        for (let i = 0; i < demoItem.selectedImages.length; i++) {
+          const imgBase64 = demoItem.selectedImages[i];
+          if (imgBase64 && typeof imgBase64 === 'string' && imgBase64.startsWith('data:image')) {
+            try {
+              const file = base64ToFile(imgBase64, `demo-detail-${i}-${Date.now()}.png`);
+              const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
+              additionalImagePaths.push(uploadResult.publicUrl);
+              console.log(`[Migration] Detail image ${i + 1} uploaded successfully`);
+            } catch (detailImgErr) {
+              console.error(`[Migration] Failed to upload detail image ${i + 1}:`, detailImgErr);
+            }
+          }
+        }
+        console.log('[Migration] Total detailed images uploaded:', additionalImagePaths.length);
+      } else {
+        console.log('[Migration] No detailed images to upload');
+      }
 
       // For demo migration: Skip credit deduction
       // The item will be saved with 4 images for super-admin to process manually
@@ -331,7 +305,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     } catch (err) {
       console.error('[Migration] Error migrating demo item:', err);
       alert(`Migration failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      setLoading(false); // Ensure loading state is cleared on error
       return false;
     } finally {
       console.log('[Migration] Cleaning up, setting isMigrating to false');
