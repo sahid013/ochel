@@ -34,6 +34,10 @@ interface FirstTimeMenuEditorProps {
  * Fetches menu items from database and allows adding more before publishing
  */
 export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }: FirstTimeMenuEditorProps) {
+  console.log('[FirstTimeMenuEditor] ===== COMPONENT MOUNTED =====');
+  console.log('[FirstTimeMenuEditor] Restaurant ID:', restaurant.id);
+  console.log('[FirstTimeMenuEditor] Restaurant Name:', restaurant.name);
+
   const router = useRouter();
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -43,6 +47,13 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   const [formKey, setFormKey] = useState(0);
   const [showItemsModal, setShowItemsModal] = useState(false);
   const hasMigratedRef = useRef(false);
+
+  // Log localStorage on mount
+  useEffect(() => {
+    console.log('[FirstTimeMenuEditor] LocalStorage contents on mount:');
+    console.log('  - ochel_demo_menu_item:', !!localStorage.getItem('ochel_demo_menu_item'));
+    console.log('  - ochel_first_time_menu_item:', !!localStorage.getItem('ochel_first_time_menu_item'));
+  }, []);
 
   // Fetch existing categories and subcategories for autocomplete
   const [categories, setCategories] = useState<string[]>([]);
