@@ -76,7 +76,7 @@ export default function SubscriptionSuccessPage() {
                             <div className="flex justify-center">
                                 {isVerified ? (
                                     <PrimaryButton
-                                        onClick={() => router.push(`/${slug}/admin`)}
+                                        onClick={() => router.push(`/${slug}/admin?tab=template`)}
                                         className="bg-[#F34A23] hover:bg-[#d63e1b] text-white font-bold py-3 px-8 text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
                                     >
                                         Visit Dashboard
