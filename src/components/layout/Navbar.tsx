@@ -23,7 +23,7 @@ export function Navbar() {
           </a>
 
           {/* Language Switcher + Login/Signup Buttons or Profile */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
             <LandingLanguageSwitcher />
 
             <AuthButtons t={t} />
@@ -76,13 +76,13 @@ function AuthButtons({ t }: { t: any }) {
   }
 
   return (
-    <>
+    <div className="flex items-center gap-1">
       <PrimaryButton href="/login" variant="secondary" size="sm">
         {t('nav.login')}
       </PrimaryButton>
       <PrimaryButton href="/signup" size="sm">
         {t('nav.signup')}
       </PrimaryButton>
-    </>
+    </div>
   );
 }
