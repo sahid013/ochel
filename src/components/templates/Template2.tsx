@@ -180,7 +180,7 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
               <h1 className={cn("text-[30px] md:text-[56px] font-bold mb-4", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
                 {restaurant.name}
               </h1>
-              <p className="text-xl" style={{ color: 'var(--pixel-text, white)' }}>{t('menuPage.title')}</p>
+              <p className="text-[17px] md:text-xl" style={{ color: 'var(--pixel-text, white)' }}>{t('menuPage.title')}</p>
             </div>
           </div>
         </div>

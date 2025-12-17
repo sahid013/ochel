@@ -108,7 +108,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
 
                 {/* Subtitle */}
                 <AnimateIn animation="blur" duration={1000} delay={300}>
-                  <p className="text-xl max-w-[450px] mx-auto leading-relaxed font-bold" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                  <p className="text-[17px] md:text-xl max-w-[450px] mx-auto leading-relaxed font-bold" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                     {t('menuPage.title')}
                   </p>
                 </AnimateIn>

@@ -117,7 +117,7 @@ export default function Template4({ restaurant, demoItem, hideNavigation }: Temp
             <h1 className={cn("text-[30px] md:text-[56px] font-bold mb-4", headerFontClass)}>
               {restaurant.name}
             </h1>
-            <p className="text-xl font-medium">
+            <p className="text-[17px] md:text-xl font-medium">
               {t('menuPage.title')}
             </p>
           </div>

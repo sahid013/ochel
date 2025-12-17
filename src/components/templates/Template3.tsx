@@ -101,7 +101,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
               {restaurant.name}
             </h1>
             <div className="w-24 h-1 mx-auto mb-6" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>
-            <p className="text-xl font-light tracking-widest uppercase">
+            <p className="text-[17px] md:text-xl font-light tracking-widest uppercase">
               {t('menuPage.title')}
             </p>
           </div>
