@@ -110,7 +110,10 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
   const migrateDemoItem = async () => {
     // Prevent concurrent migrations
-    if (isMigrating) return;
+    if (isMigrating) {
+      console.log('[Migration] Already migrating, skipping...');
+      return false;
+    }
 
     const DEMO_KEY = 'ochel_demo_menu_item';
     const FIRST_TIME_KEY = 'ochel_first_time_menu_item';
@@ -124,20 +127,28 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       usedKey = FIRST_TIME_KEY;
     }
 
-    console.log('Migration check - Cached item:', cached ? `Found in ${usedKey}` : 'Not found');
+    console.log('[Migration] Check - Cached item:', cached ? `Found in ${usedKey}` : 'Not found');
 
     if (!cached) {
+      console.log('[Migration] No cached item found, aborting migration');
       // If manually triggered and no item, alert user
       return false;
     }
 
     try {
-      console.log('Starting migration...');
+      console.log('[Migration] Starting migration...');
       setIsMigrating(true);
       const demoItem = JSON.parse(cached);
-      console.log('Parsed demo item:', demoItem);
+      console.log('[Migration] Parsed demo item:', {
+        title: demoItem.title,
+        category: demoItem.category,
+        hasImage: !!demoItem.image,
+        hasDetailedImages: !!demoItem.selectedImages,
+        detailedImagesCount: demoItem.selectedImages?.length || 0
+      });
 
       // Create or get category
+      console.log('[Migration] Checking for existing category:', demoItem.category);
       let categoryData = await supabase
         .from('categories')
         .select('*')
@@ -146,6 +157,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         .maybeSingle();
 
       if (!categoryData.data) {
+        console.log('[Migration] Creating new category:', demoItem.category);
         const { data: newCategory, error: categoryError } = await supabase
           .from('categories')
           .insert({
@@ -158,11 +170,18 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           .select()
           .single();
 
-        if (categoryError) throw categoryError;
+        if (categoryError) {
+          console.error('[Migration] Error creating category:', categoryError);
+          throw categoryError;
+        }
         categoryData.data = newCategory;
+        console.log('[Migration] Category created successfully:', newCategory.id);
+      } else {
+        console.log('[Migration] Using existing category:', categoryData.data.id);
       }
 
       // Create or get subcategory
+      console.log('[Migration] Checking for existing subcategory:', demoItem.subcategory || 'General');
       let subcategoryData = await supabase
         .from('subcategories')
         .select('*')
@@ -171,6 +190,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         .maybeSingle();
 
       if (!subcategoryData.data) {
+        console.log('[Migration] Creating new subcategory:', demoItem.subcategory || 'General');
         const { data: newSubcategory, error: subcategoryError } = await supabase
           .from('subcategories')
           .insert({
@@ -184,23 +204,34 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           .select()
           .single();
 
-        if (subcategoryError) throw subcategoryError;
+        if (subcategoryError) {
+          console.error('[Migration] Error creating subcategory:', subcategoryError);
+          throw subcategoryError;
+        }
         subcategoryData.data = newSubcategory;
+        console.log('[Migration] Subcategory created successfully:', newSubcategory.id);
+      } else {
+        console.log('[Migration] Using existing subcategory:', subcategoryData.data.id);
       }
 
       // Handle Main Image Upload
+      console.log('[Migration] Uploading main image...');
       let imagePath = null;
       if (demoItem.image && demoItem.image.startsWith('data:image')) {
         try {
           const file = base64ToFile(demoItem.image, `demo-image-${Date.now()}.png`);
           const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
           imagePath = uploadResult.publicUrl; // Use publicUrl for image_path as expected by templates
+          console.log('[Migration] Main image uploaded successfully:', imagePath);
         } catch (imgErr) {
-          console.error('Failed to upload demo image:', imgErr);
+          console.error('[Migration] Failed to upload demo image:', imgErr);
         }
+      } else {
+        console.log('[Migration] No main image to upload');
       }
 
       // Handle Detailed Images Upload (4 images)
+      console.log('[Migration] Uploading detailed images...');
       const additionalImagePaths: string[] = [];
       if (demoItem.selectedImages && demoItem.selectedImages.length > 0) {
         for (let i = 0; i < demoItem.selectedImages.length; i++) {
@@ -210,11 +241,15 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               const file = base64ToFile(imgBase64, `demo-detail-${i}-${Date.now()}.png`);
               const uploadResult = await uploadImage(file, 'menu-item', restaurant.id);
               additionalImagePaths.push(uploadResult.publicUrl);
+              console.log(`[Migration] Detail image ${i + 1} uploaded successfully`);
             } catch (detailImgErr) {
-              console.error('Failed to upload detail image:', detailImgErr);
+              console.error(`[Migration] Failed to upload detail image ${i + 1}:`, detailImgErr);
             }
           }
         }
+        console.log('[Migration] Total detailed images uploaded:', additionalImagePaths.length);
+      } else {
+        console.log('[Migration] No detailed images to upload');
       }
 
       // For demo migration: Skip credit deduction
@@ -226,6 +261,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       }
 
       // Create menu item
+      console.log('[Migration] Creating menu item in database...');
       const { error: itemError } = await supabase
         .from('menu_items')
         .insert({
@@ -244,9 +280,15 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           status: 'active'
         });
 
-      if (itemError) throw itemError;
+      if (itemError) {
+        console.error('[Migration] Error creating menu item:', itemError);
+        throw itemError;
+      }
+
+      console.log('[Migration] Menu item created successfully!');
 
       // Clear demo item from local storage
+      console.log('[Migration] Clearing localStorage key:', usedKey);
       localStorage.removeItem(usedKey);
 
       // Clear menu data cache to ensure template updates
@@ -255,14 +297,17 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       }
 
       // Refresh items
+      console.log('[Migration] Refreshing menu items...');
       await fetchMenuItems();
+      console.log('[Migration] Migration completed successfully!');
       return true;
 
     } catch (err) {
-      console.error('Error migrating demo item:', err);
+      console.error('[Migration] Error migrating demo item:', err);
       alert(`Migration failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
       return false;
     } finally {
+      console.log('[Migration] Cleaning up, setting isMigrating to false');
       setIsMigrating(false);
     }
   };
@@ -270,27 +315,41 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   // Check for pending migration on mount and attempt it BEFORE the first fetch
   useEffect(() => {
     const checkAndMigrate = async () => {
-      // Prevent running twice (React strict mode or fast navigation)
-      if (hasMigratedRef.current) {
-        await fetchMenuItems();
-        return;
-      }
+      console.log('[FirstTimeMenuEditor] Component mounted, checking for migration...');
 
       // Check if there's a pending migration item in localStorage
       const DEMO_KEY = 'ochel_demo_menu_item';
       const FIRST_TIME_KEY = 'ochel_first_time_menu_item';
-      const hasDemoItem = localStorage.getItem(DEMO_KEY) || localStorage.getItem(FIRST_TIME_KEY);
+      const demoItem = localStorage.getItem(DEMO_KEY);
+      const firstTimeItem = localStorage.getItem(FIRST_TIME_KEY);
+
+      console.log('[FirstTimeMenuEditor] LocalStorage check:', {
+        hasDemoItem: !!demoItem,
+        hasFirstTimeItem: !!firstTimeItem,
+        hasMigratedBefore: hasMigratedRef.current
+      });
+
+      // Only skip if we've already successfully migrated in THIS session
+      if (hasMigratedRef.current && !demoItem && !firstTimeItem) {
+        console.log('[FirstTimeMenuEditor] Already migrated and no new items, fetching...');
+        await fetchMenuItems();
+        return;
+      }
+
+      const hasDemoItem = demoItem || firstTimeItem;
 
       if (hasDemoItem) {
-        console.log('Found pending migration item, attempting migration...');
+        console.log('[FirstTimeMenuEditor] Found pending migration item, attempting migration...');
         hasMigratedRef.current = true;
         const success = await migrateDemoItem();
+        console.log('[FirstTimeMenuEditor] Migration result:', success);
         if (!success) {
-          console.log('Migration did not complete, will fetch items normally');
+          console.log('[FirstTimeMenuEditor] Migration failed, fetching items normally...');
           await fetchMenuItems();
         }
         // If migration succeeded, fetchMenuItems() is called inside migrateDemoItem
       } else {
+        console.log('[FirstTimeMenuEditor] No pending migration, fetching items normally...');
         // No pending migration, just fetch items normally
         await fetchMenuItems();
       }
@@ -527,30 +586,35 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               <h3 className="text-2xl md:text-3xl font-bold text-primary font-loubag uppercase">
                 {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
               </h3>
-              {menuItems.length > 0 ? (
-                <button
-                  onClick={() => setShowItemsModal(true)}
-                  className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline"
-                >
-                  See All ({menuItems.length})
-                </button>
-              ) : (
+              <div className="flex gap-3 items-center">
+                {menuItems.length > 0 && (
+                  <button
+                    onClick={() => setShowItemsModal(true)}
+                    className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline"
+                  >
+                    See All ({menuItems.length})
+                  </button>
+                )}
                 <button
                   onClick={async () => {
                     setLoading(true);
+                    console.log('[Manual Recovery] User clicked recovery button');
                     const success = await migrateDemoItem();
                     if (!success) {
                       alert('No pending item found in your browser cache.');
                     } else {
                       alert('Item recovered successfully!');
+                      if (menuItems.length > 0) {
+                        setShowItemsModal(true);
+                      }
                     }
                     setLoading(false);
                   }}
-                  className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline"
+                  className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline whitespace-nowrap"
                 >
                   Recupérer mon plat
                 </button>
-              )}
+              </div>
             </div>
 
             {/* Item Form */}
