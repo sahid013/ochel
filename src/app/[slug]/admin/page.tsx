@@ -32,6 +32,17 @@ export default function RestaurantAdminPage() {
   // Check if user has completed onboarding
   const { isFirstTime, loading: checkingFirstTime, checkAgain } = useFirstTimeUser(restaurant);
 
+  console.log('Admin Page Debug:', {
+    slug,
+    tabParam,
+    isOnboardingView,
+    isFirstTime,
+    checkingFirstTime,
+    hasCompletedOnboarding: restaurant?.has_completed_onboarding,
+    skipOnboarding: searchParams.get('skip_onboarding'),
+    restaurantId: restaurant?.id
+  });
+
   // Sync active tab with URL param
   useEffect(() => {
     if (tabParam && ['menu', 'template', 'customize', 'settings', 'membership', '3d-requests'].includes(tabParam)) {
@@ -63,7 +74,7 @@ export default function RestaurantAdminPage() {
         // Fetch restaurant by slug
         const { data: restaurantData, error: restaurantError } = await supabase
           .from('restaurants')
-          .select('*')
+          .select('*, has_completed_onboarding')
           .eq('slug', slug)
           .single();
 
@@ -242,7 +253,7 @@ export default function RestaurantAdminPage() {
         {/* Tab Content */}
         <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {activeTab === 'menu' && (
-            <MenuManagementTab restaurantId={restaurant.id} />
+            <MenuManagementTab restaurant={restaurant} />
           )}
 
           {activeTab === 'template' && (

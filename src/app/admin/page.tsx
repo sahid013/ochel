@@ -10,7 +10,7 @@ export default function AdminRedirectPage() {
   useEffect(() => {
     // Redirect to the new restaurant-specific admin URL
     if (restaurant?.slug) {
-      window.location.href = `/${restaurant.slug}/admin`;
+      window.location.href = `/${restaurant.slug}/admin${window.location.search}`;
     } else if (!loading && !restaurant) {
       // If no restaurant found, redirect to login
       window.location.href = '/login';

@@ -18,6 +18,7 @@ export function useFirstTimeUser(restaurant: Restaurant | null): UseFirstTimeUse
 
   const checkFirstTime = async () => {
     if (!restaurant) {
+      console.log('useFirstTimeUser: No restaurant provided');
       setIsFirstTime(false);
       setLoading(false);
       return;
@@ -26,9 +27,16 @@ export function useFirstTimeUser(restaurant: Restaurant | null): UseFirstTimeUse
     try {
       setLoading(true);
 
+      const hasCompleted = restaurant.has_completed_onboarding;
+      console.log('useFirstTimeUser check:', {
+        id: restaurant.id,
+        hasCompleted,
+        computedIsFirstTime: !hasCompleted
+      });
+
       // Check the has_completed_onboarding flag
       // If it's false or null, user hasn't completed onboarding yet
-      setIsFirstTime(!restaurant.has_completed_onboarding);
+      setIsFirstTime(!hasCompleted);
     } catch (err) {
       console.error('Error in useFirstTimeUser:', err);
       setIsFirstTime(false);

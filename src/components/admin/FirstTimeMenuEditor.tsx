@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { MenuEditorForm, MenuEditorFormData } from '@/components/menu/MenuEditorForm';
@@ -25,13 +26,14 @@ interface FirstTimeMenuEditorProps {
   restaurant: Restaurant;
   onPublish?: () => void;
   onTemplateChange?: (template: string) => void;
+  className?: string;
 }
 
 /**
  * First-time menu editor for authenticated users
  * Fetches menu items from database and allows adding more before publishing
  */
-export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeMenuEditorProps) {
+export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }: FirstTimeMenuEditorProps) {
   const router = useRouter();
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -510,7 +512,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange }: FirstTimeM
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="px-5 pb-12">
+      <div className={cn("px-5 pb-12", className)}>
         <div className="grid gap-8 items-start" style={{ gridTemplateColumns: '0.6fr 1fr' }}>
           {/* Left Column - Add Items */}
           <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
