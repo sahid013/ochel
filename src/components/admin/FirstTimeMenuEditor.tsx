@@ -606,25 +606,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
                 </div>
               )}
 
-              {menuItems.length === 0 && (
-                <div className="absolute top-3 right-3">
-                  <button
-                    onClick={() => {
-                      const hasDemo = localStorage.getItem('ochel_demo_menu_item');
-                      const hasFirstTime = localStorage.getItem('ochel_first_time_menu_item');
 
-                      if (hasDemo || hasFirstTime) {
-                        migrateDemoItem();
-                      } else {
-                        alert('No demo item found in storage.');
-                      }
-                    }}
-                    className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg hover:bg-blue-600 transition-colors"
-                  >
-                    Import Demo Item
-                  </button>
-                </div>
-              )}
 
               {menuItems.length > 0 && (
                 <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium shadow-lg flex items-center gap-1 bg-green-500 text-white">
