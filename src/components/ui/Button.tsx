@@ -21,9 +21,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizes = {
-      sm: 'px-3 py-1.5 text-sm rounded-2xl',
-      md: 'px-4 py-2 text-sm rounded-2xl',
-      lg: 'px-6 py-3 text-lg rounded-2xl'
+      sm: 'px-2 py-1 text-sm rounded-2xl md:px-3 md:py-1.5',
+      md: 'px-3 py-1.5 text-sm rounded-2xl md:px-4 md:py-2',
+      lg: 'px-4 py-2 text-sm rounded-2xl md:px-6 md:py-3 md:text-lg'
     };
 
     // Apply glowing shadow to primary variant when not disabled

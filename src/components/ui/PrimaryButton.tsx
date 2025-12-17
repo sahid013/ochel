@@ -35,13 +35,18 @@ export function PrimaryButton({
   rel,
 }: PrimaryButtonProps) {
   // Size-specific classes - secondary variant has reduced padding to compensate for 2px border
+  // Mobile-first: smaller font (14px) and padding, then desktop sizes
   const getSizeClasses = () => {
     if (size === 'sm') {
-      // sm size: reduce padding for secondary to compensate for border
-      return variant === 'secondary' ? 'px-4 py-1.5 text-base' : 'px-4 py-2 text-base';
+      // sm size: mobile first, then desktop
+      return variant === 'secondary'
+        ? 'px-3 py-1 text-sm md:px-4 md:py-1.5 md:text-base'
+        : 'px-3 py-1.5 text-sm md:px-4 md:py-2 md:text-base';
     } else {
-      // default size: reduce padding for secondary to compensate for border
-      return variant === 'secondary' ? 'px-6 py-2.5' : 'px-6 py-3';
+      // default size: mobile first, then desktop
+      return variant === 'secondary'
+        ? 'px-4 py-2 text-sm md:px-6 md:py-2.5 md:text-base'
+        : 'px-4 py-2 text-sm md:px-6 md:py-3 md:text-base';
     }
   };
 
