@@ -101,6 +101,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('[AuthContext] Setting user from session:', supabaseUser.id);
 
+      // Check cache first for instant load
+      const cacheKey = `user_restaurant_${supabaseUser.id}`;
+      const cached = sessionStorage.getItem(cacheKey);
+
+      if (cached) {
+        try {
+          const cachedData = JSON.parse(cached);
+          console.log('[AuthContext] Using cached restaurant data:', cachedData.name);
+          setUser({
+            id: supabaseUser.id,
+            email: supabaseUser.email || '',
+            username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
+            role: cachedData.hasRestaurant ? 'restaurant_owner' : 'user'
+          });
+
+          // Still fetch in background to update cache
+          fetchRestaurantInBackground(supabaseUser, cacheKey);
+          return;
+        } catch (e) {
+          console.log('[AuthContext] Cache parse error, fetching fresh data');
+        }
+      }
+
       // Set user immediately to prevent blocking
       // We'll update the role if we find a restaurant
       setUser({
@@ -110,8 +133,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
         role: 'user'
       });
 
-      // Check if user owns a restaurant with timeout (non-blocking)
-      console.log('[AuthContext] Querying restaurants table for owner_id:', supabaseUser.id);
+      // Fetch restaurant with aggressive timeout
+      await fetchRestaurantInBackground(supabaseUser, cacheKey);
+
+    } catch (error) {
+      // Keep user set even if there's an error
+      // User is already set above, so pages can still load
+      if (error instanceof Error && error.message === 'Restaurant query timed out') {
+        console.log('[AuthContext] Timeout in catch block - user is already set, continuing');
+        return;
+      }
+      console.error('[AuthContext] Unexpected error in setUserFromSession:', error);
+      // Keep the user that was already set instead of nullifying
+      console.log('[AuthContext] Keeping user despite error to allow page access');
+    }
+  };
+
+  const fetchRestaurantInBackground = async (supabaseUser: SupabaseUser, cacheKey: string) => {
+    try {
+      console.log('[AuthContext] Fetching restaurant in background for owner_id:', supabaseUser.id);
 
       const restaurantPromise = supabase
         .from('restaurants')
@@ -122,9 +162,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const timeoutPromise = new Promise<any>((_, reject) =>
         setTimeout(() => {
-          console.warn('[AuthContext] Restaurant query timed out after 3 seconds - user can still access pages');
+          console.warn('[AuthContext] Restaurant query timed out after 2 seconds');
           reject(new Error('Restaurant query timed out'));
-        }, 3000) // Reduced to 3 seconds
+        }, 2000) // Reduced to 2 seconds
       );
 
       const { data: restaurant, error } = await Promise.race([
@@ -134,10 +174,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       console.log('[AuthContext] Restaurant check result:', { restaurant, error: error || null });
 
+      // Cache the result for future instant loads
+      const cacheData = {
+        hasRestaurant: !!restaurant,
+        name: restaurant?.name || null,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem(cacheKey, JSON.stringify(cacheData));
+
       if (error) {
         // If it's a timeout, user is already set with basic role
         if (error.message === 'Restaurant query timed out') {
           console.log('[AuthContext] Timeout - keeping user with basic role, pages can still load');
+          // Cache as no restaurant found
+          sessionStorage.setItem(cacheKey, JSON.stringify({ hasRestaurant: false, name: null, timestamp: Date.now() }));
           return;
         }
 
@@ -163,14 +213,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       // Keep user set even if there's an error
-      // User is already set above, so pages can still load
       if (error instanceof Error && error.message === 'Restaurant query timed out') {
-        console.log('[AuthContext] Timeout in catch block - user is already set, continuing');
+        console.log('[AuthContext] Background fetch timeout - user already set');
         return;
       }
-      console.error('[AuthContext] Unexpected error in setUserFromSession:', error);
-      // Keep the user that was already set instead of nullifying
-      console.log('[AuthContext] Keeping user despite error to allow page access');
+      console.error('[AuthContext] Error in fetchRestaurantInBackground:', error);
     }
   };
 
