@@ -53,43 +53,78 @@ export default function RestaurantAdminPage() {
   useEffect(() => {
     // Set a timeout to prevent infinite loading
     timeoutRef.current = setTimeout(() => {
-      console.log('[AdminPage] Loading timeout - redirecting to home');
+      console.log('[AdminPage] Loading timeout after 15 seconds - redirecting to home');
       window.location.href = '/';
-    }, 5000); // 5 second timeout
+    }, 15000); // Increased to 15 second timeout
 
     async function checkAccess() {
       try {
+        console.log('[AdminPage] Starting access check for slug:', slug);
         setLoading(true);
         setError(null);
 
         // Get current user
+        console.log('[AdminPage] Getting current user...');
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
+          console.log('[AdminPage] No user found, redirecting to home');
           // Redirect to landing page if not logged in
           window.location.href = '/';
           return;
         }
 
-        // Fetch restaurant by slug
-        const { data: restaurantData, error: restaurantError } = await supabase
+        console.log('[AdminPage] User found:', user.id);
+
+        // Fetch restaurant by slug with timeout protection
+        console.log('[AdminPage] Fetching restaurant by slug:', slug);
+
+        const restaurantPromise = supabase
           .from('restaurants')
           .select('*, has_completed_onboarding')
           .eq('slug', slug)
           .single();
 
-        if (restaurantError || !restaurantData) {
-          setError('Restaurant not found');
+        const timeoutPromise = new Promise<any>((_, reject) =>
+          setTimeout(() => reject(new Error('Restaurant fetch timeout')), 5000)
+        );
+
+        const { data: restaurantData, error: restaurantError } = await Promise.race([
+          restaurantPromise,
+          timeoutPromise
+        ]) as any;
+
+        if (restaurantError) {
+          if (restaurantError.message === 'Restaurant fetch timeout') {
+            console.error('[AdminPage] Restaurant fetch timed out - database query too slow');
+            setError('Database is slow. Please refresh the page or contact support.');
+          } else {
+            console.error('[AdminPage] Restaurant error:', restaurantError);
+            setError('Restaurant not found');
+          }
           setLoading(false);
-          // Clear timeout before redirecting
+          // Clear timeout before showing error
           if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
           }
           return;
         }
 
+        if (!restaurantData) {
+          console.error('[AdminPage] No restaurant data returned');
+          setError('Restaurant not found');
+          setLoading(false);
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+          return;
+        }
+
+        console.log('[AdminPage] Restaurant found:', restaurantData.name);
+
         // Check if user owns this restaurant
         if (restaurantData.owner_id !== user.id) {
+          console.error('[AdminPage] User does not own this restaurant');
           setError('You do not have permission to access this restaurant\'s admin panel');
           setLoading(false);
           // Clear timeout before showing error
@@ -100,6 +135,7 @@ export default function RestaurantAdminPage() {
         }
 
         // User is authorized
+        console.log('[AdminPage] User authorized, setting restaurant and loading FirstTimeMenuEditor');
         setRestaurant(restaurantData as Restaurant);
         setIsAuthorized(true);
         setLoading(false);
@@ -108,6 +144,8 @@ export default function RestaurantAdminPage() {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
+
+        console.log('[AdminPage] Page setup complete, FirstTimeMenuEditor should mount now');
       } catch (err) {
         console.error('Error checking access:', err);
         setError('Failed to verify access');
