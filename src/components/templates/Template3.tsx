@@ -42,14 +42,6 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
   const [selected3DItem, setSelected3DItem] = useState<{ glb: string | undefined, usdz: string | undefined, title: string } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
 
-  // Apply light scrollbar for this template
-  useEffect(() => {
-    document.body.classList.add('scrollbar-light');
-    return () => {
-      document.body.classList.remove('scrollbar-light');
-    };
-  }, []);
-
   const handle3DClick = (e: React.MouseEvent, item: any) => {
     e.stopPropagation();
     e.preventDefault();

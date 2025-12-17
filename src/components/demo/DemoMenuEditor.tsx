@@ -374,7 +374,7 @@ export function DemoMenuEditor() {
             <div className="relative rounded-lg overflow-hidden border-2" style={{ height: '600px', borderColor: 'rgba(71, 67, 67, 0.05)' }}>
               {/* Template 1 */}
               {selectedTemplate === 'template1' && (
-                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
+                <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template1 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
@@ -392,7 +392,7 @@ export function DemoMenuEditor() {
 
               {/* Template 3 */}
               {selectedTemplate === 'template3' && (
-                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
+                <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template3 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
@@ -401,7 +401,7 @@ export function DemoMenuEditor() {
 
               {/* Template 4 */}
               {selectedTemplate === 'template4' && (
-                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
+                <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
                     <Template4 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
