@@ -466,7 +466,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template1' && (
                 <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template1 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
+                    <Template1 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={false} />
                   </div>
                 </div>
               )}
@@ -475,7 +475,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template2' && (
                 <div key="template2" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template2 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
+                    <Template2 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={false} />
                   </div>
                 </div>
               )}
@@ -484,7 +484,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template3' && (
                 <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template3 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
+                    <Template3 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={false} />
                   </div>
                 </div>
               )}
@@ -493,7 +493,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template4' && (
                 <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template4 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
+                    <Template4 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={false} />
                   </div>
                 </div>
               )}
