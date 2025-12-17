@@ -506,12 +506,28 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               <h3 className="text-2xl md:text-3xl font-bold text-primary font-loubag uppercase">
                 {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
               </h3>
-              {menuItems.length > 0 && (
+              {menuItems.length > 0 ? (
                 <button
                   onClick={() => setShowItemsModal(true)}
                   className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline"
                 >
                   See All ({menuItems.length})
+                </button>
+              ) : (
+                <button
+                  onClick={async () => {
+                    setLoading(true);
+                    const success = await migrateDemoItem();
+                    if (!success) {
+                      alert('No pending item found in your browser cache.');
+                    } else {
+                      alert('Item recovered successfully!');
+                    }
+                    setLoading(false);
+                  }}
+                  className="text-sm font-semibold text-[#F34A23] hover:text-[#d63e1b] underline"
+                >
+                  Recupérer mon plat
                 </button>
               )}
             </div>
