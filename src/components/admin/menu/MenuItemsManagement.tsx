@@ -695,7 +695,7 @@ export function MenuItemsManagement({ restaurantId }: MenuItemsManagementProps) 
     if (editingMenuItem) {
       await menuItemService.update(editingMenuItem.id, menuItemData, restaurantId);
     } else {
-      await menuItemService.create(menuItemData);
+      await menuItemService.create({ ...menuItemData, restaurant_id: restaurantId });
     }
     // Notify all tabs that menu data has changed
     const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
