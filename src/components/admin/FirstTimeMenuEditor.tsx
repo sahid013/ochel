@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -42,6 +42,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   // Key to force reset form after successful submission
   const [formKey, setFormKey] = useState(0);
   const [showItemsModal, setShowItemsModal] = useState(false);
+  const hasMigratedRef = useRef(false);
 
   // Fetch existing categories and subcategories for autocomplete
   const [categories, setCategories] = useState<string[]>([]);
@@ -266,17 +267,37 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     }
   };
 
-  // Auto-migrate on mount if items are empty and loading is done
+  // Check for pending migration on mount and attempt it BEFORE the first fetch
   useEffect(() => {
-    if (!loading && menuItems.length === 0) {
-      migrateDemoItem();
-    }
-  }, [loading, menuItems.length, restaurant.id]);
+    const checkAndMigrate = async () => {
+      // Prevent running twice (React strict mode or fast navigation)
+      if (hasMigratedRef.current) {
+        await fetchMenuItems();
+        return;
+      }
 
-  useEffect(() => {
-    // Initial fetch
-    fetchMenuItems();
-  }, [restaurant.id]);
+      // Check if there's a pending migration item in localStorage
+      const DEMO_KEY = 'ochel_demo_menu_item';
+      const FIRST_TIME_KEY = 'ochel_first_time_menu_item';
+      const hasDemoItem = localStorage.getItem(DEMO_KEY) || localStorage.getItem(FIRST_TIME_KEY);
+
+      if (hasDemoItem) {
+        console.log('Found pending migration item, attempting migration...');
+        hasMigratedRef.current = true;
+        const success = await migrateDemoItem();
+        if (!success) {
+          console.log('Migration did not complete, will fetch items normally');
+          await fetchMenuItems();
+        }
+        // If migration succeeded, fetchMenuItems() is called inside migrateDemoItem
+      } else {
+        // No pending migration, just fetch items normally
+        await fetchMenuItems();
+      }
+    };
+
+    checkAndMigrate();
+  }, [restaurant.id]); // Only run on mount or when restaurant changes
 
   // Form submission handler
   const handleFormSubmit = async (data: MenuEditorFormData) => {

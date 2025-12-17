@@ -87,7 +87,7 @@ export default function LoginPage() {
       const cachedTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
 
       if (cachedDemoItem && restaurant) {
-        // Save to first-time cache as backup and for onboarding
+        // Save to first-time cache for migration in FirstTimeMenuEditor
         localStorage.setItem(FIRST_TIME_CACHE_KEY, cachedDemoItem);
         if (cachedTemplate) {
           localStorage.setItem(FIRST_TIME_TEMPLATE_KEY, cachedTemplate);
@@ -97,77 +97,14 @@ export default function LoginPage() {
         localStorage.removeItem(DEMO_CACHE_KEY);
         localStorage.removeItem(DEMO_TEMPLATE_KEY);
 
-        try {
-          console.log('Demo item found, transferring to restaurant...');
-          setLoginStatus(t('loginPage.status.transferring'));
-          const demoItem = JSON.parse(cachedDemoItem);
+        console.log('Demo item cached for migration in admin panel.');
 
-          // Create category for the demo item
-          const { data: category, error: categoryError } = await supabase
-            .from('categories')
-            .insert({
-              restaurant_id: restaurant.id,
-              title: demoItem.category,
-              title_en: demoItem.category,
-              title_ar: demoItem.category,
-              title_fr: demoItem.category,
-              order: 0
-            })
-            .select()
-            .single();
-
-          if (categoryError) {
-            console.error('Error creating category:', categoryError);
-          } else if (category) {
-            // Create subcategory
-            const { data: subcategory, error: subcategoryError } = await supabase
-              .from('subcategories')
-              .insert({
-                category_id: category.id,
-                title: demoItem.subcategory || 'General',
-                title_en: demoItem.subcategory || 'General',
-                title_ar: demoItem.subcategory || 'General',
-                title_fr: demoItem.subcategory || 'General',
-                order: 0
-              })
-              .select()
-              .single();
-
-            if (subcategoryError) {
-              console.error('Error creating subcategory:', subcategoryError);
-            } else if (subcategory) {
-              // Create menu item (excluding image to prevent cross-account image leakage)
-              const { error: itemError } = await supabase
-                .from('menu_items')
-                .insert({
-                  category_id: category.id,
-                  subcategory_id: subcategory.id,
-                  title: demoItem.title,
-                  title_en: demoItem.title,
-                  title_ar: demoItem.title,
-                  title_fr: demoItem.title,
-                  description: demoItem.description,
-                  description_en: demoItem.description,
-                  description_ar: demoItem.description,
-                  description_fr: demoItem.description,
-                  price: parseFloat(demoItem.price) || 0,
-                  image_path: null, // Don't transfer images to prevent cross-account leakage
-                  model_3d_url: demoItem.model3dGlbUrl || null,
-                  redirect_3d_url: demoItem.model3dUsdzUrl || null,
-                  order: 0
-                });
-
-              if (itemError) {
-                console.error('Error creating menu item:', itemError);
-              } else {
-                console.log('Demo item successfully transferred!');
-              }
-            }
-          }
-        } catch (error) {
-          console.error('Error transferring demo item:', error);
-          // Don't fail login if demo item transfer fails
-        }
+        /*
+          We defer the actual DB insertion to the FirstTimeMenuEditor component.
+          This ensures that images (Base64) are properly uploaded and credits are handled
+          if it's a 3D item, which the client-side editor logic is already equipped to do.
+          This also prevents issues with missing images and race conditions.
+        */
       }
 
       setLoginStatus(t('loginPage.status.redirecting'));
