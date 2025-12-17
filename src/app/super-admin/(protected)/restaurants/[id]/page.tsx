@@ -127,15 +127,25 @@ export default function RestaurantDetailsPage() {
 
         try {
             setSaving(item.id);
-            const { error } = await supabase
-                .from('menu_items')
-                .update({
+
+            // Use the admin API route to bypass RLS policies
+            const response = await fetch('/api/admin/menu-item/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: item.id,
                     model_3d_url: updates.glb || null,
                     redirect_3d_url: updates.usdz || null
-                })
-                .eq('id', item.id);
+                }),
+            });
 
-            if (error) throw error;
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to update models');
+            }
 
             // Refresh local state without full reload
             setMenuItems(prev => prev.map(i =>
@@ -147,7 +157,7 @@ export default function RestaurantDetailsPage() {
             alert('Models updated successfully!');
         } catch (error) {
             console.error('Error saving models:', error);
-            alert('Failed to save models');
+            alert(error instanceof Error ? error.message : 'Failed to save models');
         } finally {
             setSaving(null);
         }

@@ -11,8 +11,7 @@ import { ImageUpload } from './ImageUpload';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 import { uploadImage } from '@/lib/storage';
 import { ConfirmationModal } from './ConfirmationModal';
-import { LanguageTabs } from './translation/LanguageTabs';
-import { TranslationField } from './translation/TranslationField';
+
 import {
   DndContext,
   closestCenter,
@@ -61,30 +60,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
   const [textEs, setTextEs] = useState(menuItem?.text_es || '');
   const [descriptionEs, setDescriptionEs] = useState(menuItem?.description_es || '');
 
-  // Active language tab
-  const [activeTab, setActiveTab] = useState<'fr' | 'en' | 'it' | 'es'>('fr');
 
-  // Handle global translation
-  const handleGlobalTranslate = (translations: {
-    en: { [key: string]: string };
-    it: { [key: string]: string };
-    es: { [key: string]: string };
-  }) => {
-    // Update English fields
-    if (translations.en.title) setTitleEn(translations.en.title);
-    if (translations.en.text) setTextEn(translations.en.text);
-    if (translations.en.description) setDescriptionEn(translations.en.description);
-
-    // Update Italian fields
-    if (translations.it.title) setTitleIt(translations.it.title);
-    if (translations.it.text) setTextIt(translations.it.text);
-    if (translations.it.description) setDescriptionIt(translations.it.description);
-
-    // Update Spanish fields
-    if (translations.es.title) setTitleEs(translations.es.title);
-    if (translations.es.text) setTextEs(translations.es.text);
-    if (translations.es.description) setDescriptionEs(translations.es.description);
-  };
 
   const [price, setPrice] = useState(menuItem?.price?.toString() || '');
   const [imagePath, setImagePath] = useState(menuItem?.image_path || '');
@@ -274,7 +250,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
           </svg>
         </button>
 
-        <h3 className="text-base md:text-lg font-semibold mb-4">
+        <h3 className="text-base md:text-lg font-semibold mb-4 text-gray-900">
           {menuItem ? 'Edit Menu Item' : 'New Menu Item'}
         </h3>
 
@@ -285,143 +261,44 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Language Tabs */}
-          <LanguageTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            sourceFields={{ title, text, description }}
-            onGlobalTranslate={handleGlobalTranslate}
-          />
+          {/* French Fields - Now unconditional */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Title <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex: Caesar Salad, Steak Frites..."
+              required
+            />
+          </div>
 
-          {/* French Fields */}
-          {activeTab === 'fr' && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ex: Caesar Salad, Steak Frites..."
-                  required
-                />
-              </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Short text
+            </label>
+            <Input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Optional short text..."
+            />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Short text
-                </label>
-                <Input
-                  type="text"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Optional short text..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Full description of the dish..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
-                  rows={3}
-                />
-              </div>
-            </>
-          )}
-
-          {/* English Fields */}
-          {activeTab === 'en' && (
-            <>
-              <TranslationField
-                label="Title (EN)"
-                sourceText={title}
-                value={titleEn}
-                onChange={setTitleEn}
-                targetLang="en"
-              />
-              <TranslationField
-                label="Short text (EN)"
-                sourceText={text}
-                value={textEn}
-                onChange={setTextEn}
-                targetLang="en"
-              />
-              <TranslationField
-                label="Description (EN)"
-                sourceText={description}
-                value={descriptionEn}
-                onChange={setDescriptionEn}
-                targetLang="en"
-                multiline
-                rows={3}
-              />
-            </>
-          )}
-
-          {/* Italian Fields */}
-          {activeTab === 'it' && (
-            <>
-              <TranslationField
-                label="Title (IT)"
-                sourceText={title}
-                value={titleIt}
-                onChange={setTitleIt}
-                targetLang="it"
-              />
-              <TranslationField
-                label="Short text (IT)"
-                sourceText={text}
-                value={textIt}
-                onChange={setTextIt}
-                targetLang="it"
-              />
-              <TranslationField
-                label="Description (IT)"
-                sourceText={description}
-                value={descriptionIt}
-                onChange={setDescriptionIt}
-                targetLang="it"
-                multiline
-                rows={3}
-              />
-            </>
-          )}
-
-          {/* Spanish Fields */}
-          {activeTab === 'es' && (
-            <>
-              <TranslationField
-                label="Title (ES)"
-                sourceText={title}
-                value={titleEs}
-                onChange={setTitleEs}
-                targetLang="es"
-              />
-              <TranslationField
-                label="Short text (ES)"
-                sourceText={text}
-                value={textEs}
-                onChange={setTextEs}
-                targetLang="es"
-              />
-              <TranslationField
-                label="Description (ES)"
-                sourceText={description}
-                value={descriptionEs}
-                onChange={setDescriptionEs}
-                targetLang="es"
-                multiline
-                rows={3}
-              />
-            </>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Full description of the dish..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
+              rows={3}
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

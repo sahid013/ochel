@@ -331,7 +331,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                 className="px-6 py-3 text-white font-bold rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl transform active:scale-95"
                 style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
               >
-                <span>View on Table (AR)</span>
+                <span>{t('menu.viewOnTable')}</span>
                 <img src="/icons/3d.svg" alt="" className="w-5 h-5 invert brightness-0" />
               </button>
             </div>
