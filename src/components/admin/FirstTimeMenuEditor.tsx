@@ -216,26 +216,12 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         }
       }
 
-      // Check if this is a 3D request (has 4 images) and deduct credits
+      // For demo migration: Skip credit deduction
+      // The item will be saved with 4 images for super-admin to process manually
+      // This prevents errors for new users who haven't subscribed yet
       if (additionalImagePaths.length > 0) {
-        // Deduct credit via API route (server-side with admin permissions)
-        const response = await fetch('/api/deduct-credit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ restaurantId: restaurant.id }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to deduct credit');
-        }
-
-        // Notify all tabs that credits have changed
-        const creditUpdateChannel = new BroadcastChannel('credit-updates');
-        creditUpdateChannel.postMessage('invalidate');
-        creditUpdateChannel.close();
+        console.log('Demo migration: Skipping credit deduction for item with', additionalImagePaths.length, 'images');
+        console.log('Note: Super-admin can process this as a 3D request manually if needed');
       }
 
       // Create menu item
