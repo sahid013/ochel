@@ -191,36 +191,38 @@ export default function RestaurantAdminPage() {
 
           {/* Publish Menu Button below navbar */}
           <div className="bg-white border-b border-gray-200 shadow-sm">
-            <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-primary font-loubag uppercase">
+            <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+              <div className="flex flex-row items-center gap-4 w-full md:w-auto">
+                <h1 className="text-[30px] md:text-2xl font-bold text-primary font-loubag uppercase">
                   Welcome to Ochel!
                 </h1>
                 <PrimaryButton
                   onClick={() => router.push(`/${slug}/admin?skip_onboarding=true`)}
                   size="sm"
-                  className="mt-2"
+                  className=""
                 >
                   Gérer mon menu
                 </PrimaryButton>
               </div>
-              <div className="flex items-end gap-3">
+              <div className="flex items-center gap-3 w-full md:w-auto justify-start md:justify-end">
                 <PrimaryButton
                   href={`/${slug}?preview=${restaurant.template || 'template1'}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="secondary"
-                  className="py-1.5"
+                  className="py-1.5 flex-1 md:flex-none justify-center"
                 >
                   Preview Menu
                 </PrimaryButton>
-                <PublishMenuButton
-                  restaurantId={restaurant.id}
-                  restaurantSlug={slug}
-                  currentTemplate={restaurant.template || 'template1'}
-                  subscriptionStatus={restaurant.subscription_status}
-                  onPublishComplete={checkAgain}
-                />
+                <div className="flex-1 md:flex-none">
+                  <PublishMenuButton
+                    restaurantId={restaurant.id}
+                    restaurantSlug={slug}
+                    currentTemplate={restaurant.template || 'template1'}
+                    subscriptionStatus={restaurant.subscription_status}
+                    onPublishComplete={checkAgain}
+                  />
+                </div>
               </div>
             </div>
           </div>
