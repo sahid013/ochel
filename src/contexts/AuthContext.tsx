@@ -108,13 +108,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .from('restaurants')
         .select('id, name')
         .eq('owner_id', supabaseUser.id)
+        .limit(1)
         .maybeSingle();
 
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => {
-          console.warn('Restaurant query timed out after 5 seconds (retrying via auth state change)');
+          console.warn('Restaurant query timed out after 10 seconds');
           reject(new Error('Restaurant query timed out'));
-        }, 5000)
+        }, 10000) // Increased to 10 seconds
       );
 
       const { data: restaurant, error } = await Promise.race([
@@ -125,9 +126,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.log('Restaurant check result:', { restaurant, error: error || null });
 
       if (error) {
-        // If it's a timeout, just return silently - auth state change will retry
+        // If it's a timeout, set user without restaurant role
         if (error.message === 'Restaurant query timed out') {
-          console.log('Query timed out, will retry on auth state change');
+          console.log('Query timed out, setting user without restaurant role');
+          setUser({
+            id: supabaseUser.id,
+            email: supabaseUser.email || '',
+            username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
+            role: 'user'
+          });
           return;
         }
 
