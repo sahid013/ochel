@@ -275,17 +275,7 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Short text
-            </label>
-            <Input
-              type="text"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Optional short text..."
-            />
-          </div>
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
