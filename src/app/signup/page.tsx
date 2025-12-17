@@ -185,11 +185,14 @@ export default function SignupPage() {
 
       // Success!
       setSuccess(true);
+
+      // Use Next.js router for smooth navigation without page reload
+      const onboardingUrl = `/${slug}/admin?onboarding=true`;
+      console.log('Redirecting to', onboardingUrl);
+
       setTimeout(() => {
-        const onboardingUrl = `/${slug}/admin?onboarding=true`;
-        console.log('Redirecting to', onboardingUrl);
-        window.location.href = onboardingUrl;
-      }, 2000);
+        router.push(onboardingUrl);
+      }, 1500); // Reduced to 1.5 seconds for faster redirect
 
     } catch (err: any) {
       console.error('Signup error:', err);
