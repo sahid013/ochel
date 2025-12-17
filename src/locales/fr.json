@@ -22,6 +22,11 @@
         "model": "modèle de menu 3d"
       },
       "subtitle": "Découvrez la puissance d'une présence numérique professionnelle. Créez votre menu, choisissez votre style et lancez-vous en quelques minutes.",
+      "restaurantInfo": {
+        "title": "Informations sur le restaurant",
+        "restaurantName": "Nom du restaurant",
+        "restaurantNamePlaceholder": "ex: La Bella Italia"
+      },
       "addItem": {
         "title": "Ajoutez votre premier article",
         "category": "Catégorie",

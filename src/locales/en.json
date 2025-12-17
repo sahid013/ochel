@@ -18,6 +18,11 @@
         "model": "3d menu model"
       },
       "subtitle": "Experience the power of a professional digital presence. Build your menu, choose your style, and launch in minutes.",
+      "restaurantInfo": {
+        "title": "Restaurant Info",
+        "restaurantName": "Restaurant Name",
+        "restaurantNamePlaceholder": "e.g., La Bella Italia"
+      },
       "addItem": {
         "title": "Add Your First Item",
         "category": "Category",

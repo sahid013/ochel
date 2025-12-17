@@ -29,6 +29,7 @@ interface DemoMenuItem {
 
 const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
 const DEMO_TEMPLATE_KEY = 'ochel_demo_template';
+const DEMO_RESTAURANT_NAME_KEY = 'ochel_demo_restaurant_name';
 // Bump this version to force-clear cache for all users
 const CACHE_VERSION = 'v1.0';
 const CACHE_VERSION_KEY = 'ochel_cache_version';
@@ -63,6 +64,7 @@ export function DemoMenuEditor() {
   const [showModal, setShowModal] = useState(false);
   const [demoItem, setDemoItem] = useState<DemoMenuItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [restaurantName, setRestaurantName] = useState<string>('Your Restaurant');
 
   // Load cached demo item on mount
   useEffect(() => {
@@ -74,12 +76,14 @@ export function DemoMenuEditor() {
       console.log(`Cache version mismatch (stored: ${storedVersion}, current: ${CACHE_VERSION}). Clearing demo cache.`);
       localStorage.removeItem(DEMO_CACHE_KEY);
       localStorage.removeItem(DEMO_TEMPLATE_KEY);
+      localStorage.removeItem(DEMO_RESTAURANT_NAME_KEY);
       localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
       // We don't return here because we want the clean state to just proceed normally (variables are null/default)
     } else {
       // Version matches - try to load cached data
       const cached = localStorage.getItem(DEMO_CACHE_KEY);
       const cachedTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
+      const cachedRestaurantName = localStorage.getItem(DEMO_RESTAURANT_NAME_KEY);
 
       if (cached) {
         try {
@@ -91,6 +95,10 @@ export function DemoMenuEditor() {
 
       if (cachedTemplate) {
         setSelectedTemplate(cachedTemplate);
+      }
+
+      if (cachedRestaurantName) {
+        setRestaurantName(cachedRestaurantName);
       }
     }
   }, []);
@@ -196,6 +204,11 @@ export function DemoMenuEditor() {
     setIsEditing(false);
   };
 
+  const handleRestaurantNameChange = (name: string) => {
+    setRestaurantName(name || 'Your Restaurant');
+    localStorage.setItem(DEMO_RESTAURANT_NAME_KEY, name || 'Your Restaurant');
+  };
+
   // Transform demoItem to initialValues
   const initialValues: Partial<MenuEditorFormData> | undefined = isEditing && demoItem ? {
     title: demoItem.title,
@@ -208,6 +221,12 @@ export function DemoMenuEditor() {
     previewImage: demoItem.image ? [demoItem.image] : [null], // string passes here
     selectedImages: demoItem.selectedImages || [null, null, null, null]
   } : undefined;
+
+  // Create dynamic mock restaurant
+  const mockRestaurant: Restaurant = {
+    ...MOCK_RESTAURANT,
+    name: restaurantName
+  };
 
   return (
     <div className="w-full max-w-[1460px] mx-auto">
@@ -225,11 +244,33 @@ export function DemoMenuEditor() {
 
       <div className="px-5 pb-12">
         <div className="grid gap-8 items-start grid-cols-1 md:grid-cols-[0.6fr_1fr]">
-          {/* Left Column - Add Your First Item */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-            <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
-              {t('home.demo.addItem.title')}
-            </h3>
+          {/* Left Column - Restaurant Info & Add Your First Item */}
+          <div className="space-y-6">
+            {/* Restaurant Info Section */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+              <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
+                {t('home.demo.restaurantInfo.title')}
+              </h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('home.demo.restaurantInfo.restaurantName')}
+                </label>
+                <input
+                  type="text"
+                  value={restaurantName === 'Your Restaurant' ? '' : restaurantName}
+                  onChange={(e) => handleRestaurantNameChange(e.target.value)}
+                  placeholder={t('home.demo.restaurantInfo.restaurantNamePlaceholder')}
+                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
+                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
+                />
+              </div>
+            </div>
+
+            {/* Add First Item Section */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+              <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
+                {t('home.demo.addItem.title')}
+              </h3>
 
             {demoItem && !isEditing ? (
               /* Display created item */
@@ -272,7 +313,13 @@ export function DemoMenuEditor() {
                     <p className="text-sm text-gray-600 mb-3">
                       {t('home.demo.addItem.moreItems')}
                     </p>
-                    <PrimaryButton onClick={() => router.push('/signup')} fullWidth>
+                    <PrimaryButton
+                      onClick={() => {
+                        const encodedName = encodeURIComponent(restaurantName !== 'Your Restaurant' ? restaurantName : '');
+                        router.push(`/signup${encodedName ? `?name=${encodedName}` : ''}`);
+                      }}
+                      fullWidth
+                    >
                       {t('home.demo.addItem.continueSignup')}
                     </PrimaryButton>
                   </div>
@@ -292,6 +339,7 @@ export function DemoMenuEditor() {
                 isLockedDemoMode={true}
               />
             )}
+            </div>
           </div>
 
           {/* Right Column - Choose Your Template */}
@@ -328,7 +376,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template1' && (
                 <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template1 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                    <Template1 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
                 </div>
               )}
@@ -337,7 +385,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template2' && (
                 <div key="template2" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template2 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                    <Template2 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
                 </div>
               )}
@@ -346,7 +394,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template3' && (
                 <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template3 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                    <Template3 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
                 </div>
               )}
@@ -355,7 +403,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template4' && (
                 <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50 scrollbar-light">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template4 restaurant={MOCK_RESTAURANT} demoItem={demoItem} />
+                    <Template4 restaurant={mockRestaurant} demoItem={demoItem} />
                   </div>
                 </div>
               )}
@@ -377,7 +425,10 @@ export function DemoMenuEditor() {
       <LoginSignupModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        onNavigateToSignup={() => router.push('/signup')}
+        onNavigateToSignup={() => {
+          const encodedName = encodeURIComponent(restaurantName !== 'Your Restaurant' ? restaurantName : '');
+          router.push(`/signup${encodedName ? `?name=${encodedName}` : ''}`);
+        }}
         onNavigateToLogin={() => router.push('/login')}
       />
     </div>

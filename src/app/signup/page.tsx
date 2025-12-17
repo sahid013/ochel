@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/contexts/LanguageContext';
@@ -10,6 +10,7 @@ import { useTranslation } from '@/contexts/LanguageContext';
 export default function SignupPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -24,6 +25,14 @@ export default function SignupPage() {
     password: '',
     confirmPassword: ''
   });
+
+  // Auto-fill restaurant name from URL parameter
+  useEffect(() => {
+    const nameParam = searchParams.get('name');
+    if (nameParam) {
+      setFormData(prev => ({ ...prev, restaurantName: decodeURIComponent(nameParam) }));
+    }
+  }, [searchParams]);
 
   // Auto-generate slug from restaurant name
   const generateSlug = (name: string) => {
