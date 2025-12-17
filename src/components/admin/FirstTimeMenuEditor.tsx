@@ -93,6 +93,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
+      console.log('[fetchMenuItems] Fetching items for restaurant:', restaurant.id);
       const { data, error } = await supabase
         .from('menu_items')
         .select('*')
@@ -100,6 +101,14 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+      console.log('[fetchMenuItems] Fetched items:', data?.length || 0, 'items');
+      if (data && data.length > 0) {
+        console.log('[fetchMenuItems] First item:', {
+          id: data[0].id,
+          title: data[0].title,
+          hasImage: !!data[0].image_path
+        });
+      }
       setMenuItems(data || []);
     } catch (err) {
       console.error('Error fetching menu items:', err);
@@ -564,6 +573,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     price: menuItems[0].price.toString(),
     category: 'Your Menu',
     subcategory: '',
+    image: menuItems[0].image_path || undefined,
     model3dGlbUrl: menuItems[0].model_3d_url || undefined,
     model3dUsdzUrl: menuItems[0].redirect_3d_url || undefined,
   } : {
@@ -574,6 +584,13 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     category: 'Preview',
     subcategory: '',
   };
+
+  console.log('[FirstTimeMenuEditor] Rendering with:', {
+    menuItemsCount: menuItems.length,
+    demoItemTitle: demoItem.title,
+    demoItemHasImage: !!(demoItem as any).image,
+    loading
+  });
 
   return (
     <div className="w-full">
