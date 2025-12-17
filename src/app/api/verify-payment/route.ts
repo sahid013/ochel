@@ -56,7 +56,46 @@ export async function POST(req: Request) {
             console.log('[Verify Payment] Found restaurant ID by slug:', targetRestaurantId);
         }
 
-        // 3. Manually update database (same logic as webhook)
+        // 3. Determine credits based on plan ID (same logic as webhook)
+        // Standard: prod_Tbyu0kjYbAO1GU -> 5
+        // Essential: prod_Tbyv6lbtixiI8D -> 15
+        // Advanced: prod_TbyvP5fQfg2Dbh -> 25
+        const planId = session.metadata?.planId;
+        let creditsToAdd = 0;
+        let subscriptionPlan = 'free';
+
+        console.log(`[Verify Payment] Processing checkout for planId: ${planId}`);
+
+        if (planId === 'prod_Tbyu0kjYbAO1GU') {
+            creditsToAdd = 5;
+            subscriptionPlan = 'Standard';
+        } else if (planId === 'prod_Tbyv6lbtixiI8D') {
+            creditsToAdd = 15;
+            subscriptionPlan = 'Essentielle';
+        } else if (planId === 'prod_TbyvP5fQfg2Dbh') {
+            creditsToAdd = 25;
+            subscriptionPlan = 'Avancée';
+        }
+
+        console.log(`[Verify Payment] Determined plan: ${subscriptionPlan}, Initial credits: ${creditsToAdd}`);
+
+        // Check if user has already submitted a 3D request (uploaded 4 images)
+        const { data: existingItems, error: itemsError } = await supabaseAdmin
+            .from('menu_items')
+            .select('id')
+            .eq('restaurant_id', targetRestaurantId)
+            .not('additional_image_url', 'is', null)
+            .limit(1);
+
+        // If user has pending 3D request, deduct 1 credit
+        if (existingItems && existingItems.length > 0) {
+            console.log(`[Verify Payment] Found existing 3D items, deducting 1 credit.`);
+            creditsToAdd = Math.max(0, creditsToAdd - 1);
+        }
+
+        console.log(`[Verify Payment] Final credits to add: ${creditsToAdd}`);
+
+        // 4. Manually update database (same logic as webhook)
         console.log('[Verify Payment] Updating database for restaurant:', targetRestaurantId);
         const { error } = await supabaseAdmin
             .from('restaurants')
@@ -64,7 +103,8 @@ export async function POST(req: Request) {
                 stripe_customer_id: session.customer as string,
                 stripe_subscription_id: session.subscription as string,
                 subscription_status: 'active',
-                subscription_plan: 'pro', // Ideally derive this
+                subscription_plan: subscriptionPlan,
+                credits_left: creditsToAdd,
             })
             .eq('id', targetRestaurantId);
 
@@ -72,6 +112,8 @@ export async function POST(req: Request) {
             console.error('[Verify Payment] DB Update Error:', error);
             return NextResponse.json({ error: 'Database update failed: ' + error.message }, { status: 500 });
         }
+
+        console.log(`[Verify Payment] Successfully updated restaurant ${targetRestaurantId} with credits: ${creditsToAdd}`);
 
         console.log('[Verify Payment] Success!');
         return NextResponse.json({ success: true });
