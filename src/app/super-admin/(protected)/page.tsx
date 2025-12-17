@@ -82,17 +82,17 @@ export default function SuperAdminDashboard() {
         }
 
         switch (plan) {
-            case 'basic':
+            case 'standard':
                 return {
                     label: 'Standard',
                     color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
                 };
-            case 'pro':
+            case 'essentielle':
                 return {
                     label: 'Essentielle',
                     color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
                 };
-            case 'enterprise':
+            case 'avancée':
                 return {
                     label: 'Avancée',
                     color: 'bg-[#F34A23]/15 text-[#F34A23] border-[#F34A23]/20'
@@ -111,7 +111,11 @@ export default function SuperAdminDashboard() {
         if (!matchesSearch) return false;
 
         if (filterStatus === 'subscriber') {
-            return restaurant.subscription_status === 'active';
+            // A subscriber must have active/trialing status AND a paid plan
+            const hasActiveSubscription = restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing';
+            const hasPaidPlan = restaurant.subscription_plan &&
+                ['standard', 'essentielle', 'avancée'].includes(restaurant.subscription_plan.toLowerCase());
+            return hasActiveSubscription && hasPaidPlan;
         }
 
         const status = get3DStatus(restaurant);
