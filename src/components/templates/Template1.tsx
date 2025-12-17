@@ -14,6 +14,7 @@ import AnimateIn from '@/components/ui/AnimateIn';
 interface Template1Props {
   restaurant: Restaurant;
   demoItem?: DemoItem | null;
+  hideNavigation?: boolean;
 }
 
 /**
@@ -21,7 +22,7 @@ interface Template1Props {
  * Elegant dark theme with split layout - perfect for fine dining
  * Features: Dark background, split-screen design, image gallery support, 3D model integration
  */
-export default function Template1({ restaurant, demoItem }: Template1Props) {
+export default function Template1({ restaurant, demoItem, hideNavigation }: Template1Props) {
   const { t, locale } = useTranslation();
   const {
     categories,
@@ -79,9 +80,11 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
     <>
       {/* Navigation */}
       {/* Navigation */}
-      <Navigation
-        restaurant={restaurant}
-      />
+      {!hideNavigation && (
+        <Navigation
+          restaurant={restaurant}
+        />
+      )}
 
       {/* Main Layout - Single Column */}
       <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #fff5f0)', color: 'var(--pixel-text, #3D1F00)', ...variableStyles }}>
@@ -93,11 +96,11 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
               style={{ backgroundImage: `url('${restaurant.hero_image_url || '/images/Template1HeroWhite.png'}')` }}
             >
               {/* Center Content */}
-              <div className="text-center relative z-10 max-w-4xl mx-auto backdrop-blur-sm bg-white/40 p-8 rounded-2xl shadow-sm border border-white/50">
+              <div className="text-center relative z-10 max-w-4xl mx-auto backdrop-blur-sm bg-white/40 p-3 md:p-8 rounded-2xl shadow-sm border border-white/50">
                 {/* Main Heading */}
                 <AnimateIn animation="fade" duration={800} delay={100}>
                   <div className="mb-4">
-                    <h1 className={cn("text-[36px] md:text-[56px] font-bold tracking-tight uppercase leading-none", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                    <h1 className={cn("text-[30px] md:text-[56px] font-bold tracking-tight uppercase leading-none", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                       {restaurant.name}
                     </h1>
                   </div>

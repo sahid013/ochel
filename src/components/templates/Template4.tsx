@@ -13,6 +13,7 @@ import { EmptyState } from '@/components/ui';
 interface Template4Props {
   restaurant: Restaurant;
   demoItem?: DemoItem | null;
+  hideNavigation?: boolean;
 }
 
 /**
@@ -20,7 +21,7 @@ interface Template4Props {
  * Friendly, approachable design for casual restaurants
  * Features: Colorful accents, grid layout, photo-focused, social media integration
  */
-export default function Template4({ restaurant, demoItem }: Template4Props) {
+export default function Template4({ restaurant, demoItem, hideNavigation }: Template4Props) {
   const { t } = useTranslation();
   const {
     categories,
@@ -81,9 +82,11 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
     <>
       {/* Navigation */}
       {/* Navigation */}
-      <Navigation
-        restaurant={restaurant}
-      />
+      {!hideNavigation && (
+        <Navigation
+          restaurant={restaurant}
+        />
+      )}
 
       {/* Main Layout - Casual Colorful Theme */}
       <div
@@ -110,8 +113,8 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
           }}
         >
           {restaurant.hero_image_url && <div className="absolute inset-0 bg-black/40"></div>}
-          <div className="max-w-6xl mx-auto px-6 text-center">
-            <h1 className={cn("text-[36px] md:text-[56px] font-bold mb-4", headerFontClass)}>
+          <div className="max-w-6xl mx-auto px-3 md:px-6 text-center">
+            <h1 className={cn("text-[30px] md:text-[56px] font-bold mb-4", headerFontClass)}>
               {restaurant.name}
             </h1>
             <p className="text-xl font-medium">

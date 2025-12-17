@@ -15,6 +15,7 @@ import cookingBlackAnimation from '../../../public/assets/cookingBlack.json';
 interface Template2Props {
   restaurant: Restaurant;
   demoItem?: DemoItem | null;
+  hideNavigation?: boolean;
 }
 
 /**
@@ -22,7 +23,7 @@ interface Template2Props {
  * Clean, bright design with minimalist aesthetics
  * Features: Light background, card-based layout, mobile-optimized, fast loading
  */
-export default function Template2({ restaurant, demoItem }: Template2Props) {
+export default function Template2({ restaurant, demoItem, hideNavigation }: Template2Props) {
   const { t, locale } = useTranslation();
   const {
     categories,
@@ -158,9 +159,11 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
     <div style={{ backgroundColor: 'var(--pixel-bg, #000000)', ...variableStyles }}>
       {/* Navigation */}
       {/* Navigation */}
-      <Navigation
-        restaurant={restaurant}
-      />
+      {!hideNavigation && (
+        <Navigation
+          restaurant={restaurant}
+        />
+      )}
 
       {/* Main Layout - Dark Theme */}
       <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #000000)', color: 'var(--pixel-text, white)' }}>
@@ -173,8 +176,8 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
           <div className="absolute inset-0 bg-black/40"></div>
 
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center relative z-10">
-              <h1 className={cn("text-[36px] md:text-[56px] font-bold mb-4", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
+            <div className="text-center relative z-10 p-3 md:p-0">
+              <h1 className={cn("text-[30px] md:text-[56px] font-bold mb-4", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
                 {restaurant.name}
               </h1>
               <p className="text-xl" style={{ color: 'var(--pixel-text, white)' }}>{t('menuPage.title')}</p>

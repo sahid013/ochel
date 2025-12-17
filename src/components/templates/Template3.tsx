@@ -13,6 +13,7 @@ import { EmptyState } from '@/components/ui';
 interface Template3Props {
   restaurant: Restaurant;
   demoItem?: DemoItem | null;
+  hideNavigation?: boolean;
 }
 
 /**
@@ -20,7 +21,7 @@ interface Template3Props {
  * Stylish template with elegant typography and spacing
  * Features: Custom fonts, spacious layout, premium feel, category highlights
  */
-export default function Template3({ restaurant, demoItem }: Template3Props) {
+export default function Template3({ restaurant, demoItem, hideNavigation }: Template3Props) {
   const { t } = useTranslation();
   const {
     categories,
@@ -77,9 +78,11 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
   return (
     <>
       {/* Navigation */}
-      <Navigation
-        restaurant={restaurant}
-      />
+      {!hideNavigation && (
+        <Navigation
+          restaurant={restaurant}
+        />
+      )}
 
       {/* Main Layout - Boutique Elegant Theme */}
       <div className={cn("min-h-screen", bodyFontClass)} style={{ backgroundColor: 'var(--pixel-bg, #FAF8F3)', color: 'var(--pixel-text, #2C2416)', ...variableStyles }}>
@@ -93,8 +96,8 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
           }}
         >
           {restaurant.hero_image_url && <div className="absolute inset-0 bg-black/40"></div>}
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <h1 className={cn("text-[36px] md:text-[56px] mb-6 tracking-wide", headerFontClass)}>
+          <div className="max-w-4xl mx-auto px-3 md:px-6 relative z-10">
+            <h1 className={cn("text-[30px] md:text-[56px] mb-6 tracking-wide", headerFontClass)}>
               {restaurant.name}
             </h1>
             <div className="w-24 h-1 mx-auto mb-6" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>

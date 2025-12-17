@@ -272,73 +272,73 @@ export function DemoMenuEditor() {
                 {t('home.demo.addItem.title')}
               </h3>
 
-            {demoItem && !isEditing ? (
-              /* Display created item */
-              <div className="space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-block px-3 py-1 bg-[#F34A23] text-white text-xs font-medium rounded-full">
-                        {demoItem.category}
-                      </span>
-                      {demoItem.subcategory && (
-                        <span className="inline-block px-3 py-1 bg-gray-300 text-gray-700 text-xs font-medium rounded-full">
-                          {demoItem.subcategory}
+              {demoItem && !isEditing ? (
+                /* Display created item */
+                <div className="space-y-4">
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block px-3 py-1 bg-[#F34A23] text-white text-xs font-medium rounded-full">
+                          {demoItem.category}
                         </span>
-                      )}
+                        {demoItem.subcategory && (
+                          <span className="inline-block px-3 py-1 bg-gray-300 text-gray-700 text-xs font-medium rounded-full">
+                            {demoItem.subcategory}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleEdit}
+                          className="p-1.5 text-gray-500 hover:text-[#F34A23] hover:bg-orange-50 rounded-full transition-colors"
+                          title={t('home.demo.addItem.edit')}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                          title={t('home.demo.addItem.delete')}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={handleEdit}
-                        className="p-1.5 text-gray-500 hover:text-[#F34A23] hover:bg-orange-50 rounded-full transition-colors"
-                        title={t('home.demo.addItem.edit')}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={handleDelete}
-                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                        title={t('home.demo.addItem.delete')}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
 
-                  <div className="pt-4 border-t border-gray-200">
-                    <p className="text-sm text-gray-600 mb-3">
-                      {t('home.demo.addItem.moreItems')}
-                    </p>
-                    <PrimaryButton
-                      onClick={() => {
-                        const encodedName = encodeURIComponent(restaurantName !== 'Your Restaurant' ? restaurantName : '');
-                        router.push(`/signup${encodedName ? `?name=${encodedName}` : ''}`);
-                      }}
-                      fullWidth
-                    >
-                      {t('home.demo.addItem.continueSignup')}
-                    </PrimaryButton>
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-sm text-gray-600 mb-3">
+                        {t('home.demo.addItem.moreItems')}
+                      </p>
+                      <PrimaryButton
+                        onClick={() => {
+                          const encodedName = encodeURIComponent(restaurantName !== 'Your Restaurant' ? restaurantName : '');
+                          router.push(`/signup${encodedName ? `?name=${encodedName}` : ''}`);
+                        }}
+                        fullWidth
+                      >
+                        {t('home.demo.addItem.continueSignup')}
+                      </PrimaryButton>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              /* Item Form Replaced */
-              <MenuEditorForm
-                initialValues={initialValues}
-                onSubmit={handleFormSubmit}
-                onCancel={() => setIsEditing(false)}
-                isEditing={isEditing}
-                show3DInputs={true}
-                showDetailedImageUpload={true}
-                existingCategories={[]}
-                existingSubcategories={[]}
-                isLockedDemoMode={true}
-              />
-            )}
+              ) : (
+                /* Item Form Replaced */
+                <MenuEditorForm
+                  initialValues={initialValues}
+                  onSubmit={handleFormSubmit}
+                  onCancel={() => setIsEditing(false)}
+                  isEditing={isEditing}
+                  show3DInputs={true}
+                  showDetailedImageUpload={true}
+                  existingCategories={[]}
+                  existingSubcategories={[]}
+                  isLockedDemoMode={true}
+                />
+              )}
             </div>
           </div>
 
@@ -376,7 +376,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template1' && (
                 <div key="template1" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template1 restaurant={mockRestaurant} demoItem={demoItem} />
+                    <Template1 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
                   </div>
                 </div>
               )}
@@ -385,7 +385,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template2' && (
                 <div key="template2" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template2 restaurant={mockRestaurant} demoItem={demoItem} />
+                    <Template2 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
                   </div>
                 </div>
               )}
@@ -394,7 +394,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template3' && (
                 <div key="template3" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template3 restaurant={mockRestaurant} demoItem={demoItem} />
+                    <Template3 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
                   </div>
                 </div>
               )}
@@ -403,7 +403,7 @@ export function DemoMenuEditor() {
               {selectedTemplate === 'template4' && (
                 <div key="template4" className="h-full overflow-auto animate-fade-in bg-gray-100/50">
                   <div className="max-w-[768px] mx-auto min-h-full shadow-2xl">
-                    <Template4 restaurant={mockRestaurant} demoItem={demoItem} />
+                    <Template4 restaurant={mockRestaurant} demoItem={demoItem} hideNavigation={true} />
                   </div>
                 </div>
               )}
