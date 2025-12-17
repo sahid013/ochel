@@ -99,10 +99,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const setUserFromSession = async (supabaseUser: SupabaseUser) => {
     try {
-      console.log('Setting user from session:', supabaseUser.id);
+      console.log('[AuthContext] Setting user from session:', supabaseUser.id);
 
-      // Check if user owns a restaurant with timeout
-      console.log('Querying restaurants table for owner_id:', supabaseUser.id);
+      // Set user immediately to prevent blocking
+      // We'll update the role if we find a restaurant
+      setUser({
+        id: supabaseUser.id,
+        email: supabaseUser.email || '',
+        username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
+        role: 'user'
+      });
+
+      // Check if user owns a restaurant with timeout (non-blocking)
+      console.log('[AuthContext] Querying restaurants table for owner_id:', supabaseUser.id);
 
       const restaurantPromise = supabase
         .from('restaurants')
@@ -111,11 +120,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .limit(1)
         .maybeSingle();
 
-      const timeoutPromise = new Promise((_, reject) =>
+      const timeoutPromise = new Promise<any>((_, reject) =>
         setTimeout(() => {
-          console.warn('Restaurant query timed out after 10 seconds');
+          console.warn('[AuthContext] Restaurant query timed out after 3 seconds - user can still access pages');
           reject(new Error('Restaurant query timed out'));
-        }, 10000) // Increased to 10 seconds
+        }, 3000) // Reduced to 3 seconds
       );
 
       const { data: restaurant, error } = await Promise.race([
@@ -123,32 +132,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
         timeoutPromise
       ]) as any;
 
-      console.log('Restaurant check result:', { restaurant, error: error || null });
+      console.log('[AuthContext] Restaurant check result:', { restaurant, error: error || null });
 
       if (error) {
-        // If it's a timeout, set user without restaurant role
+        // If it's a timeout, user is already set with basic role
         if (error.message === 'Restaurant query timed out') {
-          console.log('Query timed out, setting user without restaurant role');
-          setUser({
-            id: supabaseUser.id,
-            email: supabaseUser.email || '',
-            username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
-            role: 'user'
-          });
+          console.log('[AuthContext] Timeout - keeping user with basic role, pages can still load');
           return;
         }
 
-        // For other errors (not PGRST116 which is "no rows"), set user to null
+        // For other errors (not PGRST116 which is "no rows"), keep current user
         if (error.code !== 'PGRST116') {
-          console.error('Database error checking restaurant:', error);
-          setUser(null);
+          console.error('[AuthContext] Database error checking restaurant:', error);
           return;
         }
       }
 
-      // Set user (restaurant owners are considered admins)
+      // Update user role if restaurant found
       if (restaurant) {
-        console.log('Setting restaurant owner user:', restaurant.name);
+        console.log('[AuthContext] Found restaurant, updating user role to restaurant_owner:', restaurant.name);
         setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || '',
@@ -156,23 +158,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
           role: 'restaurant_owner'
         });
       } else {
-        console.log('User has no restaurant, setting basic user');
-        // User is authenticated but not a restaurant owner - still set user
-        setUser({
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
-          role: 'user'
-        });
+        console.log('[AuthContext] No restaurant found, keeping basic user role');
+        // User already set above with 'user' role, no need to set again
       }
     } catch (error) {
-      // Silently handle timeout errors - auth state change will retry
+      // Keep user set even if there's an error
+      // User is already set above, so pages can still load
       if (error instanceof Error && error.message === 'Restaurant query timed out') {
-        console.log('Query timed out in catch block, ignoring (will retry)');
+        console.log('[AuthContext] Timeout in catch block - user is already set, continuing');
         return;
       }
-      console.error('Unexpected error in setUserFromSession:', error);
-      setUser(null);
+      console.error('[AuthContext] Unexpected error in setUserFromSession:', error);
+      // Keep the user that was already set instead of nullifying
+      console.log('[AuthContext] Keeping user despite error to allow page access');
     }
   };
 
