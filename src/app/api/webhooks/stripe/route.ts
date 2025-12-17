@@ -46,6 +46,8 @@ export async function POST(req: Request) {
                 let creditsToAdd = 0;
                 let subscriptionPlan = 'free';
 
+                console.log(`[Webhook Debug] Processing checkout for planId: ${planId}`);
+
                 if (planId === 'prod_Tbyu0kjYbAO1GU') {
                     creditsToAdd = 5; // Start with full quota
                     subscriptionPlan = 'Standard';
@@ -56,6 +58,8 @@ export async function POST(req: Request) {
                     creditsToAdd = 25;
                     subscriptionPlan = 'Avancée';
                 }
+
+                console.log(`[Webhook Debug] Determined plan: ${subscriptionPlan}, Initial credits: ${creditsToAdd}`);
 
                 // Check if user has already submitted a 3D request (uploaded 4 images)
                 // We check if any menu item has 'additional_image_url' populated
@@ -69,8 +73,11 @@ export async function POST(req: Request) {
                 // If user has pending 3D request (items with 4 images), deduct 1 credit
                 // Note: We check if any check returned true
                 if (existingItems && existingItems.length > 0) {
+                    console.log(`[Webhook Debug] Found existing 3D items, deducting 1 credit.`);
                     creditsToAdd = Math.max(0, creditsToAdd - 1);
                 }
+
+                console.log(`[Webhook Debug] Final credits to add: ${creditsToAdd}`);
 
                 // Update restaurant with subscription details and credits
                 const { error } = await supabaseAdmin
@@ -85,8 +92,10 @@ export async function POST(req: Request) {
                     .eq('id', restaurantId);
 
                 if (error) {
-                    console.error('Error updating restaurant subscription:', error);
+                    console.error('[Webhook Debug] Error updating restaurant subscription:', error);
                     return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
+                } else {
+                    console.log(`[Webhook Debug] Successfully updated restaurant ${restaurantId} with credits: ${creditsToAdd}`);
                 }
                 break;
             }
