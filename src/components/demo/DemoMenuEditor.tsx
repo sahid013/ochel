@@ -231,7 +231,7 @@ export function DemoMenuEditor() {
   return (
     <div className="w-full max-w-[1460px] mx-auto">
       {/* Header */}
-      <div className="text-center mb-12 pt-[80px]">
+      <div className="text-center mb-8 md:mb-12 pt-12 md:pt-[80px]">
         <h2 className="text-xl md:text-[32px] font-bold text-primary mb-4 font-loubag uppercase flex flex-col md:flex-row items-center justify-center gap-2">
           <span>{t('home.demo.create')}</span>
           <TextRotator
@@ -242,13 +242,13 @@ export function DemoMenuEditor() {
         </h2>
       </div>
 
-      <div className="px-5 pb-12">
+      <div className="px-4 pb-12">
         <div className="grid gap-8 items-start grid-cols-1 md:grid-cols-[0.6fr_1fr]">
           {/* Left Column - Restaurant Info & Add Your First Item */}
           <div className="space-y-6">
             {/* Restaurant Info Section */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-              <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
+            <div className="bg-white rounded-2xl p-4 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+              <h3 className="text-2xl font-bold text-primary mb-8 md:mb-6 font-plus-jakarta-sans">
                 {t('home.demo.restaurantInfo.title')}
               </h3>
               <div>
@@ -267,8 +267,8 @@ export function DemoMenuEditor() {
             </div>
 
             {/* Add First Item Section */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-              <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
+            <div className="bg-white rounded-2xl p-4 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+              <h3 className="text-2xl font-bold text-primary mb-8 md:mb-6 font-plus-jakarta-sans">
                 {t('home.demo.addItem.title')}
               </h3>
 
@@ -343,8 +343,8 @@ export function DemoMenuEditor() {
           </div>
 
           {/* Right Column - Choose Your Template */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit md:sticky md:top-[100px]" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-            <h3 className="text-2xl font-bold text-primary mb-6 font-plus-jakarta-sans">
+          <div className="bg-white rounded-2xl p-4 md:p-8 border flex flex-col h-fit md:sticky md:top-[100px]" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+            <h3 className="text-2xl font-bold text-primary mb-8 md:mb-6 font-plus-jakarta-sans">
               {t('home.demo.template.title')}
             </h3>
 

@@ -111,7 +111,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
         >
           {restaurant.hero_image_url && <div className="absolute inset-0 bg-black/40"></div>}
           <div className="max-w-6xl mx-auto px-6 text-center">
-            <h1 className={cn("text-[56px] font-bold mb-4", headerFontClass)}>
+            <h1 className={cn("text-[36px] md:text-[56px] font-bold mb-4", headerFontClass)}>
               {restaurant.name}
             </h1>
             <p className="text-xl font-medium">
@@ -179,7 +179,7 @@ export default function Template4({ restaurant, demoItem }: Template4Props) {
           {!loading && !error && (
             <div className={`transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
               {sections.length === 0 ? (
-                <EmptyState message={t('menu.noItems')} className="text-gray-600" />
+                <EmptyState message={t('menu.noItems')} className="text-[16px] md:text-lg text-gray-600" />
               ) : (
                 sections.map((section, sectionIndex) => (
                   <div key={sectionIndex} className="mb-12">

@@ -174,7 +174,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
 
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center relative z-10">
-              <h1 className={cn("text-[56px] font-bold mb-4", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
+              <h1 className={cn("text-[36px] md:text-[56px] font-bold mb-4", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
                 {restaurant.name}
               </h1>
               <p className="text-xl" style={{ color: 'var(--pixel-text, white)' }}>{t('menuPage.title')}</p>
@@ -240,7 +240,7 @@ export default function Template2({ restaurant, demoItem }: Template2Props) {
               <div>
                 {categories.length === 0 ? (
                   <div style={{ color: 'var(--pixel-text, white)' }}>
-                    <EmptyState message={t('menu.noItems')} animationData={cookingBlackAnimation} />
+                    <EmptyState message={t('menu.noItems')} animationData={cookingBlackAnimation} className="text-[16px] md:text-lg text-gray-500" />
                   </div>
                 ) : (
                   categories.map((category) => {

@@ -97,7 +97,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                 {/* Main Heading */}
                 <AnimateIn animation="fade" duration={800} delay={100}>
                   <div className="mb-4">
-                    <h1 className={cn("text-[56px] font-bold tracking-tight uppercase leading-none", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                    <h1 className={cn("text-[36px] md:text-[56px] font-bold tracking-tight uppercase leading-none", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                       {restaurant.name}
                     </h1>
                   </div>
@@ -191,7 +191,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                 <div className={`w-full transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                   {sections.length === 0 && categories.length > 0 ? (
                     <div style={{ color: 'var(--pixel-text, #3D1F00)' }} className="opacity-60">
-                      <EmptyState message={t('menu.noItems')} />
+                      <EmptyState message={t('menu.noItems')} className="text-[16px] md:text-lg text-gray-500" />
                     </div>
                   ) : sections.length > 0 ? (
                     sections.map((section, sectionIndex) => (
@@ -274,7 +274,7 @@ export default function Template1({ restaurant, demoItem }: Template1Props) {
                     ))
                   ) : (
                     <div style={{ color: 'var(--pixel-text, #3D1F00)' }} className="opacity-60">
-                      <EmptyState message={t('menu.noCategories')} />
+                      <EmptyState message={t('menu.noCategories')} className="text-[16px] md:text-lg text-gray-500" />
                     </div>
                   )}
                 </div>

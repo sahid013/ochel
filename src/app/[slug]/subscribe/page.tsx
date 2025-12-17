@@ -238,7 +238,7 @@ export default function SubscribePage() {
                                         ? 'bg-[#FEF5F3] border-[#F34A23] shadow-lg ring-1 ring-[#F34A23]/20'
                                         : 'bg-[#FEF5F3] border-gray-200 shadow-sm'
                                         }`}>
-                                        <div className="p-8 pb-0 text-center">
+                                        <div className="p-4 md:p-8 pb-0 text-center">
                                             <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
                                             <div className="flex flex-col items-center justify-center mb-6">
                                                 <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>
@@ -316,7 +316,7 @@ export default function SubscribePage() {
 
                 {/* Custom Website Section */}
                 <AnimateIn animation="blur" delay={600} className="max-w-4xl mx-auto">
-                    <div className="bg-[#1a1a1a] rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
+                    <div className="bg-[#1a1a1a] rounded-3xl p-4 md:p-12 text-center relative overflow-hidden">
                         {/* Background decorative elements */}
                         <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
                             <div className="absolute top-0 left-0 w-64 h-64 bg-[#F34A23] rounded-full filter blur-[100px] transform -translate-x-1/2 -translate-y-1/2"></div>

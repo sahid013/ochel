@@ -498,11 +498,11 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   return (
     <div className="w-full">
       {/* Header */}
-      <div className={cn("px-5 pb-12", className)}>
+      <div className={cn("px-4 pb-12 pt-12 md:pt-0", className)}>
         <div className="grid gap-8 items-start" style={{ gridTemplateColumns: '0.6fr 1fr' }}>
           {/* Left Column - Add Items */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-white rounded-2xl p-4 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+            <div className="flex justify-between items-center mb-8 md:mb-6">
               <h3 className="text-2xl md:text-3xl font-bold text-primary font-loubag uppercase">
                 {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
               </h3>
@@ -531,8 +531,8 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           </div>
 
           {/* Right Column - Choose Your Template */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border flex flex-col h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
-            <h3 className="text-2xl md:text-3xl font-bold text-primary mb-6 font-loubag uppercase">
+          <div className="bg-white rounded-2xl p-4 md:p-8 border flex flex-col h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
+            <h3 className="text-2xl md:text-3xl font-bold text-primary mb-8 md:mb-6 font-loubag uppercase">
               Choose Your Template
             </h3>
 
@@ -610,7 +610,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       {showItemsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowItemsModal(false)}>
           <div className="bg-white rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col shadow-xl" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-6 border-b border-gray-100">
+            <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-100">
               <h3 className="text-xl font-bold text-primary font-plus-jakarta-sans">Your Menu Items</h3>
               <button
                 onClick={() => setShowItemsModal(false)}
@@ -622,7 +622,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto">
+            <div className="p-4 md:p-6 overflow-y-auto">
               <div className="space-y-3">
                 {menuItems.map((item) => (
                   <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex justify-between items-start">
@@ -652,7 +652,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
+            <div className="p-4 md:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
               <button
                 onClick={() => router.push(`/${restaurant.slug}/admin?skip_onboarding=true`)}
                 className="w-full py-3 bg-[#F34A23] hover:bg-[#d63e1b] text-white font-semibold rounded-xl transition-colors"

@@ -297,7 +297,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                         ? 'bg-[#FEF5F3] border-[#F34A23] shadow-lg ring-1 ring-[#F34A23]/20'
                                         : 'bg-[#FEF5F3] border-gray-200 shadow-sm'
                                         }`}>
-                                        <div className="p-8 pb-0 text-center">
+                                        <div className="p-4 md:p-8 pb-0 text-center">
                                             <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
                                             <div className="flex flex-col items-center justify-center mb-6">
                                                 <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>

@@ -342,7 +342,7 @@ export default function LoginPage() {
       {/* Reset Password Modal */}
       {showResetPassword && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+          <div className="bg-white rounded-2xl p-4 md:p-8 max-w-md w-full">
             <h2 className="text-2xl font-bold text-primary mb-2 font-loubag uppercase">{t('loginPage.reset.title')}</h2>
             <p className="text-secondary mb-6 font-inter">
               {t('loginPage.reset.subtitle')}

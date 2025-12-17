@@ -94,7 +94,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
         >
           {restaurant.hero_image_url && <div className="absolute inset-0 bg-black/40"></div>}
           <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <h1 className={cn("text-[56px] mb-6 tracking-wide", headerFontClass)}>
+            <h1 className={cn("text-[36px] md:text-[56px] mb-6 tracking-wide", headerFontClass)}>
               {restaurant.name}
             </h1>
             <div className="w-24 h-1 mx-auto mb-6" style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}></div>
@@ -173,7 +173,7 @@ export default function Template3({ restaurant, demoItem }: Template3Props) {
             !loading && !error && (
               <div className={`transition-opacity duration-300 ${isFading ? 'opacity-0' : 'opacity-100'}`}>
                 {sections.length === 0 ? (
-                  <EmptyState message={t('menu.noItems')} className="text-gray-500 italic" />
+                  <EmptyState message={t('menu.noItems')} className="text-[16px] md:text-lg text-gray-500 italic" />
                 ) : (
                   sections.map((section, sectionIndex) => (
                     <div key={sectionIndex} className="mb-16">
