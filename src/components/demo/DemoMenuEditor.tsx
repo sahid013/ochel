@@ -103,12 +103,63 @@ export function DemoMenuEditor() {
     }
   }, []);
 
-  const fileToBase64 = (file: File): Promise<string> => {
+  const fileToBase64 = (file: File, maxSizeKB: number = 500): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Calculate scaling to keep image under maxSizeKB
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Resize if image is too large (max 1200px on longest side)
+          const maxDimension = 1200;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Failed to get canvas context'));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Compress to JPEG with quality adjustment
+          let quality = 0.8;
+          let result = canvas.toDataURL('image/jpeg', quality);
+
+          // If still too large, reduce quality
+          while (result.length > maxSizeKB * 1024 && quality > 0.3) {
+            quality -= 0.1;
+            result = canvas.toDataURL('image/jpeg', quality);
+          }
+
+          console.log('[DemoMenuEditor] Compressed image:', {
+            originalSize: `${(file.size / 1024).toFixed(2)} KB`,
+            compressedSize: `${(result.length / 1024).toFixed(2)} KB`,
+            quality: quality.toFixed(2)
+          });
+
+          resolve(result);
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = e.target?.result as string;
+      };
       reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
     });
   };
 
@@ -178,8 +229,47 @@ export function DemoMenuEditor() {
 
     // Save to state and cache
     setDemoItem(newItem);
-    localStorage.setItem(DEMO_CACHE_KEY, JSON.stringify(newItem));
-    localStorage.setItem(DEMO_TEMPLATE_KEY, selectedTemplate);
+
+    try {
+      // Clear old demo data first to free up space
+      localStorage.removeItem(DEMO_CACHE_KEY);
+      localStorage.removeItem(DEMO_TEMPLATE_KEY);
+      localStorage.removeItem('ochel_first_time_menu_item');
+      localStorage.removeItem('ochel_first_time_template');
+
+      // Try to save the new item
+      const itemJson = JSON.stringify(newItem);
+      console.log('[DemoMenuEditor] Saving item to localStorage, size:', (itemJson.length / 1024).toFixed(2), 'KB');
+
+      localStorage.setItem(DEMO_CACHE_KEY, itemJson);
+      localStorage.setItem(DEMO_TEMPLATE_KEY, selectedTemplate);
+      console.log('[DemoMenuEditor] Item saved successfully');
+    } catch (error) {
+      if (error instanceof Error && error.name === 'QuotaExceededError') {
+        console.error('[DemoMenuEditor] LocalStorage quota exceeded. Item is too large (likely due to images).');
+
+        // Try to save without images as fallback
+        const itemWithoutImages: DemoMenuItem = {
+          ...newItem,
+          image: undefined,
+          images: undefined,
+          selectedImages: undefined
+        };
+
+        try {
+          localStorage.setItem(DEMO_CACHE_KEY, JSON.stringify(itemWithoutImages));
+          localStorage.setItem(DEMO_TEMPLATE_KEY, selectedTemplate);
+          console.log('[DemoMenuEditor] Saved item without images due to quota limit');
+          alert('Your item was saved, but images were too large for temporary storage. You can re-upload them after signing up.');
+        } catch (fallbackError) {
+          console.error('[DemoMenuEditor] Failed to save even without images:', fallbackError);
+          alert('Unable to save item - please try with smaller images or sign up first.');
+        }
+      } else {
+        console.error('[DemoMenuEditor] Error saving to localStorage:', error);
+        alert('Error saving item. Please try again.');
+      }
+    }
 
     setIsEditing(false);
 
