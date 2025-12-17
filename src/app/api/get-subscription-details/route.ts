@@ -8,9 +8,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 // Map Product IDs to Plan Names (for easier frontend logic)
 const PRODUCT_MAP: Record<string, string> = {
-    'prod_Tbyu0kjYbAO1GU': 'Basic',
-    'prod_Tbyv6lbtixiI8D': 'Pro',
-    'prod_TbyvP5fQfg2Dbh': 'Enterprise'
+    'prod_Tbyu0kjYbAO1GU': 'Standard',
+    'prod_Tbyv6lbtixiI8D': 'Essentielle',
+    'prod_TbyvP5fQfg2Dbh': 'Avancée'
 };
 
 export async function POST(req: Request) {

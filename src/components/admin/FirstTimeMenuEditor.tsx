@@ -537,7 +537,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
             </h3>
 
             {/* Template Selector */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
               {['template1', 'template2', 'template3', 'template4'].map((template) => (
                 <button
                   key={template}

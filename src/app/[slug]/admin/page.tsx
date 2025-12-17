@@ -193,7 +193,7 @@ export default function RestaurantAdminPage() {
           <div className="bg-white border-b border-gray-200 shadow-sm">
             <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
               <div className="flex flex-row items-center gap-4 w-full md:w-auto">
-                <h1 className="text-[30px] md:text-2xl font-bold text-primary font-loubag uppercase">
+                <h1 className="text-[24px] md:text-2xl font-bold text-primary font-loubag uppercase">
                   Welcome to Ochel!
                 </h1>
                 <PrimaryButton
