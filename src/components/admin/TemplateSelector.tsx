@@ -82,8 +82,8 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
           </p>
         </div>
         <div className="flex-shrink-0 flex gap-3">
-          {/* View Public Menu Button - Disabled without subscription */}
-          {restaurant.is_active ? (
+          {/* View Public Menu Button - Disabled without active subscription */}
+          {restaurant.is_active && (restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing') ? (
             <a
               href={`/${restaurant.slug}`}
               target="_blank"
@@ -95,8 +95,8 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
           ) : (
             <button
               disabled
-              className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60"
-              title="Publish your menu to enable this"
+              className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60 pointer-events-none"
+              title="Subscribe and publish your menu to enable this"
             >
               View Public Menu
             </button>
