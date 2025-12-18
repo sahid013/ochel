@@ -102,9 +102,9 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
             </button>
           )}
 
-          {/* Publish Menu Button - Goes to subscribe page */}
+          {/* Publish Menu Button - Goes to restaurant's subscribe page */}
           <a
-            href="/subscribe"
+            href={`/${restaurant.slug}/subscribe`}
             className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
           >
             Publish Menu
