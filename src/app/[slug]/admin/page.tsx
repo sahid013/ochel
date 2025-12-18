@@ -235,7 +235,25 @@ export default function RestaurantAdminPage() {
                   Welcome to Ochel!
                 </h1>
                 <PrimaryButton
-                  onClick={() => router.push(`/${slug}/admin?skip_onboarding=true`)}
+                  onClick={async () => {
+                    // Mark onboarding as completed in the database
+                    try {
+                      await supabase
+                        .from('restaurants')
+                        .update({ has_completed_onboarding: true })
+                        .eq('id', restaurant.id);
+
+                      // Refresh restaurant data to update the state
+                      await checkAgain();
+
+                      // Navigate to admin panel
+                      router.push(`/${slug}/admin`);
+                    } catch (error) {
+                      console.error('Error completing onboarding:', error);
+                      // Still navigate even if update fails
+                      router.push(`/${slug}/admin?skip_onboarding=true`);
+                    }
+                  }}
                   size="sm"
                   className=""
                 >

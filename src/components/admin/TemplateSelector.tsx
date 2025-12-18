@@ -81,14 +81,35 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
             Select the template that best represents your restaurant's style. Use "Preview Live" to test each template before activating it.
           </p>
         </div>
-        <a
-          href={`/${restaurant.slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-shrink-0 px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
-        >
-          View Public Menu
-        </a>
+        <div className="flex-shrink-0 flex gap-3">
+          {/* View Public Menu Button - Disabled without subscription */}
+          {restaurant.is_active ? (
+            <a
+              href={`/${restaurant.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors shadow-sm"
+            >
+              View Public Menu
+            </a>
+          ) : (
+            <button
+              disabled
+              className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60"
+              title="Publish your menu to enable this"
+            >
+              View Public Menu
+            </button>
+          )}
+
+          {/* Publish Menu Button - Goes to subscribe page */}
+          <a
+            href="/subscribe"
+            className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
+          >
+            Publish Menu
+          </a>
+        </div>
       </div>
 
       {error && (
