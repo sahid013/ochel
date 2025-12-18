@@ -6,6 +6,7 @@ import { PrimaryButton } from '@/components/ui';
 import { useTranslation } from '@/contexts/LanguageContext';
 import { MenuEditorForm, MenuEditorFormData } from '@/components/menu/MenuEditorForm';
 import { LoginSignupModal } from './LoginSignupModal';
+import { ImageUploader } from './ImageUploader';
 import Template1 from '@/components/templates/Template1';
 import Template2 from '@/components/templates/Template2';
 import Template3 from '@/components/templates/Template3';
@@ -377,12 +378,20 @@ export function DemoMenuEditor() {
     selectedImages: demoItem.selectedImages || [null, null, null, null]
   } : undefined;
 
+  // Helper to get displayable URL from File or string
+  const getImageUrl = (img: File | string | null): string | undefined => {
+    if (!img) return undefined;
+    if (typeof img === 'string') return img;
+    if (img instanceof File) return URL.createObjectURL(img);
+    return undefined;
+  };
+
   // Create dynamic mock restaurant with customization
   const mockRestaurant: Restaurant = {
     ...MOCK_RESTAURANT,
     name: restaurantName,
-    logo_url: logoImage[0] as string || undefined,
-    hero_image_url: heroImage[0] as string || undefined,
+    logo_url: getImageUrl(logoImage[0]),
+    hero_image_url: getImageUrl(heroImage[0]),
     primary_color: primaryColor || undefined
   };
 
@@ -425,40 +434,37 @@ export function DemoMenuEditor() {
                   />
                 </div>
 
-                {/* Logo Upload */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Restaurant Logo
-                  </label>
-                  <ImageUploader
-                    images={logoImage}
-                    onImagesChange={handleLogoChange}
-                    maxImages={1}
-                    loadingText="Uploading..."
-                    placeholderText="Upload Logo"
-                    aspectRatio="h-20 w-40"
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Upload your restaurant logo (optional)
-                  </p>
-                </div>
+                {/* Logo and Hero Images - Side by side on desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Logo Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Restaurant Logo
+                    </label>
+                    <ImageUploader
+                      images={logoImage}
+                      onImagesChange={handleLogoChange}
+                      maxImages={1}
+                      loadingText="Uploading..."
+                      placeholderText="Upload Logo"
+                      aspectRatio="h-20 w-20"
+                    />
+                  </div>
 
-                {/* Hero Background Image */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hero Background Image
-                  </label>
-                  <ImageUploader
-                    images={heroImage}
-                    onImagesChange={handleHeroChange}
-                    maxImages={1}
-                    loadingText="Uploading..."
-                    placeholderText="Upload Hero Image"
-                    aspectRatio="h-32 w-full"
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Customize the banner image at the top of your menu (optional)
-                  </p>
+                  {/* Hero Background Image */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Hero Background Image
+                    </label>
+                    <ImageUploader
+                      images={heroImage}
+                      onImagesChange={handleHeroChange}
+                      maxImages={1}
+                      loadingText="Uploading..."
+                      placeholderText="Upload Hero Image"
+                      aspectRatio="h-20 w-full"
+                    />
+                  </div>
                 </div>
 
                 {/* Primary Color */}
@@ -466,25 +472,46 @@ export function DemoMenuEditor() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Primary Color
                   </label>
-                  <div className="flex gap-3">
-                    <input
-                      type="color"
-                      value={primaryColor}
-                      onChange={(e) => handlePrimaryColorChange(e.target.value)}
-                      className="w-20 h-12 border border-gray-300 rounded-lg cursor-pointer p-1"
-                    />
-                    <input
-                      type="text"
-                      value={primaryColor}
-                      onChange={(e) => handlePrimaryColorChange(e.target.value)}
-                      placeholder="#F34A23"
-                      className="flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                      style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                    />
+                  <div className="flex gap-3 items-center">
+                    <div className="flex-shrink-0">
+                      <input
+                        type="color"
+                        value={primaryColor}
+                        onChange={(e) => handlePrimaryColorChange(e.target.value)}
+                        className="w-16 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                        title="Pick a color"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label htmlFor="hex-color-input" className="text-xs text-gray-500 block mb-1">
+                        Hex Color Code
+                      </label>
+                      <input
+                        id="hex-color-input"
+                        type="text"
+                        value={primaryColor}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          // Allow typing # and hex characters
+                          if (value === '' || /^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                            handlePrimaryColorChange(value);
+                          }
+                        }}
+                        onBlur={(e) => {
+                          // Validate on blur - if invalid, reset to previous valid value
+                          const value = e.target.value;
+                          if (value && !/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                            // Invalid hex, keep previous value
+                            e.target.value = primaryColor;
+                          }
+                        }}
+                        placeholder="#F34A23"
+                        maxLength={7}
+                        className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400 font-mono text-sm"
+                        style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
+                      />
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Main brand color for buttons and highlights
-                  </p>
                 </div>
               </div>
             </div>
