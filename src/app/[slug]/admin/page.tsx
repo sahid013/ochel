@@ -243,15 +243,18 @@ export default function RestaurantAdminPage() {
                         .update({ has_completed_onboarding: true })
                         .eq('id', restaurant.id);
 
+                      // Update local restaurant state immediately
+                      setRestaurant({ ...restaurant, has_completed_onboarding: true });
+
                       // Refresh restaurant data to update the state
                       await checkAgain();
 
-                      // Navigate to admin panel
-                      router.push(`/${slug}/admin`);
+                      // Navigate to admin panel with menu tab explicitly
+                      router.push(`/${slug}/admin?tab=menu`);
                     } catch (error) {
                       console.error('Error completing onboarding:', error);
                       // Still navigate even if update fails
-                      router.push(`/${slug}/admin?skip_onboarding=true`);
+                      router.push(`/${slug}/admin?skip_onboarding=true&tab=menu`);
                     }
                   }}
                   size="sm"

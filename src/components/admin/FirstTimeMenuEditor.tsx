@@ -776,7 +776,22 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
             <div className="p-4 md:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
               <button
-                onClick={() => router.push(`/${restaurant.slug}/admin?skip_onboarding=true`)}
+                onClick={async () => {
+                  try {
+                    // Mark onboarding as completed in the database
+                    await supabase
+                      .from('restaurants')
+                      .update({ has_completed_onboarding: true })
+                      .eq('id', restaurant.id);
+
+                    // Navigate to menu management tab
+                    router.push(`/${restaurant.slug}/admin?tab=menu`);
+                  } catch (error) {
+                    console.error('Error completing onboarding:', error);
+                    // Still navigate even if update fails
+                    router.push(`/${restaurant.slug}/admin?skip_onboarding=true&tab=menu`);
+                  }
+                }}
                 className="w-full py-3 bg-[#F34A23] hover:bg-[#d63e1b] text-white font-semibold rounded-xl transition-colors"
               >
                 Gérer mon menu
