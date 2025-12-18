@@ -144,6 +144,101 @@ export default function SignupPage() {
 
       console.log('Signup successful! Restaurant created:', newRestaurant);
 
+      // Step 3.5: Transfer customization values (logo, hero, primary color)
+      const DEMO_LOGO_KEY = 'ochel_demo_logo';
+      const DEMO_HERO_KEY = 'ochel_demo_hero';
+      const DEMO_PRIMARY_COLOR_KEY = 'ochel_demo_primary_color';
+
+      const demoLogo = localStorage.getItem(DEMO_LOGO_KEY);
+      const demoHero = localStorage.getItem(DEMO_HERO_KEY);
+      const demoPrimaryColor = localStorage.getItem(DEMO_PRIMARY_COLOR_KEY);
+
+      if (demoLogo || demoHero || demoPrimaryColor) {
+        try {
+          console.log('Customization values found, uploading to restaurant...');
+
+          // Helper function to upload base64 image to Supabase storage
+          const uploadBase64Image = async (base64: string, fileName: string): Promise<string | null> => {
+            try {
+              // Extract the base64 data
+              const matches = base64.match(/^data:(.+);base64,(.+)$/);
+              if (!matches) return null;
+
+              const contentType = matches[1];
+              const base64Data = matches[2];
+
+              // Convert base64 to blob
+              const byteCharacters = atob(base64Data);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: contentType });
+
+              // Upload to Supabase storage
+              const fileExt = contentType.split('/')[1];
+              const filePath = `${slug}-${fileName}-${Math.random()}.${fileExt}`;
+
+              const { error: uploadError } = await supabase.storage
+                .from('brand-assets')
+                .upload(filePath, blob);
+
+              if (uploadError) throw uploadError;
+
+              const { data: { publicUrl } } = supabase.storage
+                .from('brand-assets')
+                .getPublicUrl(filePath);
+
+              return publicUrl;
+            } catch (error) {
+              console.error(`Error uploading ${fileName}:`, error);
+              return null;
+            }
+          };
+
+          // Upload logo and hero images
+          let logoUrl = null;
+          let heroUrl = null;
+
+          if (demoLogo && demoLogo.startsWith('data:image')) {
+            logoUrl = await uploadBase64Image(demoLogo, 'logo');
+          }
+
+          if (demoHero && demoHero.startsWith('data:image')) {
+            heroUrl = await uploadBase64Image(demoHero, 'hero');
+          }
+
+          // Update restaurant with customization values
+          const updateData: any = {};
+          if (logoUrl) updateData.logo_url = logoUrl;
+          if (heroUrl) updateData.hero_image_url = heroUrl;
+          if (demoPrimaryColor) updateData.primary_color = demoPrimaryColor;
+
+          if (Object.keys(updateData).length > 0) {
+            const { error: updateError } = await supabase
+              .from('restaurants')
+              .update(updateData)
+              .eq('id', newRestaurant.id);
+
+            if (updateError) {
+              console.error('Error updating restaurant customization:', updateError);
+            } else {
+              console.log('Customization values updated successfully');
+            }
+          }
+
+          // Clear customization cache
+          localStorage.removeItem(DEMO_LOGO_KEY);
+          localStorage.removeItem(DEMO_HERO_KEY);
+          localStorage.removeItem(DEMO_PRIMARY_COLOR_KEY);
+
+        } catch (error) {
+          console.error('Error transferring customization:', error);
+          // Don't fail signup if customization transfer fails
+        }
+      }
+
       // Step 4: Check for demo item and transfer it to the new restaurant
       const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
       const DEMO_TEMPLATE_KEY = 'ochel_demo_template';

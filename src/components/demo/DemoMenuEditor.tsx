@@ -30,8 +30,11 @@ interface DemoMenuItem {
 const DEMO_CACHE_KEY = 'ochel_demo_menu_item';
 const DEMO_TEMPLATE_KEY = 'ochel_demo_template';
 const DEMO_RESTAURANT_NAME_KEY = 'ochel_demo_restaurant_name';
+const DEMO_LOGO_KEY = 'ochel_demo_logo';
+const DEMO_HERO_KEY = 'ochel_demo_hero';
+const DEMO_PRIMARY_COLOR_KEY = 'ochel_demo_primary_color';
 // Bump this version to force-clear cache for all users
-const CACHE_VERSION = 'v1.0';
+const CACHE_VERSION = 'v1.1';
 const CACHE_VERSION_KEY = 'ochel_cache_version';
 
 // Mock restaurant object for template previews
@@ -66,6 +69,11 @@ export function DemoMenuEditor() {
   const [isEditing, setIsEditing] = useState(false);
   const [restaurantName, setRestaurantName] = useState<string>('Your Restaurant');
 
+  // Customization states
+  const [logoImage, setLogoImage] = useState<(File | string | null)[]>([null]);
+  const [heroImage, setHeroImage] = useState<(File | string | null)[]>([null]);
+  const [primaryColor, setPrimaryColor] = useState<string>('#F34A23');
+
   // Load cached demo item on mount
   useEffect(() => {
     // Check cache version
@@ -77,6 +85,9 @@ export function DemoMenuEditor() {
       localStorage.removeItem(DEMO_CACHE_KEY);
       localStorage.removeItem(DEMO_TEMPLATE_KEY);
       localStorage.removeItem(DEMO_RESTAURANT_NAME_KEY);
+      localStorage.removeItem(DEMO_LOGO_KEY);
+      localStorage.removeItem(DEMO_HERO_KEY);
+      localStorage.removeItem(DEMO_PRIMARY_COLOR_KEY);
       localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
       // We don't return here because we want the clean state to just proceed normally (variables are null/default)
     } else {
@@ -84,6 +95,9 @@ export function DemoMenuEditor() {
       const cached = localStorage.getItem(DEMO_CACHE_KEY);
       const cachedTemplate = localStorage.getItem(DEMO_TEMPLATE_KEY);
       const cachedRestaurantName = localStorage.getItem(DEMO_RESTAURANT_NAME_KEY);
+      const cachedLogo = localStorage.getItem(DEMO_LOGO_KEY);
+      const cachedHero = localStorage.getItem(DEMO_HERO_KEY);
+      const cachedPrimaryColor = localStorage.getItem(DEMO_PRIMARY_COLOR_KEY);
 
       if (cached) {
         try {
@@ -99,6 +113,18 @@ export function DemoMenuEditor() {
 
       if (cachedRestaurantName) {
         setRestaurantName(cachedRestaurantName);
+      }
+
+      if (cachedLogo) {
+        setLogoImage([cachedLogo]);
+      }
+
+      if (cachedHero) {
+        setHeroImage([cachedHero]);
+      }
+
+      if (cachedPrimaryColor) {
+        setPrimaryColor(cachedPrimaryColor);
       }
     }
   }, []);
@@ -299,6 +325,45 @@ export function DemoMenuEditor() {
     localStorage.setItem(DEMO_RESTAURANT_NAME_KEY, name || 'Your Restaurant');
   };
 
+  const handleLogoChange = async (images: (File | string | null)[]) => {
+    setLogoImage(images);
+    const img = images[0];
+    if (img instanceof File) {
+      try {
+        const base64 = await fileToBase64(img);
+        localStorage.setItem(DEMO_LOGO_KEY, base64);
+      } catch (error) {
+        console.error('Error converting logo to base64:', error);
+      }
+    } else if (typeof img === 'string') {
+      localStorage.setItem(DEMO_LOGO_KEY, img);
+    } else {
+      localStorage.removeItem(DEMO_LOGO_KEY);
+    }
+  };
+
+  const handleHeroChange = async (images: (File | string | null)[]) => {
+    setHeroImage(images);
+    const img = images[0];
+    if (img instanceof File) {
+      try {
+        const base64 = await fileToBase64(img);
+        localStorage.setItem(DEMO_HERO_KEY, base64);
+      } catch (error) {
+        console.error('Error converting hero to base64:', error);
+      }
+    } else if (typeof img === 'string') {
+      localStorage.setItem(DEMO_HERO_KEY, img);
+    } else {
+      localStorage.removeItem(DEMO_HERO_KEY);
+    }
+  };
+
+  const handlePrimaryColorChange = (color: string) => {
+    setPrimaryColor(color);
+    localStorage.setItem(DEMO_PRIMARY_COLOR_KEY, color);
+  };
+
   // Transform demoItem to initialValues
   const initialValues: Partial<MenuEditorFormData> | undefined = isEditing && demoItem ? {
     title: demoItem.title,
@@ -312,10 +377,13 @@ export function DemoMenuEditor() {
     selectedImages: demoItem.selectedImages || [null, null, null, null]
   } : undefined;
 
-  // Create dynamic mock restaurant
+  // Create dynamic mock restaurant with customization
   const mockRestaurant: Restaurant = {
     ...MOCK_RESTAURANT,
-    name: restaurantName
+    name: restaurantName,
+    logo_url: logoImage[0] as string || undefined,
+    hero_image_url: heroImage[0] as string || undefined,
+    primary_color: primaryColor || undefined
   };
 
   return (
@@ -341,18 +409,83 @@ export function DemoMenuEditor() {
               <h3 className="text-2xl font-bold text-primary mb-8 md:mb-6 font-plus-jakarta-sans">
                 {t('home.demo.restaurantInfo.title')}
               </h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('home.demo.restaurantInfo.restaurantName')}
-                </label>
-                <input
-                  type="text"
-                  value={restaurantName === 'Your Restaurant' ? '' : restaurantName}
-                  onChange={(e) => handleRestaurantNameChange(e.target.value)}
-                  placeholder={t('home.demo.restaurantInfo.restaurantNamePlaceholder')}
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
-                  style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                />
+              <div className="space-y-6">
+                {/* Restaurant Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t('home.demo.restaurantInfo.restaurantName')}
+                  </label>
+                  <input
+                    type="text"
+                    value={restaurantName === 'Your Restaurant' ? '' : restaurantName}
+                    onChange={(e) => handleRestaurantNameChange(e.target.value)}
+                    placeholder={t('home.demo.restaurantInfo.restaurantNamePlaceholder')}
+                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
+                    style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
+                  />
+                </div>
+
+                {/* Logo Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Restaurant Logo
+                  </label>
+                  <ImageUploader
+                    images={logoImage}
+                    onImagesChange={handleLogoChange}
+                    maxImages={1}
+                    loadingText="Uploading..."
+                    placeholderText="Upload Logo"
+                    aspectRatio="h-20 w-40"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Upload your restaurant logo (optional)
+                  </p>
+                </div>
+
+                {/* Hero Background Image */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hero Background Image
+                  </label>
+                  <ImageUploader
+                    images={heroImage}
+                    onImagesChange={handleHeroChange}
+                    maxImages={1}
+                    loadingText="Uploading..."
+                    placeholderText="Upload Hero Image"
+                    aspectRatio="h-32 w-full"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Customize the banner image at the top of your menu (optional)
+                  </p>
+                </div>
+
+                {/* Primary Color */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Primary Color
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="color"
+                      value={primaryColor}
+                      onChange={(e) => handlePrimaryColorChange(e.target.value)}
+                      className="w-20 h-12 border border-gray-300 rounded-lg cursor-pointer p-1"
+                    />
+                    <input
+                      type="text"
+                      value={primaryColor}
+                      onChange={(e) => handlePrimaryColorChange(e.target.value)}
+                      placeholder="#F34A23"
+                      className="flex-1 px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
+                      style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Main brand color for buttons and highlights
+                  </p>
+                </div>
               </div>
             </div>
 
