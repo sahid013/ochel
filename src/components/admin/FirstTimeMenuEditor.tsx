@@ -47,6 +47,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   const [formKey, setFormKey] = useState(0);
   const [showItemsModal, setShowItemsModal] = useState(false);
   const hasMigratedRef = useRef(false);
+  const isMigratingRef = useRef(false);
 
   // Log localStorage on mount
   useEffect(() => {
@@ -129,11 +130,14 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   };
 
   const migrateDemoItem = async () => {
-    // Prevent concurrent migrations
-    if (isMigrating) {
+    // Prevent concurrent migrations using both state and ref for extra safety
+    if (isMigrating || isMigratingRef.current) {
       console.log('[Migration] Already migrating, skipping...');
       return false;
     }
+
+    // Set both immediately to block any concurrent attempts
+    isMigratingRef.current = true;
 
     const DEMO_KEY = 'ochel_demo_menu_item';
     const FIRST_TIME_KEY = 'ochel_first_time_menu_item';
@@ -166,6 +170,12 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         hasDetailedImages: !!demoItem.selectedImages,
         detailedImagesCount: demoItem.selectedImages?.length || 0
       });
+
+      // Clear localStorage IMMEDIATELY to prevent duplicate migrations
+      console.log('[Migration] Clearing localStorage key immediately:', usedKey);
+      localStorage.removeItem(usedKey);
+      localStorage.removeItem(DEMO_KEY); // Clear both keys to be safe
+      localStorage.removeItem(FIRST_TIME_KEY);
 
       // Create or get category
       console.log('[Migration] Checking for existing category:', demoItem.category);
@@ -307,10 +317,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
       console.log('[Migration] Menu item created successfully!');
 
-      // Clear demo item from local storage
-      console.log('[Migration] Clearing localStorage key:', usedKey);
-      localStorage.removeItem(usedKey);
-
       // Clear menu data cache to ensure template updates
       if (typeof window !== 'undefined') {
         sessionStorage.removeItem(`menu_data_${restaurant.id}`);
@@ -329,6 +335,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     } finally {
       console.log('[Migration] Cleaning up, setting isMigrating to false');
       setIsMigrating(false);
+      isMigratingRef.current = false;
     }
   };
 
@@ -360,11 +367,18 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
       if (hasDemoItem) {
         console.log('[FirstTimeMenuEditor] Found pending migration item, attempting migration...');
+        // Set this BEFORE migration to prevent duplicate migrations
+        if (hasMigratedRef.current) {
+          console.log('[FirstTimeMenuEditor] Migration already in progress, skipping...');
+          await fetchMenuItems();
+          return;
+        }
         hasMigratedRef.current = true;
         const success = await migrateDemoItem();
         console.log('[FirstTimeMenuEditor] Migration result:', success);
         if (!success) {
           console.log('[FirstTimeMenuEditor] Migration failed, fetching items normally...');
+          hasMigratedRef.current = false; // Reset on failure
           await fetchMenuItems();
         }
         // If migration succeeded, fetchMenuItems() is called inside migrateDemoItem
