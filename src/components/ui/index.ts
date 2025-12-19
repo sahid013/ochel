@@ -9,6 +9,11 @@ export { Alert } from './Alert';
 export { LoadingSpinner, PageLoadingSpinner } from './LoadingSpinner';
 export { Badge } from './Badge';
 export { EmptyState } from './EmptyState';
+export { ConfirmationModal } from './ConfirmationModal';
+export { AnimateIn } from './AnimateIn';
+export { TextRotator } from './TextRotator';
+export { SkeletonLoader } from './SkeletonLoader';
+export { MenuSkeleton } from './MenuSkeleton';
 
 export type { ButtonProps } from './Button';
 export type { InputProps } from './Input';

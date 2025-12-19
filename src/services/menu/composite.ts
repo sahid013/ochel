@@ -5,7 +5,17 @@ import { subcategoryService } from './subcategoryService';
 import { menuItemService } from './menuItemService';
 import { addonService } from './addonService';
 
+/**
+ * Composite service for managing complete menu data
+ * Aggregates data from categories, subcategories, menu items, and addons
+ */
 export const menuService = {
+    /**
+     * Get complete menu data for a specific category
+     * @param categoryId - The category ID to fetch menu data for
+     * @returns Complete menu data including category, subcategories, items, and addons
+     * @throws Error if category is not found or has no restaurant ID
+     */
     async getMenuByCategory(categoryId: number): Promise<MenuData> {
         // Fetch category first to get restaurantId
 
@@ -39,6 +49,11 @@ export const menuService = {
         };
     },
 
+    /**
+     * Get all active categories for a restaurant
+     * @param restaurantId - Optional restaurant ID to filter categories
+     * @returns Array of active categories ordered by their display order
+     */
     async getActiveCategories(restaurantId?: string): Promise<Category[]> {
         let query = supabase
             .from('categories')
@@ -57,6 +72,13 @@ export const menuService = {
         return data || [];
     },
 
+    /**
+     * Get all menu data for a restaurant, organized by category
+     * Fetches categories, subcategories, menu items, and addons in parallel for efficiency
+     * @param restaurantId - Restaurant ID (required for data fetching)
+     * @returns Map of category IDs to complete menu data for each category
+     * @returns Empty map if restaurantId is not provided
+     */
     async getAllMenuData(restaurantId?: string): Promise<Map<number, MenuData>> {
         // Fetch all data in one go
         // Note: subcategoryService.getAll requires restaurantId.

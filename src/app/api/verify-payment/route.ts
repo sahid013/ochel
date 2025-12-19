@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { getPlanDetails } from '@/lib/stripe-plans';
+import { logDebug, logError } from '@/lib/logger';
 
 export async function POST(req: Request) {
     if (!process.env.STRIPE_SECRET_KEY) {
@@ -20,40 +22,40 @@ export async function POST(req: Request) {
     );
     try {
         const body = await req.json();
-        console.log('[Verify Payment] Request body:', body);
+        logDebug('Request body:', body);
         const { sessionId, slug } = body;
 
         if (!sessionId) {
-            console.error('[Verify Payment] Missing session ID');
+            logError('Missing session ID');
             return NextResponse.json({ error: 'Missing session ID' }, { status: 400 });
         }
 
         // 1. Retrieve session from Stripe
-        console.log('[Verify Payment] Retrieving session:', sessionId);
+        logDebug('Retrieving session:', sessionId);
         const session = await stripe.checkout.sessions.retrieve(sessionId);
-        console.log('[Verify Payment] Session retrieved. Payment Status:', session.payment_status);
+        logDebug('Session retrieved. Payment Status:', session.payment_status);
 
         // 2. Verify payment status
         if (session.payment_status !== 'paid') {
-            console.error('[Verify Payment] Payment not paid:', session.payment_status);
+            logError('Payment not paid:', session.payment_status);
             return NextResponse.json({ error: `Payment not completed. Status: ${session.payment_status}` }, { status: 400 });
         }
 
         const restaurantId = session.metadata?.restaurantId;
-        console.log('[Verify Payment] Restaurant ID from metadata:', restaurantId);
+        logDebug('Restaurant ID from metadata:', restaurantId);
 
         let targetRestaurantId = restaurantId;
 
         if (!targetRestaurantId) {
-            console.log('[Verify Payment] Metadata missing. Falling back to slug lookup:', slug);
+            logDebug('Metadata missing. Falling back to slug lookup:', slug);
             // Fallback: try to find restaurant by slug if metadata is missing
             const { data: rest } = await supabaseAdmin.from('restaurants').select('id').eq('slug', slug).single();
             if (!rest) {
-                console.error('[Verify Payment] Restaurant not found by slug:', slug);
+                logError('Restaurant not found by slug:', slug);
                 return NextResponse.json({ error: 'Restaurant not found' }, { status: 404 });
             }
             targetRestaurantId = rest.id;
-            console.log('[Verify Payment] Found restaurant ID by slug:', targetRestaurantId);
+            logDebug('Found restaurant ID by slug:', targetRestaurantId);
         }
 
         // 3. Determine credits based on plan ID (same logic as webhook)
@@ -61,23 +63,12 @@ export async function POST(req: Request) {
         // Essential: prod_Tbyv6lbtixiI8D -> 15
         // Advanced: prod_TbyvP5fQfg2Dbh -> 25
         const planId = session.metadata?.planId;
-        let creditsToAdd = 0;
-        let subscriptionPlan = 'free';
+        const planDetails = getPlanDetails(planId || '');
+        let creditsToAdd = planDetails.credits;
+        let subscriptionPlan = planDetails.name;
 
-        console.log(`[Verify Payment] Processing checkout for planId: ${planId}`);
-
-        if (planId === 'prod_Tbyu0kjYbAO1GU') {
-            creditsToAdd = 5;
-            subscriptionPlan = 'Standard';
-        } else if (planId === 'prod_Tbyv6lbtixiI8D') {
-            creditsToAdd = 15;
-            subscriptionPlan = 'Essentielle';
-        } else if (planId === 'prod_TbyvP5fQfg2Dbh') {
-            creditsToAdd = 25;
-            subscriptionPlan = 'Avancée';
-        }
-
-        console.log(`[Verify Payment] Determined plan: ${subscriptionPlan}, Initial credits: ${creditsToAdd}`);
+        logDebug(`Processing checkout for planId: ${planId}`);
+        logDebug(`Determined plan: ${subscriptionPlan}, Initial credits: ${creditsToAdd}`);
 
         // Check if user has already submitted a 3D request (uploaded 4 images)
         const { data: existingItems, error: itemsError } = await supabaseAdmin
@@ -89,14 +80,14 @@ export async function POST(req: Request) {
 
         // If user has pending 3D request, deduct 1 credit
         if (existingItems && existingItems.length > 0) {
-            console.log(`[Verify Payment] Found existing 3D items, deducting 1 credit.`);
+            logDebug('Found existing 3D items, deducting 1 credit.');
             creditsToAdd = Math.max(0, creditsToAdd - 1);
         }
 
-        console.log(`[Verify Payment] Final credits to add: ${creditsToAdd}`);
+        logDebug(`Final credits to add: ${creditsToAdd}`);
 
         // 4. Manually update database (same logic as webhook)
-        console.log('[Verify Payment] Updating database for restaurant:', targetRestaurantId);
+        logDebug('Updating database for restaurant:', targetRestaurantId);
         const { error } = await supabaseAdmin
             .from('restaurants')
             .update({
@@ -109,17 +100,17 @@ export async function POST(req: Request) {
             .eq('id', targetRestaurantId);
 
         if (error) {
-            console.error('[Verify Payment] DB Update Error:', error);
+            logError('DB Update Error:', error);
             return NextResponse.json({ error: 'Database update failed: ' + error.message }, { status: 500 });
         }
 
-        console.log(`[Verify Payment] Successfully updated restaurant ${targetRestaurantId} with credits: ${creditsToAdd}`);
+        logDebug(`Successfully updated restaurant ${targetRestaurantId} with credits: ${creditsToAdd}`);
 
-        console.log('[Verify Payment] Success!');
+        logDebug('Payment verification successful');
         return NextResponse.json({ success: true });
 
     } catch (err: any) {
-        console.error('Verification error:', err);
+        logError('Verification error:', err);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }

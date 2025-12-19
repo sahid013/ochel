@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { TableSkeleton } from '@/components/ui/SkeletonLoader';
-import { downloadMultipleFiles } from '@/utils/download';
+import { downloadMultipleFiles } from '@/lib/download';
 import { cn } from '@/lib/utils'; // Assuming cn utility exists, usually does in shadcn/tailwind setups
 
 interface MenuItemWithDetails {

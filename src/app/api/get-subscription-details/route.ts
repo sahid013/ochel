@@ -1,17 +1,11 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { supabase } from '@/lib/supabase';
+import { getPlanDetails } from '@/lib/stripe-plans';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     // Use default API version from package
 });
-
-// Map Product IDs to Plan Names (for easier frontend logic)
-const PRODUCT_MAP: Record<string, string> = {
-    'prod_Tbyu0kjYbAO1GU': 'Standard',
-    'prod_Tbyv6lbtixiI8D': 'Essentielle',
-    'prod_TbyvP5fQfg2Dbh': 'Avancée'
-};
 
 export async function POST(req: Request) {
     try {
@@ -41,7 +35,8 @@ export async function POST(req: Request) {
 
         const price = subscription.items.data[0].price;
         const productId = typeof price.product === 'string' ? price.product : price.product.id;
-        const planName = PRODUCT_MAP[productId] || 'Unknown';
+        const planDetails = getPlanDetails(productId);
+        const planName = planDetails.name;
 
         return NextResponse.json({
             status: subscription.status,

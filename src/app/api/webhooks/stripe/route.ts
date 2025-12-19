@@ -2,6 +2,8 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { getPlanDetails } from '@/lib/stripe-plans';
+import { logDebug, logError } from '@/lib/logger';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     // Use default API version from package
@@ -23,7 +25,7 @@ export async function POST(req: Request) {
     try {
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err: any) {
-        console.error(`Webhook signature verification failed.`, err.message);
+        logError('Webhook signature verification failed.', err);
         return NextResponse.json({ error: err.message }, { status: 400 });
     }
 
@@ -34,7 +36,7 @@ export async function POST(req: Request) {
                 const restaurantId = session.metadata?.restaurantId;
 
                 if (!restaurantId) {
-                    console.error('No restaurantId in session metadata');
+                    logError('No restaurantId in session metadata');
                     break;
                 }
 
@@ -43,23 +45,12 @@ export async function POST(req: Request) {
                 // Essential: prod_Tbyv6lbtixiI8D -> 15 (minus 1 = 14)
                 // Advanced: prod_TbyvP5fQfg2Dbh -> 25 (minus 1 = 24)
                 const planId = session.metadata?.planId;
-                let creditsToAdd = 0;
-                let subscriptionPlan = 'free';
+                const planDetails = getPlanDetails(planId || '');
+                let creditsToAdd = planDetails.credits;
+                let subscriptionPlan = planDetails.name;
 
-                console.log(`[Webhook Debug] Processing checkout for planId: ${planId}`);
-
-                if (planId === 'prod_Tbyu0kjYbAO1GU') {
-                    creditsToAdd = 5; // Start with full quota
-                    subscriptionPlan = 'Standard';
-                } else if (planId === 'prod_Tbyv6lbtixiI8D') {
-                    creditsToAdd = 15;
-                    subscriptionPlan = 'Essentielle';
-                } else if (planId === 'prod_TbyvP5fQfg2Dbh') {
-                    creditsToAdd = 25;
-                    subscriptionPlan = 'Avancée';
-                }
-
-                console.log(`[Webhook Debug] Determined plan: ${subscriptionPlan}, Initial credits: ${creditsToAdd}`);
+                logDebug(`Processing checkout for planId: ${planId}`);
+                logDebug(`Determined plan: ${subscriptionPlan}, Initial credits: ${creditsToAdd}`);
 
                 // Check if user has already submitted a 3D request (uploaded 4 images)
                 // We check if any menu item has 'additional_image_url' populated
@@ -73,11 +64,11 @@ export async function POST(req: Request) {
                 // If user has pending 3D request (items with 4 images), deduct 1 credit
                 // Note: We check if any check returned true
                 if (existingItems && existingItems.length > 0) {
-                    console.log(`[Webhook Debug] Found existing 3D items, deducting 1 credit.`);
+                    logDebug('Found existing 3D items, deducting 1 credit.');
                     creditsToAdd = Math.max(0, creditsToAdd - 1);
                 }
 
-                console.log(`[Webhook Debug] Final credits to add: ${creditsToAdd}`);
+                logDebug(`Final credits to add: ${creditsToAdd}`);
 
                 // Update restaurant with subscription details and credits
                 const { error } = await supabaseAdmin
@@ -92,10 +83,10 @@ export async function POST(req: Request) {
                     .eq('id', restaurantId);
 
                 if (error) {
-                    console.error('[Webhook Debug] Error updating restaurant subscription:', error);
+                    logError('Error updating restaurant subscription:', error);
                     return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
                 } else {
-                    console.log(`[Webhook Debug] Successfully updated restaurant ${restaurantId} with credits: ${creditsToAdd}`);
+                    logDebug(`Successfully updated restaurant ${restaurantId} with credits: ${creditsToAdd}`);
                 }
                 break;
             }
@@ -108,7 +99,7 @@ export async function POST(req: Request) {
             // Add other event handlers (e.g., customer.subscription.updated/deleted) as needed
         }
     } catch (err: any) {
-        console.error('Webhook processing error:', err);
+        logError('Webhook processing error:', err);
         return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
     }
 
