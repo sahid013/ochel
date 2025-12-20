@@ -66,8 +66,8 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
         {
             id: 'prod_Tbyu0kjYbAO1GU',
             name: 'Standard',
-            price: billingCycle === 'month' ? '49 €' : '499 €',
-            period: '/mois',
+            price: billingCycle === 'month' ? '49 €' : '490 €',
+            period: billingCycle === 'month' ? '/mois' : '/année',
             features: [
                 "Menu digital Ochel **prêt à l'emploi**",
                 "Accès à **tous les templates** de site menu, personnalisables à l'image de votre restaurant",
@@ -85,8 +85,8 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
         {
             id: 'prod_Tbyv6lbtixiI8D',
             name: 'Essentielle',
-            price: billingCycle === 'month' ? '59 €' : '599 €',
-            period: '/mois',
+            price: billingCycle === 'month' ? '59 €' : '590 €',
+            period: billingCycle === 'month' ? '/mois' : '/année',
             features: [
                 "**Tout ce qui est inclus dans l'offre Standard**",
                 "Jusqu'à **15 plats en 3D**",
@@ -99,8 +99,8 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
         {
             id: 'prod_TbyvP5fQfg2Dbh',
             name: 'Avancée',
-            price: billingCycle === 'month' ? '79 €' : '799 €',
-            period: '/mois',
+            price: billingCycle === 'month' ? '79 €' : '790 €',
+            period: billingCycle === 'month' ? '/mois' : '/année',
             features: [
                 "**Tout ce qui est inclus dans l'offre Essentielle**",
                 "Jusqu'à **25 plats en 3D**",
@@ -261,7 +261,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors flex items-center gap-3 ${billingCycle === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
                         Annuel
                         <span className="bg-[#dcfce7] text-[#166534] text-xs font-bold px-2.5 py-1 rounded-full border border-[#bbf7d0]">
-                            -20%
+                            2 mois gratuits
                         </span>
                     </span>
                 </AnimateIn>
