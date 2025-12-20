@@ -294,7 +294,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                             variant="outline"
                                             onClick={handleCancelSubscription}
                                             disabled={cancelLoading || loading}
-                                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                                            className="border-2 border-gray-400 text-gray-700 hover:bg-gray-50 hover:border-gray-500"
                                         >
                                             {cancelLoading ? 'Loading...' : 'Manage Subscription'}
                                         </Button>
