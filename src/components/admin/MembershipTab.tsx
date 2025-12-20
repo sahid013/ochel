@@ -7,7 +7,6 @@ import { PrimaryButton, Button } from '@/components/ui';
 import AnimateIn from '@/components/ui/AnimateIn';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
-import { useTranslation } from '@/contexts/LanguageContext';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -19,7 +18,6 @@ interface MembershipTabProps {
 
 export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
     const router = useRouter();
-    const { t, locale } = useTranslation();
     const [loading, setLoading] = useState<string | null>(null);
     const [error, setError] = useState('');
     const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>({
@@ -67,29 +65,49 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
     const plans = [
         {
             id: 'prod_Tbyu0kjYbAO1GU',
-            name: t('home.features.plans.standard.name'),
+            name: 'Standard',
             price: billingCycle === 'month' ? '49 €' : '490 €',
-            period: billingCycle === 'month' ? t('home.features.plans.period.month') : (locale === 'fr' ? '/année' : '/year'),
-            features: Array.isArray(t('home.features.plans.standard.features')) ? t('home.features.plans.standard.features') : [],
-            footerNote: t('home.features.plans.standard.footer'),
+            period: billingCycle === 'month' ? '/mois' : '/année',
+            features: [
+                "Menu digital Ochel **prêt à l'emploi**",
+                "Accès à **tous les templates** de site menu, personnalisables à l'image de votre restaurant",
+                "**Accès à un dashboard de gestion du menu**",
+                "Jusqu'à **5 plats en 3D**",
+                "QR code unique pour votre établissement",
+                "Modification **instantanée** & illimitée du menu (ajouts, suppressions, prix, descriptions)",
+                "Menu multilingue (option +9 € / mois)",
+                "Hébergement & maintenance inclus",
+                "Menu accessible partout (QR, lien, Google, réseaux sociaux)"
+            ],
+            footerNote: "Pensée pour une gestion fluide et autonome du menu, sans complexité.",
             popular: false,
         },
         {
             id: 'prod_Tbyv6lbtixiI8D',
-            name: t('home.features.plans.essential.name'),
+            name: 'Essentielle',
             price: billingCycle === 'month' ? '59 €' : '590 €',
-            period: billingCycle === 'month' ? t('home.features.plans.period.month') : (locale === 'fr' ? '/année' : '/year'),
-            features: Array.isArray(t('home.features.plans.essential.features')) ? t('home.features.plans.essential.features') : [],
-            footerNote: t('home.features.plans.essential.footer'),
+            period: billingCycle === 'month' ? '/mois' : '/année',
+            features: [
+                "**Tout ce qui est inclus dans l'offre Standard**",
+                "Jusqu'à **15 plats en 3D**",
+                "Menu multilingue (option +9 € / mois)",
+                "Gestion quotidienne du menu depuis le dashboard Ochel"
+            ],
+            footerNote: "Conçue pour les restaurants qui exploitent pleinement leur menu au quotidien.",
             popular: true,
         },
         {
             id: 'prod_TbyvP5fQfg2Dbh',
-            name: t('home.features.plans.advanced.name'),
+            name: 'Avancée',
             price: billingCycle === 'month' ? '79 €' : '790 €',
-            period: billingCycle === 'month' ? t('home.features.plans.period.month') : (locale === 'fr' ? '/année' : '/year'),
-            features: Array.isArray(t('home.features.plans.advanced.features')) ? t('home.features.plans.advanced.features') : [],
-            footerNote: t('home.features.plans.advanced.footer'),
+            period: billingCycle === 'month' ? '/mois' : '/année',
+            features: [
+                "**Tout ce qui est inclus dans l'offre Essentielle**",
+                "Jusqu'à **25 plats en 3D**",
+                "Gestion avancée et fréquente du menu (cartes évolutives, rotations, volumes, performance)",
+                "Menu multilingue (option +9 € / mois)"
+            ],
+            footerNote: "Adaptée aux restaurants dont le menu est un véritable levier de performance.",
             popular: false,
         }
     ];
@@ -179,7 +197,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
     // Helper to determine button text
     const getButtonText = (planName: string) => {
-        if (!currentPlan) return t('home.features.buttons.selectPlan');
+        if (!currentPlan) return 'Choisir ce plan';
 
         const currentPlanName = (currentPlan.plan || '').toLowerCase();
         let normalizedPlanName = planName.toLowerCase();
@@ -188,17 +206,17 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
         const targetTier = TIER_LEVELS[normalizedPlanName] || 0;
         const isActive = currentPlan.status === 'active' || currentPlan.status === 'trialing';
 
-        if (!isActive) return t('home.features.buttons.selectPlan');
+        if (!isActive) return 'Choisir ce plan';
 
-        if (targetTier > currentTier) return t('home.features.buttons.upgrade');
-        if (targetTier < currentTier) return t('home.features.buttons.downgrade');
+        if (targetTier > currentTier) return 'Améliorer';
+        if (targetTier < currentTier) return 'Rétrograder';
 
         // Same tier
         if ((currentPlan as any).interval === 'month' && billingCycle === 'year') {
-            return t('home.features.buttons.switchToAnnual');
+            return 'Passer à l\'annuel';
         }
 
-        return t('home.features.buttons.currentPlan');
+        return 'Current Plan';
     };
 
     return (
@@ -224,7 +242,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                 {/* Billing Toggle */}
                 <AnimateIn animation="fade" delay={300} className="flex justify-center items-center gap-4 mb-16">
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors ${billingCycle === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
-                        {t('home.features.billing.monthly')}
+                        Mensuel
                     </span>
 
                     <button
@@ -241,9 +259,9 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                     </button>
 
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors flex items-center gap-3 ${billingCycle === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
-                        {t('home.features.billing.annual')}
+                        Annuel
                         <span className="bg-[#dcfce7] text-[#166534] text-xs font-bold px-2.5 py-1 rounded-full border border-[#bbf7d0]">
-                            {locale === 'fr' ? '2 mois gratuits' : '2 months free'}
+                            2 mois gratuits
                         </span>
                     </span>
                 </AnimateIn>
@@ -271,7 +289,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                     {plan.popular && (
                                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
                                             <span className="bg-[#F34A23] text-white px-6 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-md font-plus-jakarta-sans whitespace-nowrap">
-                                                {t('home.features.plans.popularTag')}
+                                                LE PLUS POPULAIRE
                                             </span>
                                         </div>
                                     )}
@@ -282,7 +300,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                         <div className="p-4 md:p-8 pb-0 text-center">
                                             <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
                                             <div className="flex flex-col items-center justify-center mb-6">
-                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">{t('home.features.plans.subscription')}</span>
+                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-[32px] font-bold text-[#F34A23] font-plus-jakarta-sans">{plan.price}</span>
                                                     <span className="text-lg text-gray-800 font-plus-jakarta-sans">{plan.period}</span>
@@ -310,7 +328,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
                                             {(() => {
                                                 const btnText = getButtonText(plan.name);
-                                                const isCurrent = btnText === t('home.features.buttons.currentPlan');
+                                                const isCurrent = btnText === 'Current Plan';
 
                                                 if (isCurrent) {
                                                     return (
@@ -318,7 +336,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                             disabled
                                                             className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
                                                         >
-                                                            {t('home.features.buttons.currentPlan')}
+                                                            Plan Actuel
                                                         </Button>
                                                     );
                                                 }
@@ -331,7 +349,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                             disabled={loading === 'portal' || loading !== null}
                                                             className="w-full border-gray-900"
                                                         >
-                                                            {loading === 'portal' ? t('home.features.buttons.loading') : btnText}
+                                                            {loading === 'portal' ? 'Chargement...' : btnText}
                                                         </Button>
                                                     );
                                                 }
@@ -344,7 +362,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                             disabled={loading === plan.id || loading !== null}
                                                             fullWidth
                                                         >
-                                                            {loading === plan.id ? t('home.features.buttons.processing') : t('home.features.buttons.selectPlan')}
+                                                            {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
                                                         </PrimaryButton>
                                                     );
                                                 }
@@ -356,7 +374,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                         disabled={loading === plan.id || loading !== null}
                                                         className="w-full border-gray-900"
                                                     >
-                                                        {loading === plan.id ? t('home.features.buttons.processing') : t('home.features.buttons.selectPlan')}
+                                                        {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
                                                     </Button>
                                                 );
                                             })()}
