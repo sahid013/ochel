@@ -31,16 +31,14 @@ export function MenuManagementTab({ restaurant }: MenuManagementTabProps) {
   return (
     <div className="space-y-6 font-plus-jakarta-sans">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-2 font-loubag uppercase">Gestion du Menu</h2>
-          <p className="text-secondary font-plus-jakarta-sans text-lg">
-            Gérez les catégories, sous-catégories, éléments de menu et add-ons du restaurant
-          </p>
-        </div>
+      <div>
+        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-2 font-loubag uppercase">Gestion du Menu</h2>
+        <p className="text-secondary font-plus-jakarta-sans text-lg mb-4">
+          Gérez les catégories, sous-catégories, éléments de menu et add-ons du restaurant
+        </p>
 
         {/* Editor Mode Toggle */}
-        <div className="flex bg-gray-100 p-1 rounded-lg self-start md:self-center">
+        <div className="flex bg-gray-100 p-1 rounded-lg w-fit">
           <button
             onClick={() => setEditorMode('detailed')}
             className={cn(
@@ -50,7 +48,7 @@ export function MenuManagementTab({ restaurant }: MenuManagementTabProps) {
                 : "text-gray-500 hover:text-gray-900"
             )}
           >
-            Detailed Editor
+            Éditeur détaillé
           </button>
           <button
             onClick={() => setEditorMode('simple')}
@@ -61,7 +59,7 @@ export function MenuManagementTab({ restaurant }: MenuManagementTabProps) {
                 : "text-gray-500 hover:text-gray-900"
             )}
           >
-            Simple Editor
+            Éditeur simple
           </button>
         </div>
       </div>
