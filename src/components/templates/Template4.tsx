@@ -255,6 +255,30 @@ export default function Template4({ restaurant, demoItem, hideNavigation }: Temp
               )}
             </div>
           )}
+
+          {/* Footer */}
+          <footer className="mt-16 pt-8 pb-8 border-t" style={{ borderColor: 'var(--pixel-primary, #F34A23)', opacity: 0.2 }}>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              {/* Left - Restaurant Logo */}
+              <div className="flex-shrink-0">
+                {restaurant.logo_url ? (
+                  <img src={restaurant.logo_url} alt={restaurant.name} className="h-12 w-auto object-contain" />
+                ) : (
+                  <span className={cn("text-lg font-bold", headerFontClass)} style={{ color: 'var(--pixel-text, #111827)' }}>
+                    {restaurant.name}
+                  </span>
+                )}
+              </div>
+
+              {/* Right - Powered by Ochel */}
+              <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--pixel-text, #111827)', opacity: 0.7 }}>
+                <span>Site propulsé par</span>
+                <a href="https://www.ochel.fr" target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
+                  <img src="/icons/ochellogofull.png" alt="Ochel" className="h-4 w-auto object-contain" />
+                </a>
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
 
