@@ -7,6 +7,7 @@ import { PrimaryButton, Button } from '@/components/ui';
 import AnimateIn from '@/components/ui/AnimateIn';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -18,6 +19,7 @@ interface MembershipTabProps {
 
 export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
     const router = useRouter();
+    const { t } = useTranslation();
     const [loading, setLoading] = useState<string | null>(null);
     const [error, setError] = useState('');
     const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>({
@@ -65,49 +67,29 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
     const plans = [
         {
             id: 'prod_Tbyu0kjYbAO1GU',
-            name: 'Standard',
+            name: t('superAdmin.membership.plans.standard.name'),
             price: billingCycle === 'month' ? '49 €' : '490 €',
-            period: billingCycle === 'month' ? '/mois' : '/année',
-            features: [
-                "Menu digital Ochel **prêt à l'emploi**",
-                "Accès à **tous les templates** de site menu, personnalisables à l'image de votre restaurant",
-                "**Accès à un dashboard de gestion du menu**",
-                "Jusqu'à **5 plats en 3D**",
-                "QR code unique pour votre établissement",
-                "Modification **instantanée** & illimitée du menu (ajouts, suppressions, prix, descriptions)",
-                "Menu multilingue (option +9 € / mois)",
-                "Hébergement & maintenance inclus",
-                "Menu accessible partout (QR, lien, Google, réseaux sociaux)"
-            ],
-            footerNote: "Pensée pour une gestion fluide et autonome du menu, sans complexité.",
+            period: billingCycle === 'month' ? t('superAdmin.membership.plans.period.month') : '/an',
+            features: t('superAdmin.membership.plans.standard.features'),
+            footerNote: t('superAdmin.membership.plans.standard.footer'),
             popular: false,
         },
         {
             id: 'prod_Tbyv6lbtixiI8D',
-            name: 'Essentielle',
+            name: t('superAdmin.membership.plans.essential.name'),
             price: billingCycle === 'month' ? '59 €' : '590 €',
-            period: billingCycle === 'month' ? '/mois' : '/année',
-            features: [
-                "**Tout ce qui est inclus dans l'offre Standard**",
-                "Jusqu'à **15 plats en 3D**",
-                "Menu multilingue (option +9 € / mois)",
-                "Gestion quotidienne du menu depuis le dashboard Ochel"
-            ],
-            footerNote: "Conçue pour les restaurants qui exploitent pleinement leur menu au quotidien.",
+            period: billingCycle === 'month' ? t('superAdmin.membership.plans.period.month') : '/an',
+            features: t('superAdmin.membership.plans.essential.features'),
+            footerNote: t('superAdmin.membership.plans.essential.footer'),
             popular: true,
         },
         {
             id: 'prod_TbyvP5fQfg2Dbh',
-            name: 'Avancée',
+            name: t('superAdmin.membership.plans.advanced.name'),
             price: billingCycle === 'month' ? '79 €' : '790 €',
-            period: billingCycle === 'month' ? '/mois' : '/année',
-            features: [
-                "**Tout ce qui est inclus dans l'offre Essentielle**",
-                "Jusqu'à **25 plats en 3D**",
-                "Gestion avancée et fréquente du menu (cartes évolutives, rotations, volumes, performance)",
-                "Menu multilingue (option +9 € / mois)"
-            ],
-            footerNote: "Adaptée aux restaurants dont le menu est un véritable levier de performance.",
+            period: billingCycle === 'month' ? t('superAdmin.membership.plans.period.month') : '/an',
+            features: t('superAdmin.membership.plans.advanced.features'),
+            footerNote: t('superAdmin.membership.plans.advanced.footer'),
             popular: false,
         }
     ];
@@ -191,13 +173,15 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
     const TIER_LEVELS: Record<string, number> = {
         'standard': 1,
         'essentielle': 2,
-        'pro': 2, // Map 'Pro' to 'Essentielle' tier
-        'avancée': 3
+        'essential': 2, // Added English key mapping
+        'pro': 2,
+        'avancée': 3,
+        'advanced': 3 // Added English key mapping
     };
 
     // Helper to determine button text
     const getButtonText = (planName: string) => {
-        if (!currentPlan) return 'Choisir ce plan';
+        if (!currentPlan) return t('superAdmin.membership.buttons.selectPlan');
 
         const currentPlanName = (currentPlan.plan || '').toLowerCase();
         let normalizedPlanName = planName.toLowerCase();
@@ -206,17 +190,17 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
         const targetTier = TIER_LEVELS[normalizedPlanName] || 0;
         const isActive = currentPlan.status === 'active' || currentPlan.status === 'trialing';
 
-        if (!isActive) return 'Choisir ce plan';
+        if (!isActive) return t('superAdmin.membership.buttons.selectPlan');
 
-        if (targetTier > currentTier) return 'Améliorer';
-        if (targetTier < currentTier) return 'Rétrograder';
+        if (targetTier > currentTier) return t('superAdmin.membership.buttons.upgrade');
+        if (targetTier < currentTier) return t('superAdmin.membership.buttons.downgrade');
 
         // Same tier
         if ((currentPlan as any).interval === 'month' && billingCycle === 'year') {
-            return 'Passer à l\'annuel';
+            return t('superAdmin.membership.buttons.switchToAnnual');
         }
 
-        return 'Current Plan';
+        return t('superAdmin.membership.buttons.currentPlan');
     };
 
     return (
@@ -228,13 +212,13 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                     <AnimateIn animation="slide" delay={200}>
                         <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4 font-loubag tracking-normal leading-tight">
                             {currentPlan?.status === 'active' || currentPlan?.status === 'trialing'
-                                ? <>Une tarification simple pour gérer<br /> <span className="text-[#F34A23]">votre</span> abonnement</>
-                                : <>Une tarification simple pour activer <span className="text-[#F34A23]">votre</span> menu digital <span className="text-[#F34A23]">3D</span>,</>}
+                                ? <span dangerouslySetInnerHTML={{ __html: t('superAdmin.membership.title.active') }} />
+                                : <span dangerouslySetInnerHTML={{ __html: t('superAdmin.membership.title.inactive') }} />}
                         </h1>
                         <p className="text-lg md:text-xl text-secondary max-w-3xl mx-auto font-plus-jakarta-sans italic">
                             {currentPlan?.status === 'active' || currentPlan?.status === 'trialing'
-                                ? 'Modifiez, améliorez ou annulez votre abonnement à tout moment.'
-                                : 'Gérez votre menu en temps réel depuis un dashboard, sans dépendre de personne.'}
+                                ? t('superAdmin.membership.subtitle.active')
+                                : t('superAdmin.membership.subtitle.inactive')}
                         </p>
                     </AnimateIn>
                 </div>
@@ -242,7 +226,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                 {/* Billing Toggle */}
                 <AnimateIn animation="fade" delay={300} className="flex justify-center items-center gap-4 mb-16">
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors ${billingCycle === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
-                        Mensuel
+                        {t('superAdmin.membership.billing.monthly')}
                     </span>
 
                     <button
@@ -259,9 +243,9 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                     </button>
 
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors flex items-center gap-3 ${billingCycle === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
-                        Annuel
+                        {t('superAdmin.membership.billing.annual')}
                         <span className="bg-[#dcfce7] text-[#166534] text-xs font-bold px-2.5 py-1 rounded-full border border-[#bbf7d0]">
-                            2 mois gratuits
+                            2 {t('superAdmin.membership.billing.discount').replace('-20%', 'mois gratuits')}
                         </span>
                     </span>
                 </AnimateIn>
@@ -276,6 +260,9 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                 {/* Plans Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-20">
                     {plans.map((plan, index) => {
+                        // Match user's plan via localized name or English/French fallback logic
+                        // A safer comparison is to use fixed IDs or normalize the 'plan.name' to a standard key if possible
+                        // But existing logic uses name matching.
                         const isCurrentPlan = currentPlan?.status === 'active' && currentPlan?.plan?.toLowerCase() === plan.name.toLowerCase();
 
                         return (
@@ -289,7 +276,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                     {plan.popular && (
                                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
                                             <span className="bg-[#F34A23] text-white px-6 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-md font-plus-jakarta-sans whitespace-nowrap">
-                                                LE PLUS POPULAIRE
+                                                {t('superAdmin.membership.plans.popularTag')}
                                             </span>
                                         </div>
                                     )}
@@ -300,7 +287,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                         <div className="p-4 md:p-8 pb-0 text-center">
                                             <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
                                             <div className="flex flex-col items-center justify-center mb-6">
-                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>
+                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">{t('superAdmin.membership.plans.subscription')}</span>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-[32px] font-bold text-[#F34A23] font-plus-jakarta-sans">{plan.price}</span>
                                                     <span className="text-lg text-gray-800 font-plus-jakarta-sans">{plan.period}</span>
@@ -310,7 +297,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
                                         <div className={`px-8 py-6 ${plan.popular ? 'bg-white mx-0' : 'bg-white mx-0'} flex-1 flex flex-col`}>
                                             <ul className="space-y-4 mb-8 flex-1">
-                                                {plan.features.map((feature, featureIndex) => (
+                                                {Array.isArray(plan.features) && plan.features.map((feature: string, featureIndex: number) => (
                                                     <li key={featureIndex} className="flex items-start gap-3 text-left">
                                                         <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -328,7 +315,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
                                             {(() => {
                                                 const btnText = getButtonText(plan.name);
-                                                const isCurrent = btnText === 'Current Plan';
+                                                const isCurrent = btnText === t('superAdmin.membership.buttons.currentPlan');
 
                                                 if (isCurrent) {
                                                     return (
@@ -336,7 +323,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                             disabled
                                                             className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
                                                         >
-                                                            Plan Actuel
+                                                            {btnText}
                                                         </Button>
                                                     );
                                                 }
@@ -349,7 +336,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                             disabled={loading === 'portal' || loading !== null}
                                                             className="w-full border-gray-900"
                                                         >
-                                                            {loading === 'portal' ? 'Chargement...' : btnText}
+                                                            {loading === 'portal' ? t('superAdmin.membership.buttons.loading') : btnText}
                                                         </Button>
                                                     );
                                                 }
@@ -362,7 +349,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                             disabled={loading === plan.id || loading !== null}
                                                             fullWidth
                                                         >
-                                                            {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
+                                                            {loading === plan.id ? t('superAdmin.membership.buttons.processing') : t('superAdmin.membership.buttons.selectPlan')}
                                                         </PrimaryButton>
                                                     );
                                                 }
@@ -374,7 +361,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                                                         disabled={loading === plan.id || loading !== null}
                                                         className="w-full border-gray-900"
                                                     >
-                                                        {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
+                                                        {loading === plan.id ? t('superAdmin.membership.buttons.processing') : t('superAdmin.membership.buttons.selectPlan')}
                                                     </Button>
                                                 );
                                             })()}

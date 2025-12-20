@@ -47,6 +47,7 @@
         "modelGlbPlaceholder": "https://exemple.com/modele.glb",
         "modelGlbHelpTitle": "Qu'est-ce que GLB ?",
         "modelGlbHelpText": "Format GLB pour l'aperçu 3D sur le web et les appareils Android. Champ optionnel.",
+        "modelGlbMask": "Votre plat 3D",
         "modelUsdz": "URL du modèle 3D (.usdz)",
         "modelUsdzPlaceholder": "https://exemple.com/modele.usdz",
         "modelUsdzHelpTitle": "Qu'est-ce que USDZ ?",

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { AdminHeader, AdminTabs } from '@/components/admin';
 import { supabase } from '@/lib/supabase';
 import AnimateIn from '@/components/ui/AnimateIn';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // Initialize Stripe (replace key with env var in real app)
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -18,6 +19,7 @@ export default function SubscribePage() {
     const params = useParams();
     const slug = params.slug as string;
     const router = useRouter();
+    const { t, locale } = useTranslation();
     const [loading, setLoading] = useState<string | null>(null);
     const [error, setError] = useState('');
     const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>(null);

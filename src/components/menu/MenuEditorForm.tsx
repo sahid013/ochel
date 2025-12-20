@@ -361,9 +361,9 @@ export function MenuEditorForm({
                             )}
                         </label>
                         <input
-                            type="url"
-                            value={model3dGlbUrl}
-                            onChange={(e) => setModel3dGlbUrl(e.target.value)}
+                            type={isLockedDemoMode ? "text" : "url"}
+                            value={isLockedDemoMode ? t('home.demo.addItem.modelGlbMask') : model3dGlbUrl}
+                            onChange={(e) => !isLockedDemoMode && setModel3dGlbUrl(e.target.value)}
                             readOnly={isLockedDemoMode}
                             placeholder={!isLockedDemoMode ? (t('home.demo.addItem.modelGlbPlaceholder') || 'https://example.com/model.glb') : ''}
                             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400 ${isLockedDemoMode ? 'bg-gray-100 text-gray-500 cursor-not-allowed pointer-events-none' : ''}`}

@@ -43,6 +43,7 @@
         "modelGlbPlaceholder": "https://example.com/model.glb",
         "modelGlbHelpTitle": "What is GLB?",
         "modelGlbHelpText": "GLB format for 3D preview on web and Android devices. Optional field.",
+        "modelGlbMask": "Your 3D Dish",
         "modelUsdz": "3D Model URL",
         "modelUsdzPlaceholder": "https://example.com/model.usdz",
         "modelUsdzHelpTitle": "What is USDZ?",
