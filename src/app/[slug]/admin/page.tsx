@@ -332,7 +332,7 @@ export default function RestaurantAdminPage() {
           )}
 
           {activeTab === 'settings' && (
-            <SettingsTab restaurant={restaurant} />
+            <SettingsTab restaurant={restaurant} slug={slug} />
           )}
 
           {activeTab === '3d-requests' && (

@@ -3,16 +3,18 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
-import { PrimaryButton } from '@/components/ui';
+import { PrimaryButton, Button } from '@/components/ui';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 import { Alert } from '@/components/ui/Alert';
 
 interface SettingsTabProps {
     restaurant: Restaurant;
+    slug: string;
 }
 
-export function SettingsTab({ restaurant }: SettingsTabProps) {
+export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
     const [loading, setLoading] = useState(false);
+    const [cancelLoading, setCancelLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -79,6 +81,33 @@ export function SettingsTab({ restaurant }: SettingsTabProps) {
             } finally {
                 setLoading(false);
             }
+        }
+    };
+
+    const handleCancelSubscription = async () => {
+        setCancelLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/create-portal-session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create portal session');
+            }
+
+            const { url } = await response.json();
+            window.location.href = url;
+
+        } catch (err: any) {
+            console.error('Portal error:', err);
+            setError(err.message || 'Failed to open subscription management');
+        } finally {
+            setCancelLoading(false);
         }
     };
 
@@ -253,10 +282,29 @@ export function SettingsTab({ restaurant }: SettingsTabProps) {
                                     </div>
                                 </div>
 
+                                {/* Subscription Management Section */}
+                                {(restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing') && (
+                                    <div className="pt-6 border-t border-gray-100">
+                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Subscription Management</h4>
+                                        <p className="text-sm text-gray-500 mb-4">
+                                            Manage your subscription, billing details, or cancel your plan.
+                                        </p>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={handleCancelSubscription}
+                                            disabled={cancelLoading || loading}
+                                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                                        >
+                                            {cancelLoading ? 'Loading...' : 'Manage Subscription'}
+                                        </Button>
+                                    </div>
+                                )}
+
                                 <div className="pt-4 border-t border-gray-100 flex justify-end">
                                     <PrimaryButton
                                         type="submit"
-                                        disabled={loading}
+                                        disabled={loading || cancelLoading}
                                         className="min-w-[120px]"
                                     >
                                         {loading ? 'Saving...' : 'Save Changes'}
