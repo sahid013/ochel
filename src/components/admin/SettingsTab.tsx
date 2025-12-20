@@ -285,18 +285,18 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                 {/* Subscription Management Section */}
                                 {(restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing') && (
                                     <div className="pt-6 border-t border-gray-100">
-                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Subscription Management</h4>
+                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Gestion de l'abonnement</h4>
                                         <p className="text-sm text-gray-500 mb-4">
-                                            Manage your subscription, billing details, or cancel your plan.
+                                            Gérez votre abonnement, vos informations de facturation ou annulez votre forfait.
                                         </p>
                                         <Button
                                             type="button"
                                             variant="outline"
                                             onClick={handleCancelSubscription}
                                             disabled={cancelLoading || loading}
-                                            className="border-2 border-gray-400 text-gray-700 hover:bg-gray-50 hover:border-gray-500"
+                                            className="border-gray-900"
                                         >
-                                            {cancelLoading ? 'Loading...' : 'Manage Subscription'}
+                                            {cancelLoading ? 'Chargement...' : 'Gérer l\'abonnement'}
                                         </Button>
                                     </div>
                                 )}
