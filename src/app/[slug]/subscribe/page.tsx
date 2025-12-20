@@ -224,77 +224,81 @@ export default function SubscribePage() {
                                 key={plan.id}
                                 animation="slide"
                                 delay={300 + (index * 100)}
-                                className={`relative rounded-3xl flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border ${plan.popular
-                                    ? 'bg-[#FEF5F3] border-[#F34A23] shadow-lg ring-1 ring-[#F34A23]/20'
-                                    : 'bg-[#FEF5F3] border-gray-200 shadow-sm'
-                                    }`}
+                                className="flex flex-col gap-4 h-full"
                             >
-                                {plan.popular && (
-                                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                                        <span className="bg-[#F34A23] text-white px-6 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-md font-plus-jakarta-sans whitespace-nowrap">
-                                            LE PLUS POPULAIRE
-                                        </span>
-                                    </div>
-                                )}
+                                <div className="relative group transition-all duration-300 hover:-translate-y-2 h-full flex flex-col">
+                                    {plan.popular && (
+                                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                                            <span className="bg-[#F34A23] text-white px-6 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-md font-plus-jakarta-sans whitespace-nowrap">
+                                                LE PLUS POPULAIRE
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className={`rounded-3xl overflow-hidden flex flex-col border transition-all duration-300 group-hover:shadow-xl h-full ${plan.popular
+                                        ? 'bg-[#FEF5F3] border-[#F34A23] shadow-lg ring-1 ring-[#F34A23]/20'
+                                        : 'bg-[#FEF5F3] border-gray-200 shadow-sm'
+                                        }`}>
+                                        <div className="p-4 md:p-8 pb-0 text-center">
+                                            <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
+                                            <div className="flex flex-col items-center justify-center mb-6">
+                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-[32px] font-bold text-[#F34A23] font-plus-jakarta-sans">{plan.price}</span>
+                                                    <span className="text-lg text-gray-800 font-plus-jakarta-sans">{plan.period}</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                <div className="p-8 pb-0 text-center">
-                                    <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
-                                    <div className="flex flex-col items-center justify-center mb-6">
-                                        <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-[32px] font-bold text-[#F34A23] font-plus-jakarta-sans">{plan.price}</span>
-                                            <span className="text-lg text-gray-800 font-plus-jakarta-sans">{plan.period}</span>
+                                        <div className={`px-8 py-6 ${plan.popular ? 'bg-white mx-0' : 'bg-white mx-0'} flex-1 flex flex-col`}>
+                                            <ul className="space-y-4 mb-8 flex-1">
+                                                {plan.features.map((feature, featureIndex) => (
+                                                    <li key={featureIndex} className="flex items-start gap-3 text-left">
+                                                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                        <span className="text-gray-700 text-[15px] font-medium font-plus-jakarta-sans leading-snug"
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: feature.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                                            }}
+                                                        />
+                                                    </li>
+                                                ))}
+                                            </ul>
+
+                                            {isCurrentPlan ? (
+                                                <Button
+                                                    disabled
+                                                    className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
+                                                >
+                                                    Plan Actuel
+                                                </Button>
+                                            ) : plan.popular ? (
+                                                <PrimaryButton
+                                                    onClick={() => handleSubscribe(plan.id)}
+                                                    disabled={loading === plan.id || loading !== null}
+                                                    fullWidth
+                                                >
+                                                    {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
+                                                </PrimaryButton>
+                                            ) : (
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => handleSubscribe(plan.id)}
+                                                    disabled={loading === plan.id || loading !== null}
+                                                    className="w-full border-gray-900"
+                                                >
+                                                    {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className={`px-8 py-6 ${plan.popular ? 'bg-white mx-0' : 'bg-white mx-0'} flex-1`}>
-                                    <ul className="space-y-4 mb-8">
-                                        {plan.features.map((feature, featureIndex) => (
-                                            <li key={featureIndex} className="flex items-start gap-3 text-left">
-                                                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                    <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                </div>
-                                                <span className="text-gray-700 text-[15px] font-medium font-plus-jakarta-sans leading-snug"
-                                                    dangerouslySetInnerHTML={{
-                                                        __html: feature.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                                    }}
-                                                />
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                {isCurrentPlan ? (
-                                    <Button
-                                        disabled
-                                        className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
-                                    >
-                                        Plan Actuel
-                                    </Button>
-                                ) : plan.popular ? (
-                                    <PrimaryButton
-                                        onClick={() => handleSubscribe(plan.id)}
-                                        disabled={loading === plan.id || loading !== null}
-                                        fullWidth
-                                    >
-                                        {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
-                                    </PrimaryButton>
-                                ) : (
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => handleSubscribe(plan.id)}
-                                        disabled={loading === plan.id || loading !== null}
-                                        className="w-full border-gray-900"
-                                    >
-                                        {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
-                                    </Button>
-                                )}
-
+                                {/* Footer Note Outside Box */}
                                 {plan.footerNote && (
-                                    <div className="mt-8 pt-6 border-t border-dashed border-gray-200 text-center">
+                                    <div className="text-center px-4">
                                         <div className="flex flex-col items-center justify-center gap-2">
                                             <svg className="w-6 h-6 text-[#F34A23]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
