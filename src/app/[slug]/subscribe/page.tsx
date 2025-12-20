@@ -202,7 +202,7 @@ export default function SubscribePage() {
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors flex items-center gap-3 ${billingCycle === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
                         Annuel
                         <span className="bg-[#dcfce7] text-[#166534] text-xs font-bold px-2.5 py-1 rounded-full border border-[#bbf7d0]">
-                            -20%
+                            2 mois gratuits
                         </span>
                     </span>
                 </AnimateIn>
