@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { AdminHeader, AdminTabs } from '@/components/admin';
 import { supabase } from '@/lib/supabase';
 import AnimateIn from '@/components/ui/AnimateIn';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 // Initialize Stripe (replace key with env var in real app)
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
@@ -18,6 +19,7 @@ export default function SubscribePage() {
     const params = useParams();
     const slug = params.slug as string;
     const router = useRouter();
+    const { t, locale } = useTranslation();
     const [loading, setLoading] = useState<string | null>(null);
     const [error, setError] = useState('');
     const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>(null);
@@ -26,49 +28,29 @@ export default function SubscribePage() {
     const plans = [
         {
             id: 'prod_Tbyu0kjYbAO1GU',
-            name: 'Standard',
+            name: t('home.features.plans.standard.name'),
             price: billingCycle === 'month' ? '49 €' : '490 €',
-            period: billingCycle === 'month' ? '/mois' : '/année',
-            features: [
-                "Menu digital Ochel **prêt à l'emploi**",
-                "Accès à **tous les templates** de site menu, personnalisables à l'image de votre restaurant",
-                "**Accès à un dashboard de gestion du menu**",
-                "Jusqu'à **5 plats en 3D**",
-                "QR code unique pour votre établissement",
-                "Modification **instantanée** & illimitée du menu (ajouts, suppressions, prix, descriptions)",
-                "Menu multilingue (option +9 € / mois)",
-                "Hébergement & maintenance inclus",
-                "Menu accessible partout (QR, lien, Google, réseaux sociaux)"
-            ],
-            footerNote: "Pensée pour une gestion fluide et autonome du menu, sans complexité.",
+            period: billingCycle === 'month' ? t('home.features.plans.period.month') : (locale === 'fr' ? '/année' : '/year'),
+            features: t('home.features.plans.standard.features'),
+            footerNote: t('home.features.plans.standard.footer'),
             popular: false,
         },
         {
             id: 'prod_Tbyv6lbtixiI8D',
-            name: 'Essentielle',
+            name: t('home.features.plans.essential.name'),
             price: billingCycle === 'month' ? '59 €' : '590 €',
-            period: billingCycle === 'month' ? '/mois' : '/année',
-            features: [
-                "**Tout ce qui est inclus dans l'offre Standard**",
-                "Jusqu'à **15 plats en 3D**",
-                "Menu multilingue (option +9 € / mois)",
-                "Gestion quotidienne du menu depuis le dashboard Ochel"
-            ],
-            footerNote: "Conçue pour les restaurants qui exploitent pleinement leur menu au quotidien.",
+            period: billingCycle === 'month' ? t('home.features.plans.period.month') : (locale === 'fr' ? '/année' : '/year'),
+            features: t('home.features.plans.essential.features'),
+            footerNote: t('home.features.plans.essential.footer'),
             popular: true,
         },
         {
             id: 'prod_TbyvP5fQfg2Dbh',
-            name: 'Avancée',
+            name: t('home.features.plans.advanced.name'),
             price: billingCycle === 'month' ? '79 €' : '790 €',
-            period: billingCycle === 'month' ? '/mois' : '/année',
-            features: [
-                "**Tout ce qui est inclus dans l'offre Essentielle**",
-                "Jusqu'à **25 plats en 3D**",
-                "Gestion avancée et fréquente du menu (cartes évolutives, rotations, volumes, performance)",
-                "Menu multilingue (option +9 € / mois)"
-            ],
-            footerNote: "Adaptée aux restaurants dont le menu est un véritable levier de performance.",
+            period: billingCycle === 'month' ? t('home.features.plans.period.month') : (locale === 'fr' ? '/année' : '/year'),
+            features: t('home.features.plans.advanced.features'),
+            footerNote: t('home.features.plans.advanced.footer'),
             popular: false,
         }
     ];
@@ -183,7 +165,7 @@ export default function SubscribePage() {
                 {/* Billing Toggle (Hidden as per requirement to follow image exactness, or kept? The image doesn't show toggle, but usually it exists. I will keep it but update labels if needed. For now keeping as is but maybe hide if user wanted EXACT match. User said "keeping the design, layout and functionality same". So I keep the toggle functionality.) */}
                 <AnimateIn animation="fade" delay={300} className="flex justify-center items-center gap-4 mb-16">
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors ${billingCycle === 'month' ? 'text-gray-900' : 'text-gray-500'}`}>
-                        Mensuel
+                        {t('home.features.billing.monthly')}
                     </span>
 
                     <button
@@ -200,9 +182,9 @@ export default function SubscribePage() {
                     </button>
 
                     <span className={`text-lg font-bold font-plus-jakarta-sans transition-colors flex items-center gap-3 ${billingCycle === 'year' ? 'text-gray-900' : 'text-gray-500'}`}>
-                        Annuel
+                        {t('home.features.billing.annual')}
                         <span className="bg-[#dcfce7] text-[#166534] text-xs font-bold px-2.5 py-1 rounded-full border border-[#bbf7d0]">
-                            2 mois gratuits
+                            {locale === 'fr' ? '2 mois gratuits' : '2 months free'}
                         </span>
                     </span>
                 </AnimateIn>
@@ -230,7 +212,7 @@ export default function SubscribePage() {
                                     {plan.popular && (
                                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
                                             <span className="bg-[#F34A23] text-white px-6 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-md font-plus-jakarta-sans whitespace-nowrap">
-                                                LE PLUS POPULAIRE
+                                                {t('home.features.plans.popularTag')}
                                             </span>
                                         </div>
                                     )}
@@ -241,7 +223,7 @@ export default function SubscribePage() {
                                         <div className="p-4 md:p-8 pb-0 text-center">
                                             <h3 className="text-[28px] font-bold text-[#F34A23] mb-2 font-loubag uppercase">{plan.name}</h3>
                                             <div className="flex flex-col items-center justify-center mb-6">
-                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">Abonnement :</span>
+                                                <span className="text-lg font-medium text-gray-800 font-plus-jakarta-sans">{t('home.features.plans.subscription')}</span>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-[32px] font-bold text-[#F34A23] font-plus-jakarta-sans">{plan.price}</span>
                                                     <span className="text-lg text-gray-800 font-plus-jakarta-sans">{plan.period}</span>
@@ -272,7 +254,7 @@ export default function SubscribePage() {
                                                     disabled
                                                     className="w-full bg-[#F34A23] text-white border-[#F34A23] opacity-100 cursor-default font-bold hover:bg-[#F34A23] hover:text-white"
                                                 >
-                                                    Plan Actuel
+                                                    {t('home.features.buttons.currentPlan')}
                                                 </Button>
                                             ) : plan.popular ? (
                                                 <PrimaryButton
@@ -280,7 +262,7 @@ export default function SubscribePage() {
                                                     disabled={loading === plan.id || loading !== null}
                                                     fullWidth
                                                 >
-                                                    {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
+                                                    {loading === plan.id ? t('home.features.buttons.processing') : t('home.features.buttons.selectPlan')}
                                                 </PrimaryButton>
                                             ) : (
                                                 <Button
@@ -289,7 +271,7 @@ export default function SubscribePage() {
                                                     disabled={loading === plan.id || loading !== null}
                                                     className="w-full border-gray-900"
                                                 >
-                                                    {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
+                                                    {loading === plan.id ? t('home.features.buttons.processing') : t('home.features.buttons.selectPlan')}
                                                 </Button>
                                             )}
                                         </div>
