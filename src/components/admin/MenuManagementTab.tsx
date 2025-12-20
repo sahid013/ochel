@@ -65,9 +65,7 @@ export function MenuManagementTab({ restaurant }: MenuManagementTabProps) {
       </div>
 
       {editorMode === 'simple' ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-          <FirstTimeMenuEditor restaurant={restaurant} className="p-0" />
-        </div>
+        <FirstTimeMenuEditor restaurant={restaurant} />
       ) : (
         <>
           {/* Tabs Navigation */}
