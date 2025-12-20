@@ -621,7 +621,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     <div className="w-full">
       {/* Header */}
       <div className={cn("px-4 pb-12 pt-12 md:pt-0", className)}>
-        <div className="grid gap-8 items-start grid-cols-1 lg:grid-cols-[0.6fr_1fr]">
+        <div className="grid gap-8 items-start grid-cols-1 lg:grid-cols-[minmax(400px,1fr)_1.2fr]">
           {/* Left Column - Add Items */}
           <div className="bg-white rounded-2xl p-4 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <div className="flex justify-between items-center mb-8 md:mb-6">
