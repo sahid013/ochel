@@ -122,27 +122,21 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
               {/* Tab Bar Container */}
               <AnimateIn animation="slide" duration={600} delay={200}>
                 <div className="mb-8">
-                  <div className="overflow-x-auto scrollbar-hide">
-                    <div className="flex gap-3 md:gap-4">
-                      {categories.map((category, index) => (
-                        <button
-                          key={category.id}
-                          onClick={() => {
-                            setActiveTab(index);
-                            // Scroll selected tab to center on mobile
-                            const button = document.getElementById(`tab-${index}`);
-                            if (button && window.innerWidth < 768) {
-                              button.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                            }
-                          }}
-                          id={`tab-${index}`}
-                          className={cn(
-                            "text-[13px] md:text-[14px] font-bold text-center rounded-lg cursor-pointer transition-all duration-200 py-3 px-6 uppercase tracking-wide",
-                            "min-h-[44px] flex items-center justify-center whitespace-nowrap flex-shrink-0",
-                            activeTab === index
-                              ? "text-white border-2"
-                              : "bg-white border-2 hover:text-white"
-                          )}
+                  <div className="flex flex-wrap gap-3 md:gap-4">
+                    {categories.map((category, index) => (
+                      <button
+                        key={category.id}
+                        onClick={() => {
+                          setActiveTab(index);
+                        }}
+                        id={`tab-${index}`}
+                        className={cn(
+                          "text-[13px] md:text-[14px] font-bold text-center rounded-lg cursor-pointer transition-all duration-200 py-3 px-6 uppercase tracking-wide",
+                          "min-h-[44px] flex items-center justify-center whitespace-nowrap",
+                          activeTab === index
+                            ? "text-white border-2"
+                            : "bg-white border-2 hover:text-white"
+                        )}
                           style={{
                             borderColor: 'var(--pixel-primary, #C8102E)',
                             backgroundColor: activeTab === index ? 'var(--pixel-primary, #C8102E)' : 'white',
@@ -156,7 +150,6 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                       ))}
                     </div>
                   </div>
-                </div>
               </AnimateIn>
 
               {/* Category Title and Description */}

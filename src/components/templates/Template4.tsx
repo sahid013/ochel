@@ -127,7 +127,7 @@ export default function Template4({ restaurant, demoItem, hideNavigation }: Temp
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-6">
           {/* Category Tabs - Colorful Buttons */}
           <div className="mb-10">
-            <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide">
+            <div className="flex flex-wrap gap-3">
               {categories.map((category, index) => (
                 <button
                   key={category.id}
