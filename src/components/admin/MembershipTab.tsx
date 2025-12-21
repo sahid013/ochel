@@ -451,6 +451,21 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
                     })}
                 </div>
             </div>
+            {/* Custom Website CTA */}
+            <div className="mt-16 bg-white rounded-2xl p-8 border border-gray-200 text-center max-w-3xl mx-auto shadow-sm">
+                <h3 className="text-2xl font-bold font-forum text-gray-900 mb-3 uppercase">
+                    {t('superAdmin.membership.customWebsite.title')}
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-xl mx-auto">
+                    {t('superAdmin.membership.customWebsite.description')}
+                </p>
+                <a
+                    href="mailto:contact@ochel.com"
+                    className="inline-flex items-center justify-center px-8 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-black transition-colors"
+                >
+                    {t('superAdmin.membership.customWebsite.button')}
+                </a>
+            </div>
         </div>
     );
 }

@@ -66,8 +66,8 @@ export function PublishMenuButton({ restaurantId, restaurantSlug, currentTemplat
         // Redirect to public menu page
         router.push(`/${restaurantSlug}`);
       } else {
-        // Redirect to subscription page
-        router.push(`/${restaurantSlug}/subscribe`);
+        // Redirect to subscription page (Membership Tab in Admin)
+        router.push(`/${restaurantSlug}/admin?tab=membership`);
       }
 
     } catch (err) {

@@ -615,7 +615,7 @@ export function DemoMenuEditor() {
                     borderRadius: '0.5rem'
                   }}
                 >
-                  Template {template.slice(-1)}
+                  {t(`admin.templateSelector.templates.${template}.name`)}
                 </button>
               ))}
             </div>

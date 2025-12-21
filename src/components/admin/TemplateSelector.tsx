@@ -12,39 +12,40 @@ interface TemplateSelectorProps {
   onTemplateChange?: (template: string) => void;
 }
 
-const templates = [
-  {
-    id: 'template1',
-    name: 'Classique Sombre',
-    description: 'Thème sombre élégant avec mise en page divisée - parfait pour la cuisine raffinée',
-    features: ['Fond sombre', 'Design écran scindé', 'Support galerie images', 'Intégration modèles 3D'],
-    preview: '/images/template1_preview.png',
-  },
-  {
-    id: 'template2',
-    name: 'Moderne Lumineux',
-    description: 'Design épuré et lumineux avec une esthétique minimaliste',
-    features: ['Fond clair', 'Mise en page cartes', 'Optimisé mobile', 'Chargement rapide'],
-    preview: '/images/template2_preview.png',
-  },
-  {
-    id: 'template3',
-    name: 'Boutique',
-    description: 'Modèle élégant avec une typographie et un espacement soignés',
-    features: ['Polices personnalisées', 'Mise en page aérée', 'Ressenti premium', 'Mise en avant catégories'],
-    preview: '/images/template3_preview.png',
-  },
-  {
-    id: 'template4',
-    name: 'Restauration Détendue',
-    description: 'Design amical et accessible pour les restaurants décontractés',
-    features: ['Accents colorés', 'Mise en page grille', 'Focus photos', 'Intégration réseaux sociaux'],
-    preview: '/images/template4_preview.png',
-  },
-];
-
 export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelectorProps) {
   const { t } = useTranslation();
+
+  const templates = [
+    {
+      id: 'template1',
+      name: t('admin.templateSelector.templates.template1.name'),
+      description: t('admin.templateSelector.templates.template1.description'),
+      features: t('admin.templateSelector.templates.template1.features') as string[],
+      preview: '/images/template1_preview.png',
+    },
+    {
+      id: 'template2',
+      name: t('admin.templateSelector.templates.template2.name'),
+      description: t('admin.templateSelector.templates.template2.description'),
+      features: t('admin.templateSelector.templates.template2.features') as string[],
+      preview: '/images/template2_preview.png',
+    },
+    {
+      id: 'template3',
+      name: t('admin.templateSelector.templates.template3.name'),
+      description: t('admin.templateSelector.templates.template3.description'),
+      features: t('admin.templateSelector.templates.template3.features') as string[],
+      preview: '/images/template3_preview.png',
+    },
+    {
+      id: 'template4',
+      name: t('admin.templateSelector.templates.template4.name'),
+      description: t('admin.templateSelector.templates.template4.description'),
+      features: t('admin.templateSelector.templates.template4.features') as string[],
+      preview: '/images/template4_preview.png',
+    },
+  ];
+
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,7 +107,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
 
           {/* Publish Menu Button - Goes to restaurant's subscribe page */}
           <a
-            href={`/${restaurant.slug}/subscribe`}
+            href={`/${restaurant.slug}/admin?tab=membership`}
             className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
           >
             {t('admin.templateSelector.publish')}

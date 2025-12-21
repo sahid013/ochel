@@ -541,7 +541,49 @@
       "saving": "Enregistrement...",
       "viewPublic": "Voir le menu public",
       "publish": "Publier le menu",
-      "subscribeTooltip": "Abonnez-vous et publiez votre menu pour activer ceci"
+      "subscribeTooltip": "Abonnez-vous et publiez votre menu pour activer cette fonction",
+      "templates": {
+        "template1": {
+          "name": "Classique",
+          "description": "Thème sombre élégant avec mise en page divisée - parfait pour la cuisine raffinée",
+          "features": [
+            "Fond sombre",
+            "Design écran scindé",
+            "Support galerie images",
+            "Intégration modèles 3D"
+          ]
+        },
+        "template2": {
+          "name": "Moderne",
+          "description": "Design épuré et lumineux avec une esthétique minimaliste",
+          "features": [
+            "Fond clair",
+            "Mise en page cartes",
+            "Optimisé mobile",
+            "Chargement rapide"
+          ]
+        },
+        "template3": {
+          "name": "Boutique",
+          "description": "Modèle élégant avec une typographie et un espacement soignés",
+          "features": [
+            "Polices personnalisées",
+            "Mise en page aérée",
+            "Ressenti premium",
+            "Mise en avant catégories"
+          ]
+        },
+        "template4": {
+          "name": "Décontracté",
+          "description": "Design amical et accessible pour les restaurants décontractés",
+          "features": [
+            "Accents colorés",
+            "Mise en page grille",
+            "Focus photos",
+            "Intégration réseaux sociaux"
+          ]
+        }
+      }
     },
     "firstTime": {
       "loading": "Chargement du panneau d'administration...",
@@ -803,7 +845,6 @@
             "Jusqu'à **5 plats en 3D**",
             "QR code unique pour votre établissement",
             "Modification **instantanée** & illimitée du menu (ajouts, suppressions, prix, descriptions)",
-            "Menu multilingue (option +9 € / mois)",
             "Hébergement & maintenance inclus",
             "Menu accessible partout (QR, lien, Google, réseaux sociaux)"
           ]
@@ -814,7 +855,6 @@
           "features": [
             "**Tout ce qui est inclus dans l'offre Standard**",
             "Jusqu'à **15 plats en 3D**",
-            "Menu multilingue (option +9 € / mois)",
             "Gestion quotidienne du menu depuis le dashboard Ochel"
           ]
         },
@@ -824,8 +864,7 @@
           "features": [
             "**Tout ce qui est inclus dans l'offre Essentielle**",
             "Jusqu'à **25 plats en 3D**",
-            "Gestion avancée et fréquente du menu (cartes évolutives, rotations, volumes, performance)",
-            "Menu multilingue (option +9 € / mois)"
+            "Gestion avancée et fréquente du menu (cartes évolutives, rotations, volumes, performance)"
           ]
         }
       },
@@ -837,6 +876,11 @@
         "selectPlan": "Choisir ce plan",
         "loading": "Chargement...",
         "processing": "Traitement..."
+      },
+      "customWebsite": {
+        "title": "Besoin d'un site web sur mesure ?",
+        "description": "Vous ne voulez pas utiliser de modèle ? Notre équipe d'experts peut créer un site web entièrement personnalisé et performant, adapté exactement à l'identité unique de votre marque.",
+        "button": "Contactez-nous"
       }
     },
     "subscribe": {

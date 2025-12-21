@@ -537,7 +537,49 @@
       "saving": "Saving...",
       "viewPublic": "View Public Menu",
       "publish": "Publish Menu",
-      "subscribeTooltip": "Subscribe and publish your menu to enable this"
+      "subscribeTooltip": "Subscribe and publish your menu to enable this",
+      "templates": {
+        "template1": {
+          "name": "Classic",
+          "description": "Elegant dark theme with split layout - perfect for fine dining",
+          "features": [
+            "Dark background",
+            "Split screen design",
+            "Image gallery support",
+            "3D model integration"
+          ]
+        },
+        "template2": {
+          "name": "Modern",
+          "description": "Clean and bright design with minimalist aesthetic",
+          "features": [
+            "Light background",
+            "Card layout",
+            "Mobile optimized",
+            "Fast loading"
+          ]
+        },
+        "template3": {
+          "name": "Boutique",
+          "description": "Elegant template with careful typography and spacing",
+          "features": [
+            "Custom fonts",
+            "Airy layout",
+            "Premium feel",
+            "Category highlighting"
+          ]
+        },
+        "template4": {
+          "name": "Casual",
+          "description": "Friendly and accessible design for casual restaurants",
+          "features": [
+            "Colorful accents",
+            "Grid layout",
+            "Photo focus",
+            "Social media integration"
+          ]
+        }
+      }
     },
     "firstTime": {
       "loading": "Loading admin panel...",
@@ -739,7 +781,6 @@
             "Up to **5 3D dishes**",
             "Unique QR code for your establishment",
             "**Instant** & unlimited menu modification (additions, deletions, prices, descriptions)",
-            "Multilingual menu (option +9 € / month)",
             "Hosting & maintenance included",
             "Menu accessible everywhere (QR, link, Google, social networks)"
           ]
@@ -750,7 +791,6 @@
           "features": [
             "**Everything included in the Standard offer**",
             "Up to **15 3D dishes**",
-            "Multilingual menu (option +9 € / month)",
             "Daily menu management from the Ochel dashboard"
           ]
         },
@@ -760,8 +800,7 @@
           "features": [
             "**Everything included in the Essential offer**",
             "Up to **25 3D dishes**",
-            "Advanced and frequent menu management (evolving cards, rotations, volumes, performance)",
-            "Multilingual menu (option +9 € / month)"
+            "Advanced and frequent menu management (evolving cards, rotations, volumes, performance)"
           ]
         }
       },
@@ -773,6 +812,11 @@
         "selectPlan": "Select Plan",
         "loading": "Loading...",
         "processing": "Processing..."
+      },
+      "customWebsite": {
+        "title": "Need a Custom Website?",
+        "description": "Don't want to use a template? Our team of experts can build a fully custom, high-performance website tailored exactly to your brand's unique identity.",
+        "button": "Contact Us"
       }
     },
     "subscribe": {
