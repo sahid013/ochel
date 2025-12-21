@@ -5,6 +5,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 import { uploadImage } from '@/lib/storage';
 import { PrimaryButton } from '@/components/ui';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 
 interface ThreeDRequestsTabProps {
@@ -21,6 +22,7 @@ interface RequestItem {
 }
 
 function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem, restaurantId: string, onUpdate: () => void }) {
+    const { t } = useTranslation();
     const [images, setImages] = useState<(File | string | null)[]>([null, null, null, null]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
@@ -78,6 +80,8 @@ function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem
         }
     };
 
+    {/* ... existing imports ... */ }
+
     const isPending = item.status === 'pending';
     // If pending, allow drag/drop. If completed, maybe read-only? 
     // User said "request is in still pending state". 
@@ -92,7 +96,7 @@ function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem
                         ? 'bg-green-100 text-green-700'
                         : 'bg-yellow-100 text-yellow-700'
                         }`}>
-                        {item.status === 'completed' ? 'Completed' : 'Pending'}
+                        {item.status === 'completed' ? t('admin.threeDRequests.status.completed') : t('admin.threeDRequests.status.pending')}
                     </span>
                     <span className="text-xs text-gray-500">
                         {new Date(item.created_at).toLocaleDateString()}
@@ -105,7 +109,7 @@ function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem
                             disabled={isUpdating}
                             size="sm"
                         >
-                            {isUpdating ? 'Saving...' : 'Save Changes'}
+                            {isUpdating ? t('admin.threeDRequests.saving') : t('admin.threeDRequests.save')}
                         </PrimaryButton>
                     </div>
                 )}
@@ -117,8 +121,13 @@ function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem
                         images={images}
                         onImagesChange={handleImagesChange}
                         maxImages={4}
-                        labels={['Top view', 'Right view', 'Bottom view', 'Left view']}
-                        loadingText="Uploading..."
+                        labels={[
+                            t('admin.threeDRequests.upload.labels.top'),
+                            t('admin.threeDRequests.upload.labels.right'),
+                            t('admin.threeDRequests.upload.labels.bottom'),
+                            t('admin.threeDRequests.upload.labels.left')
+                        ]}
+                        loadingText={t('admin.threeDRequests.saving')}
                         aspectRatio="h-32 w-full"
                         instanceId={`req-${item.id}`}
                         className="mt-0"
@@ -131,12 +140,12 @@ function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem
                                 {img ? (
                                     <img
                                         src={typeof img === 'string' ? img : URL.createObjectURL(img)}
-                                        alt={`View ${idx + 1}`}
+                                        alt={`Vue ${idx + 1}`}
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
                                     <div className="flex items-center justify-center w-full h-full text-gray-300">
-                                        <span className="text-xs">No image</span>
+                                        <span className="text-xs">{t('admin.threeDRequests.upload.noImage')}</span>
                                     </div>
                                 )}
                             </div>
@@ -149,6 +158,7 @@ function ThreeDRequestItem({ item, restaurantId, onUpdate }: { item: RequestItem
 }
 
 export function ThreeDRequestsTab({ restaurant }: ThreeDRequestsTabProps) {
+    const { t } = useTranslation();
     const [requests, setRequests] = useState<RequestItem[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -195,9 +205,9 @@ export function ThreeDRequestsTab({ restaurant }: ThreeDRequestsTabProps) {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-2xl md:text-3xl font-bold font-loubag text-primary mb-2">3D Menu Requests</h2>
+                <h2 className="text-2xl md:text-3xl font-bold font-loubag text-primary mb-2">{t('admin.threeDRequests.title')}</h2>
                 <p className="text-gray-600 font-plus-jakarta-sans text-sm md:text-base">
-                    Track your 3D model generation requests and manage uploaded images
+                    {t('admin.threeDRequests.subtitle')}
                 </p>
             </div>
 
@@ -209,7 +219,7 @@ export function ThreeDRequestsTab({ restaurant }: ThreeDRequestsTabProps) {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 font-plus-jakarta-sans">No 3D Requests Yet</h3>
+                        <h3 className="text-lg font-bold text-gray-900 font-plus-jakarta-sans">{t('admin.threeDRequests.empty.title')}</h3>
                     </div>
                 </div>
             ) : (

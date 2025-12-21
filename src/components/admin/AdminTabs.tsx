@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface AdminTabsProps {
     activeTab: 'menu' | 'template' | 'customize' | 'settings' | 'membership' | '3d-requests';
@@ -8,6 +9,7 @@ interface AdminTabsProps {
 
 export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
     const router = useRouter();
+    const { t } = useTranslation();
 
     const handleNavigation = (tab: 'menu' | 'template' | 'customize' | 'settings' | 'membership' | '3d-requests') => {
         if (onTabChange) {
@@ -28,7 +30,7 @@ export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                     >
-                        Menu Management
+                        {t('admin.tabs.menu')}
                     </button>
                     <button
                         onClick={() => handleNavigation('template')}
@@ -37,7 +39,7 @@ export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                     >
-                        Template Settings
+                        {t('admin.tabs.template')}
                     </button>
                     <button
                         onClick={() => handleNavigation('customize')}
@@ -46,7 +48,7 @@ export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                     >
-                        Customize
+                        {t('admin.tabs.customize')}
                     </button>
                     <button
                         onClick={() => handleNavigation('3d-requests')}
@@ -55,7 +57,7 @@ export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                     >
-                        3D Menu Request
+                        {t('admin.tabs.threeDRequests')}
                     </button>
                     <button
                         onClick={() => handleNavigation('membership')}
@@ -64,7 +66,7 @@ export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                     >
-                        Membership
+                        {t('admin.tabs.membership')}
                     </button>
                 </nav>
             </div>

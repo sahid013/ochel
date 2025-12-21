@@ -414,7 +414,131 @@
     "header": {
       "title": "Ochel",
       "subtitle": "Admin Dashboard",
-      "logout": "Logout"
+      "logout": "Logout",
+      "credits": "3d credit left:"
+    },
+    "customize": {
+      "title": "Template Customization",
+      "subtitle": "Customize the colors and fonts for your menu templates. Changes will apply to all templates.",
+      "success": "Settings updated successfully",
+      "error": "Failed to update settings",
+      "branding": {
+        "title": "Branding",
+        "logo": {
+          "label": "Restaurant Logo",
+          "tooltipTitle": "Brand Logo",
+          "tooltipText": "Upload your restaurant's logo. This will be displayed in the navigation bar.",
+          "reset": "Reset",
+          "placeholder": "Upload Logo",
+          "helpText": "Upload your restaurant logo (PNG, JPG). Will be displayed on the navbar."
+        },
+        "hero": {
+          "label": "Hero Background Image",
+          "tooltipTitle": "Hero Section Background",
+          "tooltipText": "Customize the main banner image at the top of your menu.",
+          "placeholder": "Upload Hero Image",
+          "helpText": "Upload a background image for the top section. This will replace the default background."
+        },
+        "email": {
+          "label": "Contact Email",
+          "tooltipTitle": "Contact Information",
+          "tooltipText": "The email address where customers can reach you.",
+          "helpText": "Email address for the \"Contact\" button on your menu."
+        }
+      },
+      "fonts": {
+        "header": {
+          "label": "Header Font (H1, Titles)",
+          "tooltipTitle": "Typography",
+          "tooltipText": "Choose a font for headings and major titles.",
+          "helpText": "Font for restaurant name and section titles"
+        },
+        "body": {
+          "label": "Body Font (Text, Menu Items)",
+          "tooltipText": "Choose a font for the main content and descriptions.",
+          "helpText": "Font for descriptions, prices, and general text"
+        },
+        "reset": "Reset",
+        "placeholder": "Default"
+      },
+      "colors": {
+        "primary": {
+          "label": "Primary Color",
+          "tooltipTitle": "Theme Color",
+          "tooltipText": "Sets the main color for buttons, links, and important elements.",
+          "helpText": "Main brand color used for buttons and highlights"
+        }
+      },
+      "buttons": {
+        "save": "Apply Customization",
+        "saving": "Saving...",
+        "reset": "Reset to Default"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your restaurant profile and general settings",
+      "success": "Settings updated successfully",
+      "error": "Failed to update settings",
+      "profileImage": {
+        "title": "Profile Image",
+        "description": "Upload your restaurant logo. This will be displayed on your menu and landing page.",
+        "recommended": "Recommended: 500x500px or larger\nJPG, PNG or WEBP"
+      },
+      "basicInfo": {
+        "title": "Basic Information",
+        "name": "Restaurant Name",
+        "slug": "URL Slug",
+        "email": "Contact Email",
+        "primaryColor": "Primary Color",
+        "accentColor": "Accent Color"
+      },
+      "subscription": {
+        "title": "Subscription Management",
+        "description": "Manage your subscription, billing information, or cancel your plan.",
+        "button": "Manage Subscription"
+      },
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "threeDRequests": {
+      "title": "3D Menu Requests",
+      "subtitle": "Track your 3D model generation requests and manage uploaded images",
+      "empty": {
+        "title": "No 3D Requests Yet"
+      },
+      "status": {
+        "completed": "Completed",
+        "pending": "Pending"
+      },
+      "upload": {
+        "labels": {
+          "top": "Top view",
+          "right": "Right view",
+          "bottom": "Bottom view",
+          "left": "Left view"
+        },
+        "noImage": "No image"
+      },
+      "save": "Save Changes",
+      "saving": "Saving..."
+    },
+    "templateSelector": {
+      "title": "Choose Your Menu Template",
+      "subtitle": "Select the template that best fits your restaurant style. Use \"Live Preview\" to test each model before activating.",
+      "previewLive": "Preview Live",
+      "activate": "Activate",
+      "saving": "Saving...",
+      "viewPublic": "View Public Menu",
+      "publish": "Publish Menu",
+      "subscribeTooltip": "Subscribe and publish your menu to enable this"
+    },
+    "firstTime": {
+      "loading": "Loading admin panel...",
+      "welcome": "Welcome to Ochel!",
+      "preview": "Preview Menu",
+      "addMore": "Add More Items",
+      "addItem": "Add Menu Item"
     },
     "tabs": {
       "overview": "Overview",
@@ -424,7 +548,11 @@
       "manage": "Reservation Management",
       "manageMobile": "Management",
       "menu": "Menu Management",
-      "menuMobile": "Menu"
+      "menuMobile": "Menu",
+      "template": "Template Settings",
+      "customize": "Customization",
+      "threeDRequests": "3D Menu Requests",
+      "membership": "Membership"
     },
     "stats": {
       "total": "Total",

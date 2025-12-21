@@ -417,8 +417,132 @@
   "admin": {
     "header": {
       "title": "Ochel",
-      "subtitle": "Admin Dashboard",
-      "logout": "Déconnexion"
+      "subtitle": "Tableau de bord Admin",
+      "logout": "Déconnexion",
+      "credits": "Crédits 3D restants :"
+    },
+    "customize": {
+      "title": "Personnalisation du modèle",
+      "subtitle": "Personnalisez les couleurs et les polices de vos modèles de menu. Les modifications s'appliqueront à tous les modèles.",
+      "success": "Paramètres mis à jour avec succès",
+      "error": "Échec de la mise à jour des paramètres",
+      "branding": {
+        "title": "Image de marque",
+        "logo": {
+          "label": "Logo du Restaurant",
+          "tooltipTitle": "Logo de la marque",
+          "tooltipText": "Téléchargez le logo de votre restaurant. Il sera affiché dans la barre de navigation.",
+          "reset": "Réinitialiser",
+          "placeholder": "Télécharger Logo",
+          "helpText": "Téléchargez votre logo (PNG, JPG). Il sera affiché sur la barre de navigation."
+        },
+        "hero": {
+          "label": "Image d'arrière-plan Hero",
+          "tooltipTitle": "Arrière-plan Section Hero",
+          "tooltipText": "Personnalisez l'image de bannière principale en haut de votre menu.",
+          "placeholder": "Télécharger Image Hero",
+          "helpText": "Téléchargez une image d'arrière-plan pour la section supérieure. Cela remplacera l'arrière-plan par défaut."
+        },
+        "email": {
+          "label": "Email de contact",
+          "tooltipTitle": "Informations de contact",
+          "tooltipText": "L'adresse email où les clients peuvent vous joindre.",
+          "helpText": "Adresse email pour le bouton \"Contact\" sur votre menu."
+        }
+      },
+      "fonts": {
+        "header": {
+          "label": "Police des titres (H1, Titres)",
+          "tooltipTitle": "Typographie",
+          "tooltipText": "Choisissez une police pour les en-têtes et les titres principaux.",
+          "helpText": "Police pour le nom du restaurant et les titres de section"
+        },
+        "body": {
+          "label": "Police du corps (Texte, Articles)",
+          "tooltipText": "Choisissez une police pour le contenu principal et les descriptions.",
+          "helpText": "Police pour les descriptions, les prix et le texte général"
+        },
+        "reset": "Réinitialiser",
+        "placeholder": "Défaut"
+      },
+      "colors": {
+        "primary": {
+          "label": "Couleur Principale",
+          "tooltipTitle": "Couleur du thème",
+          "tooltipText": "Définit la couleur principale pour les boutons, liens et éléments importants.",
+          "helpText": "Couleur principale de la marque utilisée pour les boutons et les mises en avant"
+        }
+      },
+      "buttons": {
+        "save": "Appliquer la personnalisation",
+        "saving": "Enregistrement...",
+        "reset": "Rétablir les défauts"
+      }
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Gérez le profil de votre restaurant et les paramètres généraux",
+      "success": "Paramètres mis à jour avec succès",
+      "error": "Échec de la mise à jour des paramètres",
+      "profileImage": {
+        "title": "Image de profil",
+        "description": "Téléchargez le logo de votre restaurant. Il sera affiché sur votre menu et votre page d'accueil.",
+        "recommended": "Recommandé : 500x500px ou plus\nJPG, PNG ou WEBP"
+      },
+      "basicInfo": {
+        "title": "Informations de base",
+        "name": "Nom du Restaurant",
+        "slug": "Slug URL",
+        "email": "Email de Contact",
+        "primaryColor": "Couleur Principale",
+        "accentColor": "Couleur d'Accent"
+      },
+      "subscription": {
+        "title": "Gestion de l'abonnement",
+        "description": "Gérez votre abonnement, vos informations de facturation ou annulez votre forfait.",
+        "button": "Gérer l'abonnement"
+      },
+      "save": "Enregistrer",
+      "saving": "Enregistrement..."
+    },
+    "threeDRequests": {
+      "title": "Demandes de menu 3D",
+      "subtitle": "Suivez vos demandes de génération de modèles 3D et gérez les images téléchargées",
+      "empty": {
+        "title": "Aucune demande 3D pour le moment"
+      },
+      "status": {
+        "completed": "Terminé",
+        "pending": "En attente"
+      },
+      "upload": {
+        "labels": {
+          "top": "Vue de dessus",
+          "right": "Vue de droite",
+          "bottom": "Vue de dessous",
+          "left": "Vue de gauche"
+        },
+        "noImage": "Aucune image"
+      },
+      "save": "Enregistrer",
+      "saving": "Enregistrement..."
+    },
+    "templateSelector": {
+      "title": "Choisissez votre modèle de menu",
+      "subtitle": "Sélectionnez le modèle qui correspond le mieux au style de votre restaurant. Utilisez \"Aperçu en direct\" pour tester chaque modèle avant de l'activer.",
+      "previewLive": "Aperçu en direct",
+      "activate": "Activer",
+      "saving": "Enregistrement...",
+      "viewPublic": "Voir le menu public",
+      "publish": "Publier le menu",
+      "subscribeTooltip": "Abonnez-vous et publiez votre menu pour activer ceci"
+    },
+    "firstTime": {
+      "loading": "Chargement du panneau d'administration...",
+      "welcome": "Bienvenue sur Ochel !",
+      "preview": "Aperçu du menu",
+      "addMore": "Ajouter plus d'articles",
+      "addItem": "Ajouter un article"
     },
     "tabs": {
       "overview": "Vue d'ensemble",
@@ -428,7 +552,11 @@
       "manage": "Gestion des Réservations",
       "manageMobile": "Gestion",
       "menu": "Gestion du Menu",
-      "menuMobile": "Menu"
+      "menuMobile": "Menu",
+      "template": "Paramètres du modèle",
+      "customize": "Personnalisation",
+      "threeDRequests": "Demande de menu 3D",
+      "membership": "Abonnement"
     },
     "stats": {
       "total": "Total",

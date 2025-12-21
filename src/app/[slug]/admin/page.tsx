@@ -181,7 +181,7 @@ export default function RestaurantAdminPage() {
         <div className="min-h-screen bg-gray-50 md:bg-white font-forum flex items-center justify-center">
           <div className="text-center">
             <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading admin panel...</p>
+            <p className="mt-4 text-gray-600">Chargement du panneau d'administration...</p>
           </div>
         </div>
       </PageLayout>
@@ -232,7 +232,7 @@ export default function RestaurantAdminPage() {
             <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
               <div className="flex flex-row items-center gap-4 w-full md:w-auto">
                 <h1 className="text-[24px] md:text-2xl font-bold text-primary font-loubag uppercase">
-                  Welcome to Ochel!
+                  Bienvenue sur Ochel !
                 </h1>
                 <PrimaryButton
                   onClick={async () => {
@@ -271,7 +271,7 @@ export default function RestaurantAdminPage() {
                   variant="secondary"
                   className="py-1.5 flex-1 md:flex-none justify-center"
                 >
-                  Preview Menu
+                  Aperçu du menu
                 </PrimaryButton>
                 <div className="flex-1 md:flex-none">
                   <PublishMenuButton

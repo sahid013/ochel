@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { PrimaryButton, Button } from '@/components/ui';
@@ -84,6 +85,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
         }
     };
 
+    const { t } = useTranslation();
     const handleCancelSubscription = async () => {
         setCancelLoading(true);
         setError(null);
@@ -97,7 +99,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to create portal session');
+                throw new Error(errorData.error || t('admin.settings.error'));
             }
 
             const { url } = await response.json();
@@ -105,7 +107,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
         } catch (err: any) {
             console.error('Portal error:', err);
-            setError(err.message || 'Failed to open subscription management');
+            setError(err.message || t('admin.settings.error'));
         } finally {
             setCancelLoading(false);
         }
@@ -130,11 +132,11 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                 .eq('id', restaurant.id);
 
             if (updateError) throw updateError;
-
+            setSuccess(t('admin.settings.success'));
 
         } catch (err) {
             console.error('Error updating settings:', err);
-            setError('Failed to update settings');
+            setError(t('admin.settings.error'));
         } finally {
             setLoading(false);
         }
@@ -144,8 +146,8 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
         <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Settings</h2>
-                    <p className="text-gray-500 mt-1">Manage your restaurant profile and general settings</p>
+                    <h2 className="text-2xl font-bold text-gray-900">{t('admin.settings.title')}</h2>
+                    <p className="text-gray-500 mt-1">{t('admin.settings.subtitle')}</p>
                 </div>
             </div>
 
@@ -167,9 +169,9 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
                         {/* Left Column - Profile Image */}
                         <div className="lg:col-span-1 border-r border-gray-100 pr-8">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Image</h3>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.settings.profileImage.title')}</h3>
                             <p className="text-sm text-gray-500 mb-6">
-                                Upload your restaurant logo. This will be displayed on your menu and landing page.
+                                {t('admin.settings.profileImage.description')}
                             </p>
 
                             <div className="flex flex-col items-center">
@@ -179,26 +181,25 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                         images={[currentLogo]}
                                         onImagesChange={handleImageChange}
                                         maxImages={1}
-                                        loadingText="Uploading..."
-                                        placeholderText="Upload Logo"
+                                        loadingText={t('admin.settings.saving')}
+                                        placeholderText={t('admin.branding.logo.placeholder') || "Upload Logo"}
                                         className="w-full h-full"
                                     />
                                 </div>
-                                <p className="text-xs text-gray-400 text-center">
-                                    Recommended: 500x500px or larger<br />
-                                    JPG, PNG or WEBP
+                                <p className="text-xs text-gray-400 text-center whitespace-pre-line">
+                                    {t('admin.settings.profileImage.recommended')}
                                 </p>
                             </div>
                         </div>
 
                         {/* Right Column - Basic Options */}
                         <div className="lg:col-span-2">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.settings.basicInfo.title')}</h3>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                                            Restaurant Name
+                                            {t('admin.settings.basicInfo.name')}
                                         </label>
                                         <input
                                             id="name"
@@ -207,13 +208,13 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
                                             style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                                            placeholder="e.g. La Bella Vita"
+                                            placeholder="ex: La Bella Vita"
                                         />
                                     </div>
 
                                     <div className="space-y-2">
                                         <label htmlFor="slug" className="text-sm font-medium text-gray-700">
-                                            URL Slug
+                                            {t('admin.settings.basicInfo.slug')}
                                         </label>
                                         <div className="flex items-center">
                                             <span className="text-gray-400 text-sm mr-2">ochel.com/</span>
@@ -231,7 +232,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
                                 <div className="space-y-2">
                                     <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                                        Contact Email
+                                        {t('admin.settings.basicInfo.email')}
                                     </label>
                                     <input
                                         id="email"
@@ -247,7 +248,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label htmlFor="primary_color" className="text-sm font-medium text-gray-700">
-                                            Primary Color
+                                            {t('admin.settings.basicInfo.primaryColor')}
                                         </label>
                                         <div className="flex items-center gap-2">
                                             <div className="w-10 h-10 rounded-lg border border-gray-200 shadow-sm" style={{ backgroundColor: formData.primary_color || '#000000' }}></div>
@@ -265,7 +266,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
                                     <div className="space-y-2">
                                         <label htmlFor="accent_color" className="text-sm font-medium text-gray-700">
-                                            Accent Color
+                                            {t('admin.settings.basicInfo.accentColor')}
                                         </label>
                                         <div className="flex items-center gap-2">
                                             <div className="w-10 h-10 rounded-lg border border-gray-200 shadow-sm" style={{ backgroundColor: formData.accent_color || '#ffffff' }}></div>
@@ -285,9 +286,9 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                 {/* Subscription Management Section */}
                                 {(restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing') && (
                                     <div className="pt-6 border-t border-gray-100">
-                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Gestion de l'abonnement</h4>
+                                        <h4 className="text-sm font-medium text-gray-700 mb-2">{t('admin.settings.subscription.title')}</h4>
                                         <p className="text-sm text-gray-500 mb-4">
-                                            Gérez votre abonnement, vos informations de facturation ou annulez votre forfait.
+                                            {t('admin.settings.subscription.description')}
                                         </p>
                                         <Button
                                             type="button"
@@ -296,7 +297,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                             disabled={cancelLoading || loading}
                                             className="!border-2 !border-gray-900/20 !text-gray-900"
                                         >
-                                            {cancelLoading ? 'Chargement...' : 'Gérer l\'abonnement'}
+                                            {cancelLoading ? t('admin.settings.saving') : t('admin.settings.subscription.button')}
                                         </Button>
                                     </div>
                                 )}
@@ -307,7 +308,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                         disabled={loading || cancelLoading}
                                         className="min-w-[120px]"
                                     >
-                                        {loading ? 'Saving...' : 'Save Changes'}
+                                        {loading ? t('admin.settings.saving') : t('admin.settings.save')}
                                     </PrimaryButton>
                                 </div>
                             </form>

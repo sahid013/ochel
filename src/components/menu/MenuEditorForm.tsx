@@ -447,13 +447,13 @@ export function MenuEditorForm({
                         </div>
                         {creditsLeft === 0 && (
                             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[2px] rounded-lg border border-dashed border-gray-300">
-                                <p className="text-sm font-semibold text-gray-800 mb-3">You don't have credit left</p>
+                                <p className="text-sm font-semibold text-gray-800 mb-3">Vous n'avez plus de crédit</p>
                                 <button
                                     type="button"
                                     onClick={() => router.push(`/${slug}/admin?tab=membership&skip_onboarding=true`)}
                                     className="px-4 py-2 bg-[#F34A23] border border-[#F34A23] text-white text-xs font-semibold rounded-lg hover:bg-[#d63e1b] transition-colors shadow-sm"
                                 >
-                                    Purchase credit
+                                    Acheter du crédit
                                 </button>
                             </div>
                         )}

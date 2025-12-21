@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
 import { Alert } from '@/components/ui/Alert';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface TemplateSelectorProps {
   restaurant: Restaurant;
@@ -14,35 +15,36 @@ interface TemplateSelectorProps {
 const templates = [
   {
     id: 'template1',
-    name: 'Classic Dark',
-    description: 'Elegant dark theme with split layout - perfect for fine dining',
-    features: ['Dark background', 'Split-screen design', 'Image gallery support', '3D model integration'],
+    name: 'Classique Sombre',
+    description: 'Thème sombre élégant avec mise en page divisée - parfait pour la cuisine raffinée',
+    features: ['Fond sombre', 'Design écran scindé', 'Support galerie images', 'Intégration modèles 3D'],
     preview: '/images/template1_preview.png',
   },
   {
     id: 'template2',
-    name: 'Modern Light',
-    description: 'Clean, bright design with minimalist aesthetics',
-    features: ['Light background', 'Card-based layout', 'Mobile-optimized', 'Fast loading'],
+    name: 'Moderne Lumineux',
+    description: 'Design épuré et lumineux avec une esthétique minimaliste',
+    features: ['Fond clair', 'Mise en page cartes', 'Optimisé mobile', 'Chargement rapide'],
     preview: '/images/template2_preview.png',
   },
   {
     id: 'template3',
     name: 'Boutique',
-    description: 'Stylish template with elegant typography and spacing',
-    features: ['Custom fonts', 'Spacious layout', 'Premium feel', 'Category highlights'],
+    description: 'Modèle élégant avec une typographie et un espacement soignés',
+    features: ['Polices personnalisées', 'Mise en page aérée', 'Ressenti premium', 'Mise en avant catégories'],
     preview: '/images/template3_preview.png',
   },
   {
     id: 'template4',
-    name: 'Casual Dining',
-    description: 'Friendly, approachable design for casual restaurants',
-    features: ['Colorful accents', 'Grid layout', 'Photo-focused', 'Social media integration'],
+    name: 'Restauration Détendue',
+    description: 'Design amical et accessible pour les restaurants décontractés',
+    features: ['Accents colorés', 'Mise en page grille', 'Focus photos', 'Intégration réseaux sociaux'],
     preview: '/images/template4_preview.png',
   },
 ];
 
 export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelectorProps) {
+  const { t } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<string>(restaurant.template || 'template1');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +68,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
       }
     } catch (err: any) {
       console.error('Error saving template:', err);
-      setError(err.message || 'Failed to save template');
+      setError(err.message || t('admin.templateSelector.error') || 'Failed to save template');
     } finally {
       setSaving(false);
     }
@@ -76,9 +78,9 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
     <div className="space-y-6">
       <div className="flex justify-between items-start gap-6">
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Menu Template</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('admin.templateSelector.title')}</h2>
           <p className="text-gray-600">
-            Select the template that best represents your restaurant's style. Use "Preview Live" to test each template before activating it.
+            {t('admin.templateSelector.subtitle')}
           </p>
         </div>
         <div className="flex-shrink-0 flex gap-3">
@@ -90,15 +92,15 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
               rel="noopener noreferrer"
               className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors shadow-sm"
             >
-              View Public Menu
+              {t('admin.templateSelector.viewPublic')}
             </a>
           ) : (
             <button
               disabled
               className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60 pointer-events-none"
-              title="Subscribe and publish your menu to enable this"
+              title={t('admin.templateSelector.subscribeTooltip')}
             >
-              View Public Menu
+              {t('admin.templateSelector.viewPublic')}
             </button>
           )}
 
@@ -107,7 +109,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
             href={`/${restaurant.slug}/subscribe`}
             className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
           >
-            Publish Menu
+            {t('admin.templateSelector.publish')}
           </a>
         </div>
       </div>
@@ -139,7 +141,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
               {/* Selected Badge */}
               {selectedTemplate === template.id && (
                 <div className="absolute top-3 right-3 bg-[#F34A23] text-white px-3 py-1 rounded-full text-sm font-medium shadow-sm">
-                  ✓ Active
+                  ✓ Actif
                 </div>
               )}
             </div>
@@ -162,7 +164,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
                   onClick={(e) => e && e.stopPropagation()}
                   className="flex-1 justify-center"
                 >
-                  Preview Live
+                  Aperçu en direct
                 </PrimaryButton>
 
                 {/* Select Button */}
@@ -176,7 +178,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
                   className={`flex-1 justify-center ${selectedTemplate === template.id ? 'disabled:bg-[#F34A23] disabled:opacity-50 disabled:text-white' : ''
                     }`}
                 >
-                  {saving && selectedTemplate === template.id ? 'Saving...' : 'Activate'}
+                  {saving && selectedTemplate === template.id ? 'Enregistrement...' : 'Activer'}
                 </PrimaryButton>
               </div>
             </div>

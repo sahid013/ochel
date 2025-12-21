@@ -6,12 +6,14 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { parseFontConfig } from '@/lib';
 import { useRouter } from 'next/navigation';
 import { ImageUploader } from '@/components/demo/ImageUploader';
+import { useTranslation } from '@/contexts/LanguageContext';
 
 interface CustomizeTabProps {
   restaurant: Restaurant;
 }
 
 export function CustomizeTab({ restaurant }: CustomizeTabProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -105,7 +107,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           logo_url: finalLogoUrl as any,
           hero_image_url: finalHeroUrl as any,
           email: customization.contactEmail,
-          primary_color: customization.primaryColor || null,
+          primary_color: customization.primaryColor || null as any,
           // accent_color: customization.accentColor, // Restricted
           // background_color: customization.backgroundColor, // Restricted
           // text_color: customization.textColor, // Restricted
@@ -115,11 +117,11 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
 
       if (error) throw error;
 
-      setSuccessMessage('Customization saved successfully!');
+      setSuccessMessage(t('admin.customize.success'));
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Error saving customization:', error);
-      setErrorMessage('Failed to save customization. Please try again.');
+      setErrorMessage(t('admin.customize.error'));
     } finally {
       setSaving(false);
     }
@@ -131,11 +133,11 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
       const { error } = await supabase
         .from('restaurants')
         .update({
-          primary_color: null,
-          logo_url: null,
-          hero_image_url: null,
-          font_family: null,
-          email: null
+          primary_color: null as any,
+          logo_url: null as any,
+          hero_image_url: null as any,
+          font_family: null, // font_family likely accepts Json or null
+          email: null as any
         })
         .eq('id', restaurant.id);
 
@@ -153,7 +155,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
       setLogoImages([]);
       setHeroImages([]);
 
-      setSuccessMessage('Customization reset to default successfully');
+      setSuccessMessage(t('admin.customize.success'));
       setTimeout(() => setSuccessMessage(''), 3000);
 
       router.refresh();
@@ -191,9 +193,9 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
     <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Template Customization</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('admin.customize.title')}</h2>
           <p className="text-gray-600">
-            Customize the colors and fonts for your menu templates. Changes will apply to all templates.
+            {t('admin.customize.subtitle')}
           </p>
         </div>
 
@@ -212,27 +214,27 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
         <div className="space-y-6">
           {/* Logo Upload */}
           <div className="border-b border-gray-100 pb-6 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Branding</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.customize.branding.title')}</h3>
             <div className="grid md:grid-cols-2 gap-6 items-center">
               {/* Logo Upload */}
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                    Restaurant Logo
+                    {t('admin.customize.branding.logo.label')}
                     <div className="group relative">
                       <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                       </svg>
                       <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                        <p className="font-semibold mb-1">Brand Logo</p>
-                        <p>Upload your restaurant's logo. This will be displayed in the navigation bar.</p>
+                        <p className="font-semibold mb-1">{t('admin.customize.branding.logo.tooltipTitle')}</p>
+                        <p>{t('admin.customize.branding.logo.tooltipText')}</p>
                         <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                       </div>
                     </div>
                   </label>
                   {logoImages.length > 0 && (logoImages[0] !== null) && (
                     <button onClick={resetLogo} className="text-xs text-red-500 hover:text-red-700 underline">
-                      Reset
+                      {t('admin.customize.branding.logo.reset')}
                     </button>
                   )}
                 </div>
@@ -241,13 +243,13 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                     images={logoImages}
                     onImagesChange={setLogoImages}
                     maxImages={1}
-                    loadingText="Uploading..."
-                    placeholderText="Upload Logo"
+                    loadingText={t('admin.customize.buttons.saving')}
+                    placeholderText={t('admin.customize.branding.logo.placeholder')}
                     aspectRatio="h-20 w-40" // Rectangular for logos
                     instanceId="logo-uploader"
                   />
                   <p className="mt-2 text-sm text-gray-500">
-                    Upload your restaurant logo (PNG, JPG). Will be displayed on the navbar.
+                    {t('admin.customize.branding.logo.helpText')}
                   </p>
                 </div>
               </div>
@@ -256,21 +258,21 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                    Hero Background Image
+                    {t('admin.customize.branding.hero.label')}
                     <div className="group relative">
                       <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                       </svg>
                       <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                        <p className="font-semibold mb-1">Hero Section Background</p>
-                        <p>Customize the main banner image at the top of your menu.</p>
+                        <p className="font-semibold mb-1">{t('admin.customize.branding.hero.tooltipTitle')}</p>
+                        <p>{t('admin.customize.branding.hero.tooltipText')}</p>
                         <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                       </div>
                     </div>
                   </label>
                   {heroImages.length > 0 && (heroImages[0] !== null) && (
                     <button onClick={resetHero} className="text-xs text-red-500 hover:text-red-700 underline">
-                      Reset
+                      {t('admin.customize.branding.logo.reset')}
                     </button>
                   )}
                 </div>
@@ -279,13 +281,13 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                     images={heroImages}
                     onImagesChange={setHeroImages}
                     maxImages={1}
-                    loadingText="Uploading..."
-                    placeholderText="Upload Hero Image"
+                    loadingText={t('admin.customize.buttons.saving')}
+                    placeholderText={t('admin.customize.branding.hero.placeholder')}
                     aspectRatio="h-32 w-full" // Wider aspect ratio for hero
                     instanceId="hero-uploader"
                   />
                   <p className="mt-2 text-sm text-gray-500">
-                    Upload a background image for the top section. This will replace the default background.
+                    {t('admin.customize.branding.hero.helpText')}
                   </p>
                 </div>
               </div>
@@ -293,14 +295,14 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               {/* Contact Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  Contact Email
+                  {t('admin.customize.branding.email.label')}
                   <div className="group relative">
                     <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                     </svg>
                     <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                      <p className="font-semibold mb-1">Contact Information</p>
-                      <p>The email address where customers can reach you.</p>
+                      <p className="font-semibold mb-1">{t('admin.customize.branding.email.tooltipTitle')}</p>
+                      <p>{t('admin.customize.branding.email.tooltipText')}</p>
                       <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                     </div>
                   </div>
@@ -311,10 +313,10 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
                   onChange={(e) => setCustomization({ ...customization, contactEmail: e.target.value })}
                   className={inputStyle}
                   style={inputBorderColor}
-                  placeholder="contact@example.com"
+                  placeholder="contact@exemple.com"
                 />
                 <p className="mt-2 text-sm text-gray-500">
-                  Email address for the "Contact" button on your menu.
+                  {t('admin.customize.branding.email.helpText')}
                 </p>
               </div>
             </div>
@@ -327,21 +329,21 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                Header Font (H1, Titles)
+                {t('admin.customize.fonts.header.label')}
                 <div className="group relative">
                   <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                   </svg>
                   <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                    <p className="font-semibold mb-1">Typography</p>
-                    <p>Choose a font for headings and major titles.</p>
+                    <p className="font-semibold mb-1">{t('admin.customize.fonts.header.tooltipTitle')}</p>
+                    <p>{t('admin.customize.fonts.header.tooltipText')}</p>
                     <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
                 </div>
               </label>
               {customization.headerFont && (
                 <button onClick={resetHeaderFont} className="text-xs text-red-500 hover:text-red-700 underline">
-                  Reset
+                  {t('admin.customize.fonts.reset')}
                 </button>
               )}
             </div>
@@ -351,10 +353,10 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               options={fontOptions}
               className={inputStyle}
               style={inputBorderColor}
-              placeholder="Default"
+              placeholder={t('admin.customize.fonts.placeholder')}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Font for restaurant name and section titles
+              {t('admin.customize.fonts.header.helpText')}
             </p>
           </div>
 
@@ -362,21 +364,21 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                Body Font (Text, Menu Items)
+                {t('admin.customize.fonts.body.label')}
                 <div className="group relative">
                   <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                   </svg>
                   <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                    <p className="font-semibold mb-1">Typography</p>
-                    <p>Choose a font for the main content and descriptions.</p>
+                    <p className="font-semibold mb-1">{t('admin.customize.fonts.header.tooltipTitle')}</p>
+                    <p>{t('admin.customize.fonts.body.tooltipText')}</p>
                     <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
                 </div>
               </label>
               {customization.bodyFont && (
                 <button onClick={resetBodyFont} className="text-xs text-red-500 hover:text-red-700 underline">
-                  Reset
+                  {t('admin.customize.fonts.reset')}
                 </button>
               )}
             </div>
@@ -386,10 +388,10 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               options={fontOptions}
               className={inputStyle}
               style={inputBorderColor}
-              placeholder="Default"
+              placeholder={t('admin.customize.fonts.placeholder')}
             />
             <p className="mt-1 text-sm text-gray-500">
-              Font for descriptions, prices, and general text
+              {t('admin.customize.fonts.body.helpText')}
             </p>
           </div>
         </div>
@@ -400,21 +402,21 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                Primary Color
+                {t('admin.customize.colors.primary.label')}
                 <div className="group relative">
                   <svg className="w-4 h-4 text-gray-400 cursor-help" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
                   </svg>
                   <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                    <p className="font-semibold mb-1">Theme Color</p>
-                    <p>Sets the main color for buttons, links, and important elements.</p>
+                    <p className="font-semibold mb-1">{t('admin.customize.colors.primary.tooltipTitle')}</p>
+                    <p>{t('admin.customize.colors.primary.tooltipText')}</p>
                     <div className="absolute left-4 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
                 </div>
               </label>
               {customization.primaryColor && (
                 <button onClick={resetPrimaryColor} className="text-xs text-red-500 hover:text-red-700 underline">
-                  Reset
+                  {t('admin.customize.fonts.reset')}
                 </button>
               )}
             </div>
@@ -435,7 +437,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
               />
             </div>
             <p className="mt-1 text-sm text-gray-500">
-              Main brand color used for buttons and highlights
+              {t('admin.customize.colors.primary.helpText')}
             </p>
           </div>
 
@@ -453,10 +455,10 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           {saving ? (
             <>
               <LoadingSpinner size="sm" className="mr-2" />
-              Saving...
+              {t('admin.customize.buttons.saving')}
             </>
           ) : (
-            'Apply Customization'
+            t('admin.customize.buttons.save')
           )}
         </button>
 
@@ -465,7 +467,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
           disabled={saving}
           className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
         >
-          Reset to Default
+          {t('admin.customize.buttons.reset')}
         </button>
       </div>
     </div>

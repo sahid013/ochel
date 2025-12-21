@@ -691,7 +691,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           <div className="bg-white rounded-2xl p-4 md:p-8 border h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <div className="flex justify-between items-center mb-8 md:mb-6">
               <h3 className="text-2xl md:text-3xl font-bold text-primary font-loubag uppercase">
-                {menuItems.length > 0 ? 'Add More Items' : 'Add Menu Item'}
+                {menuItems.length > 0 ? 'Ajouter plus d\'articles' : 'Ajouter un article'}
               </h3>
               {menuItems.length > 0 && (
                 <button

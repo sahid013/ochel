@@ -24,6 +24,8 @@ const translations: Record<Locale, Record<string, any>> = {
   es: esTranslations,
 };
 
+// Force rebuild of translations
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   // Initialize with a function to avoid hydration issues
   const [locale, setLocaleState] = useState<Locale>(() => {
