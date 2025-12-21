@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 import { PrimaryButton, Button } from '@/components/ui';
+import { Alert } from '@/components/ui/Alert';
 import AnimateIn from '@/components/ui/AnimateIn';
 import { supabase } from '@/lib/supabase';
 import { Restaurant } from '@/types';
@@ -66,7 +67,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
     const plans = [
         {
-            id: 'prod_Tbyu0kjYbAO1GU',
+            id: 'prod_TeC1BPj8drCWmA', // LIVE mode Product ID
             name: t('superAdmin.membership.plans.standard.name'),
             price: billingCycle === 'month' ? '49 €' : '490 €',
             period: billingCycle === 'month' ? t('superAdmin.membership.plans.period.month') : '/an',
@@ -75,7 +76,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
             popular: false,
         },
         {
-            id: 'prod_Tbyv6lbtixiI8D',
+            id: 'prod_TeC4RBVp4NJNPy', // LIVE mode Product ID
             name: t('superAdmin.membership.plans.essential.name'),
             price: billingCycle === 'month' ? '59 €' : '590 €',
             period: billingCycle === 'month' ? t('superAdmin.membership.plans.period.month') : '/an',
@@ -84,7 +85,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
             popular: true,
         },
         {
-            id: 'prod_TbyvP5fQfg2Dbh',
+            id: 'prod_TeC6qYUFRekEzT', // LIVE mode Product ID
             name: t('superAdmin.membership.plans.advanced.name'),
             price: billingCycle === 'month' ? '79 €' : '790 €',
             period: billingCycle === 'month' ? t('superAdmin.membership.plans.period.month') : '/an',
@@ -105,7 +106,17 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to create portal session');
+                const errorCode = errorData.errorCode;
+
+                // Map error codes to translations
+                const errorMap: Record<string, string> = {
+                    'TEST_MODE_DATA': t('admin.settings.errors.testModeData'),
+                    'NO_CUSTOMER': t('admin.settings.errors.noCustomer'),
+                    'NO_RESTAURANT': t('admin.settings.errors.noRestaurant'),
+                    'GENERIC_ERROR': t('admin.settings.errors.generic'),
+                };
+
+                throw new Error(errorMap[errorCode] || t('admin.settings.errors.generic'));
             }
 
             const { url } = await response.json();
@@ -113,7 +124,7 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
         } catch (err: any) {
             console.error('Portal error:', err);
-            setError(err.message);
+            setError(err.message || t('admin.settings.errors.generic'));
         } finally {
             setLoading(null);
         }
@@ -252,8 +263,10 @@ export function MembershipTab({ restaurant, slug }: MembershipTabProps) {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="max-w-md mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-                        <p className="text-red-600 font-inter">{error}</p>
+                    <div className="max-w-2xl mx-auto mb-8">
+                        <Alert variant="destructive" onClose={() => setError('')}>
+                            {error}
+                        </Alert>
                     </div>
                 )}
 
