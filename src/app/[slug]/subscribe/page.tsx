@@ -27,7 +27,7 @@ export default function SubscribePage() {
 
     const plans = [
         {
-            id: 'prod_Tbyu0kjYbAO1GU',
+            id: 'prod_TeC1BPj8drCWmA', // LIVE mode Product ID
             name: 'Standard',
             price: billingCycle === 'month' ? '49 €' : '490 €',
             period: billingCycle === 'month' ? '/mois' : '/année',
@@ -46,7 +46,7 @@ export default function SubscribePage() {
             popular: false,
         },
         {
-            id: 'prod_Tbyv6lbtixiI8D',
+            id: 'prod_TeC4RBVp4NJNPy', // LIVE mode Product ID
             name: 'Essentielle',
             price: billingCycle === 'month' ? '59 €' : '590 €',
             period: billingCycle === 'month' ? '/mois' : '/année',
@@ -60,7 +60,7 @@ export default function SubscribePage() {
             popular: true,
         },
         {
-            id: 'prod_TbyvP5fQfg2Dbh',
+            id: 'prod_TeC6qYUFRekEzT', // LIVE mode Product ID
             name: 'Avancée',
             price: billingCycle === 'month' ? '79 €' : '790 €',
             period: billingCycle === 'month' ? '/mois' : '/année',
