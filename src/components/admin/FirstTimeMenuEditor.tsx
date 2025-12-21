@@ -318,7 +318,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         .insert({
           restaurant_id: restaurant.id,
           subcategory_id: subcategoryData.data.id,
-          category_id: categoryData.data.id, // Explicitly linking category if column exists, though usually inferred
           title: demoItem.title,
           title_en: demoItem.title,
           description: demoItem.description || '',
@@ -548,7 +547,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           .from('menu_items')
           .update({
             subcategory_id: subcategoryData.data.id,
-            category_id: categoryData.data.id,
             title: data.title,
             title_en: data.title,
             description: data.description || '',
@@ -572,7 +570,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           .insert({
             restaurant_id: restaurant.id,
             subcategory_id: subcategoryData.data.id,
-            category_id: categoryData.data.id,
             title: data.title,
             title_en: data.title,
             description: data.description || '',
