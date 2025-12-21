@@ -25,7 +25,8 @@ export default function SubscribePage() {
     const [error, setError] = useState('');
     const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>(null);
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
-    const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+    // Track addon selection per plan ID. If key is missing, treat as default selected (true).
+    const [addonSelection, setAddonSelection] = useState<Record<string, boolean>>({});
 
     const plans = [
         {
@@ -89,7 +90,7 @@ export default function SubscribePage() {
             if (data) {
                 setCurrentPlan({
                     status: data.subscription_status,
-                    plan: data.subscription_plan // e.g., 'pro', 'basic'
+                    plan: data.subscription_plan || 'free'
                 });
             }
         };
@@ -120,8 +121,10 @@ export default function SubscribePage() {
             }
 
             // 3. Create Checkout Session
-            // Prepare addons array if Menu multilingue is selected
-            const addons = selectedAddons.includes('prod_TeCHj5wFSShp6w')
+            // Determine if addon is selected for THIS plan (default is true if undefined)
+            const isAddonSelected = addonSelection[priceId] ?? true;
+
+            const addons = isAddonSelected
                 ? [{ productId: 'prod_TeCHj5wFSShp6w', interval: billingCycle }]
                 : [];
 
@@ -217,41 +220,7 @@ export default function SubscribePage() {
                     </span>
                 </AnimateIn>
 
-                {/* Add-ons Section */}
-                <AnimateIn animation="fade" delay={400} className="max-w-2xl mx-auto mb-12">
-                    <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4 font-plus-jakarta-sans">Options supplémentaires</h3>
-                        <label className="flex items-start gap-4 cursor-pointer group">
-                            <div className="flex items-center h-6">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedAddons.includes('prod_TeCHj5wFSShp6w')}
-                                    onChange={(e) => {
-                                        if (e.target.checked) {
-                                            setSelectedAddons([...selectedAddons, 'prod_TeCHj5wFSShp6w']);
-                                        } else {
-                                            setSelectedAddons(selectedAddons.filter(id => id !== 'prod_TeCHj5wFSShp6w'));
-                                        }
-                                    }}
-                                    className="w-5 h-5 text-[#F34A23] border-gray-300 rounded focus:ring-[#F34A23] focus:ring-2"
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="text-base font-semibold text-gray-900 font-plus-jakarta-sans group-hover:text-[#F34A23] transition-colors">
-                                        Menu multilingue
-                                    </span>
-                                    <span className="text-base font-bold text-[#F34A23]">
-                                        +{billingCycle === 'month' ? '9 €/mois' : '90 €/an'}
-                                    </span>
-                                </div>
-                                <p className="text-sm text-gray-600 font-plus-jakarta-sans">
-                                    Proposez votre menu en plusieurs langues (FR, EN, IT, ES) pour toucher une clientèle internationale
-                                </p>
-                            </div>
-                        </label>
-                    </div>
-                </AnimateIn>
+
 
                 {/* Error Message */}
                 {error && (
@@ -315,6 +284,42 @@ export default function SubscribePage() {
                                                 ))}
                                             </ul>
 
+                                            {/* Add-on Option Inside Card */}
+                                            <div className="mb-6 pt-4 border-t border-gray-100">
+                                                <label
+                                                    className="flex items-start gap-3 cursor-pointer group p-3 rounded-lg transition-colors -mx-2"
+                                                    style={{ backgroundColor: 'var(--color-bg-beige)' }}
+                                                >
+                                                    <div className="flex items-center h-6">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={addonSelection[plan.id] ?? true}
+                                                            onChange={(e) => {
+                                                                setAddonSelection({
+                                                                    ...addonSelection,
+                                                                    [plan.id]: e.target.checked
+                                                                });
+                                                            }}
+                                                            className="w-5 h-5 border-gray-300 rounded focus:ring-[#F34A23] focus:ring-2 bg-white"
+                                                            style={{ accentColor: '#F34A23' }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center justify-between mb-0.5">
+                                                            <span className="text-sm font-semibold text-gray-900 font-plus-jakarta-sans group-hover:text-[#F34A23] transition-colors">
+                                                                Menu multilingue
+                                                            </span>
+                                                            <span className="text-sm font-bold text-[#F34A23]">
+                                                                +{billingCycle === 'month' ? '9 €' : '90 €'}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-gray-600 font-plus-jakarta-sans leading-relaxed">
+                                                            Traduisez votre menu en Anglais (FR principal, EN secondaire)
+                                                        </p>
+                                                    </div>
+                                                </label>
+                                            </div>
+
                                             {isCurrentPlan ? (
                                                 <Button
                                                     disabled
@@ -335,7 +340,10 @@ export default function SubscribePage() {
                                                     variant="outline"
                                                     onClick={() => handleSubscribe(plan.id)}
                                                     disabled={loading === plan.id || loading !== null}
-                                                    className="w-full border-gray-900"
+                                                    className="w-full !text-[#F34A23] hover:!bg-[#F34A23] hover:!text-white font-bold"
+                                                    style={{
+                                                        border: '2px solid #F34A23',
+                                                    }}
                                                 >
                                                     {loading === plan.id ? 'Traitement...' : 'Choisir ce plan'}
                                                 </Button>

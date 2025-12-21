@@ -97,7 +97,7 @@ export async function POST(req: Request) {
                     const addonPrices = await stripe.prices.list({
                         product: addonProductId,
                         active: true,
-                        limit: 20,
+                        limit: 100,
                         expand: ['data.recurring']
                     });
 
@@ -108,6 +108,8 @@ export async function POST(req: Request) {
                             price: matchedAddonPrice.id,
                             quantity: 1,
                         });
+                    } else {
+                        console.warn(`[Stripe Warning] No ${addonInterval} price found for addon ${addonProductId}. This addon will be skipped.`);
                     }
                 }
             }
@@ -115,8 +117,7 @@ export async function POST(req: Request) {
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            customer: existingCustomerId || undefined, // Use existing if available
-            customer_email: existingCustomerId ? undefined : email, // Only set email if creating new customer
+            ...(existingCustomerId ? { customer: existingCustomerId } : { customer_email: email }),
             line_items: lineItems,
             mode: 'subscription',
             allow_promotion_codes: true, // Enable promo codes for discounts
@@ -125,7 +126,7 @@ export async function POST(req: Request) {
             metadata: {
                 restaurantId,
                 planId: priceId, // Store the Product ID (or Price ID) passed from client
-                addons: addons && addons.length > 0 ? JSON.stringify(addons) : undefined, // Store addons in metadata
+                ...(addons && addons.length > 0 && { addons: JSON.stringify(addons) }),
             },
         });
 
