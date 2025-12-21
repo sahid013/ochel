@@ -30,7 +30,31 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No Stripe customer found for this restaurant' }, { status: 400 });
         }
 
-        // 2. Determine base URL
+        // 2. Verify customer exists in Stripe (handle test/live mode mismatch)
+        try {
+            await stripe.customers.retrieve(restaurant.stripe_customer_id);
+        } catch (customerError: any) {
+            console.error('Stripe customer not found:', customerError.message);
+
+            // If customer doesn't exist (e.g., test mode ID in live mode), clear it from database
+            if (customerError.code === 'resource_missing') {
+                await supabase
+                    .from('restaurants')
+                    .update({
+                        stripe_customer_id: null,
+                        stripe_subscription_id: null,
+                        subscription_status: 'incomplete',
+                    })
+                    .eq('slug', slug);
+
+                return NextResponse.json({
+                    error: 'Your subscription data is from test mode. Please subscribe again with a live payment method.'
+                }, { status: 400 });
+            }
+            throw customerError;
+        }
+
+        // 3. Determine base URL
         let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
         if (!baseUrl) {
             if (process.env.VERCEL_URL) {
@@ -41,7 +65,7 @@ export async function POST(req: Request) {
         }
         baseUrl = baseUrl.replace(/\/$/, '');
 
-        // 3. Create Portal Session
+        // 4. Create Portal Session
         const session = await stripe.billingPortal.sessions.create({
             customer: restaurant.stripe_customer_id,
             return_url: `${baseUrl}/${slug}/admin?tab=membership`,
