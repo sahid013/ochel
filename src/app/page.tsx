@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { DemoMenuEditor } from '@/components/demo/DemoMenuEditor';
 import { Navbar } from '@/components/layout/Navbar';
+
 import { PrimaryButton } from '@/components/ui';
 import AnimateIn from '@/components/ui/AnimateIn';
 import { useTranslation } from '@/contexts/LanguageContext';
@@ -94,6 +95,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+
 
       {/* CTA Section */}
       <div className="py-20 px-4 text-white relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&q=80")' }}>

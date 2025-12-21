@@ -20,6 +20,8 @@ interface MenuItem {
   subcategory_id: number;
   model_3d_url?: string | null;
   redirect_3d_url?: string | null;
+  image_path?: string | null;
+  additional_image_url?: string | null;
 }
 
 interface FirstTimeMenuEditorProps {
@@ -43,11 +45,13 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isMigrating, setIsMigrating] = useState(false);
+
   // Key to force reset form after successful submission
   const [formKey, setFormKey] = useState(0);
   const [showItemsModal, setShowItemsModal] = useState(false);
   const hasMigratedRef = useRef(false);
   const isMigratingRef = useRef(false);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
   // Log localStorage on mount
   useEffect(() => {
@@ -106,6 +110,8 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     try {
       setLoading(true);
       console.log('[fetchMenuItems] Fetching items for restaurant:', restaurant.id);
+
+      // Fetch items without join first to avoid relationship errors
       const { data, error } = await supabase
         .from('menu_items')
         .select('*')
@@ -114,14 +120,29 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
       if (error) throw error;
       console.log('[fetchMenuItems] Fetched items:', data?.length || 0, 'items');
-      if (data && data.length > 0) {
-        console.log('[fetchMenuItems] First item:', {
-          id: data[0].id,
-          title: data[0].title,
-          hasImage: !!data[0].image_path
-        });
-      }
-      setMenuItems(data || []);
+
+      // Manual join for taxonomy
+      // This is safer than relying on Supabase relations which might be missing or named differently
+      const { data: catData } = await supabase
+        .from('categories')
+        .select('id, title')
+        .eq('restaurant_id', restaurant.id);
+
+      const { data: subData } = await supabase
+        .from('subcategories')
+        .select('id, title')
+        .eq('restaurant_id', restaurant.id);
+
+      const catMap = new Map(catData?.map(c => [c.id, c.title]) || []);
+      const subMap = new Map(subData?.map(s => [s.id, s.title]) || []);
+
+      const mappedItems: any[] = data?.map(item => ({
+        ...item,
+        category: catMap.get(item.category_id) || '',
+        subcategory: subMap.get(item.subcategory_id) || ''
+      })) || [];
+
+      setMenuItems(mappedItems);
     } catch (err) {
       console.error('Error fetching menu items:', err);
     } finally {
@@ -297,6 +318,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         .insert({
           restaurant_id: restaurant.id,
           subcategory_id: subcategoryData.data.id,
+          category_id: categoryData.data.id, // Explicitly linking category if column exists, though usually inferred
           title: demoItem.title,
           title_en: demoItem.title,
           description: demoItem.description || '',
@@ -392,8 +414,13 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     checkAndMigrate();
   }, [restaurant.id]); // Only run on mount or when restaurant changes
 
+  // handle editing an item
+  const handleEdit = (item: MenuItem) => {
+    setEditingItem(item);
+  };
+
   // Form submission handler
-  const handleFormSubmit = async (data: MenuEditorFormData) => {
+  const handleFormSubmit = async (data: MenuEditorFormData, itemToUpdate: MenuItem | null = null) => {
     if (!data.title || !data.price || !data.category) {
       alert('Please fill in the title, category, and price');
       return;
@@ -454,7 +481,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       }
 
       // Handle Main Image Upload
-      let imagePath = null;
+      let imagePath = itemToUpdate?.image_path || null;
       if (data.previewImage?.[0] && data.previewImage[0] instanceof File) {
         try {
           const uploadResult = await uploadImage(data.previewImage[0], 'menu-item', restaurant.id);
@@ -465,26 +492,38 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       }
 
       // Handle Detailed Images Upload (4 images)
-      const additionalImagePaths: string[] = [];
+      let additionalImagePaths: string[] = [];
+      try {
+        if (itemToUpdate && itemToUpdate.additional_image_url) {
+          additionalImagePaths = JSON.parse(itemToUpdate.additional_image_url);
+        }
+      } catch (e) { }
+
       if (data.selectedImages && data.selectedImages.length > 0) {
-        for (const img of data.selectedImages) {
+        const newPaths = [];
+        for (let i = 0; i < data.selectedImages.length; i++) {
+          const img = data.selectedImages[i];
           if (img instanceof File) {
             try {
               const uploadResult = await uploadImage(img, 'menu-item', restaurant.id);
-              additionalImagePaths.push(uploadResult.publicUrl);
+              newPaths.push(uploadResult.publicUrl);
             } catch (detailImgErr) {
               console.error('Failed to upload detail image:', detailImgErr);
+              // preserve old if failed? or push null? pushing null might break layout
+              if (additionalImagePaths[i]) newPaths.push(additionalImagePaths[i]);
             }
           } else if (typeof img === 'string') {
-            // Keep existing URL if any (though unlikely for new item)
-            additionalImagePaths.push(img);
+            // Keep existing URL
+            newPaths.push(img);
+          } else {
+            // null or undefined, means removed or empty
           }
         }
+        additionalImagePaths = newPaths;
       }
 
-      // Check if this is a 3D request (has 4 images) and deduct credits
-      if (additionalImagePaths.length > 0) {
-        // Deduct credit via API route (server-side with admin permissions)
+      if (!itemToUpdate && additionalImagePaths.length > 0) {
+        // Deduct credit via API route
         const response = await fetch('/api/deduct-credit', {
           method: 'POST',
           headers: {
@@ -498,32 +537,58 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
           throw new Error(errorData.error || 'Failed to deduct credit');
         }
 
-        // Notify all tabs that credits have changed
         const creditUpdateChannel = new BroadcastChannel('credit-updates');
         creditUpdateChannel.postMessage('invalidate');
         creditUpdateChannel.close();
       }
 
-      // Create menu item
-      const { error: itemError } = await supabase
-        .from('menu_items')
-        .insert({
-          restaurant_id: restaurant.id,
-          subcategory_id: subcategoryData.data.id,
-          title: data.title,
-          title_en: data.title,
-          description: data.description || '',
-          description_en: data.description || '',
-          price: parseFloat(data.price) || 0,
-          image_path: imagePath,
-          additional_image_url: additionalImagePaths.length > 0 ? JSON.stringify(additionalImagePaths) : null,
-          model_3d_url: data.model3dGlbUrl?.trim() || null,
-          redirect_3d_url: data.model3dUsdzUrl?.trim() || null,
-          order: 0,
-          status: 'active'
-        });
+      if (itemToUpdate) {
+        // UPDATE existing item
+        const { error: updateError } = await supabase
+          .from('menu_items')
+          .update({
+            subcategory_id: subcategoryData.data.id,
+            category_id: categoryData.data.id,
+            title: data.title,
+            title_en: data.title,
+            description: data.description || '',
+            description_en: data.description || '',
+            price: parseFloat(data.price) || 0,
+            image_path: imagePath,
+            additional_image_url: additionalImagePaths.length > 0 ? JSON.stringify(additionalImagePaths) : null,
+            model_3d_url: data.model3dGlbUrl?.trim() || null,
+            redirect_3d_url: data.model3dUsdzUrl?.trim() || null,
+          })
+          .eq('id', itemToUpdate.id)
+          .eq('restaurant_id', restaurant.id);
 
-      if (itemError) throw itemError;
+        if (updateError) throw updateError;
+        setEditingItem(null); // Clear editing state
+
+      } else {
+        // INSERT new item
+        const { error: itemError } = await supabase
+          .from('menu_items')
+          .insert({
+            restaurant_id: restaurant.id,
+            subcategory_id: subcategoryData.data.id,
+            category_id: categoryData.data.id,
+            title: data.title,
+            title_en: data.title,
+            description: data.description || '',
+            description_en: data.description || '',
+            price: parseFloat(data.price) || 0,
+            image_path: imagePath,
+            additional_image_url: additionalImagePaths.length > 0 ? JSON.stringify(additionalImagePaths) : null,
+            model_3d_url: data.model3dGlbUrl?.trim() || null,
+            redirect_3d_url: data.model3dUsdzUrl?.trim() || null,
+            order: 0,
+            status: 'active'
+          });
+
+        if (itemError) throw itemError;
+        setFormKey(prev => prev + 1); // Only reset form key for new items
+      }
 
       // Refresh menu items
       await fetchMenuItems();
@@ -534,12 +599,9 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
         sessionStorage.removeItem(`menu_data_${restaurant.id}`);
       }
 
-      // Reset form handled by updating key
-      setFormKey(prev => prev + 1);
-
     } catch (err: any) {
-      console.error('Error creating menu item:', err);
-      alert(`Failed to create menu item: ${err.message || 'Unknown error'}`);
+      console.error('Error saving menu item:', err);
+      alert(`Failed to save menu item: ${err.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -591,7 +653,17 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
   // Convert database items to demo format for template preview
   // If no items exist, show a placeholder sample item
-  const demoItem = menuItems.length > 0 ? {
+  const demoItem = editingItem ? {
+    id: editingItem.id.toString(),
+    title: editingItem.title,
+    description: editingItem.description,
+    price: editingItem.price.toString(),
+    category: (editingItem as any).category || '',
+    subcategory: (editingItem as any).subcategory || '',
+    image: editingItem.image_path || undefined,
+    model3dGlbUrl: editingItem.model_3d_url || undefined,
+    model3dUsdzUrl: editingItem.redirect_3d_url || undefined,
+  } : (menuItems.length > 0 ? {
     id: menuItems[0].id.toString(),
     title: menuItems[0].title,
     description: menuItems[0].description,
@@ -608,13 +680,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
     price: '12.50',
     category: 'Preview',
     subcategory: '',
-  };
-
-  console.log('[FirstTimeMenuEditor] Rendering with:', {
-    menuItemsCount: menuItems.length,
-    demoItemTitle: demoItem.title,
-    demoItemHasImage: !!(demoItem as any).image,
-    loading
   });
 
   return (
@@ -638,21 +703,20 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               )}
             </div>
 
-            {/* Item Form */}
+            {/* Item Form - ALWAYS Create Mode */}
             <MenuEditorForm
               key={formKey}
-              onSubmit={handleFormSubmit}
+              onSubmit={(data) => handleFormSubmit(data, null)} // Always pass null for create
               isLoading={loading}
-              submitLabel={loading ? 'Adding...' : 'Add Item'}
-
+              submitLabel={loading ? 'Saving...' : 'Add Item'}
+              isEditing={false}
               showDetailedImageUpload={true}
               existingCategories={categories}
               existingSubcategories={subcategories}
               creditsLeft={restaurant.credits_left ?? 0}
             />
-          </div>
+          </div >
 
-          {/* Right Column - Choose Your Template */}
           <div className="bg-white rounded-2xl p-4 md:p-8 border flex flex-col h-fit" style={{ borderColor: 'rgba(71, 67, 67, 0.05)' }}>
             <h3 className="text-2xl md:text-3xl font-bold text-primary mb-8 md:mb-6 font-loubag uppercase">
               Choose Your Template
@@ -714,8 +778,6 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
                 </div>
               )}
 
-
-
               {menuItems.length > 0 && (
                 <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium shadow-lg flex items-center gap-1 bg-green-500 text-white">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -726,80 +788,103 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
               )}
             </div>
           </div>
-        </div>
-      </div>
-      {/* Items List Modal */}
-      {showItemsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowItemsModal(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col shadow-xl" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-100">
-              <h3 className="text-xl font-bold text-primary font-plus-jakarta-sans">Your Menu Items</h3>
-              <button
-                onClick={() => setShowItemsModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+        </div >
+      </div >
 
-            <div className="p-4 md:p-6 overflow-y-auto">
-              <div className="space-y-3">
-                {menuItems.map((item) => (
-                  <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200 flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-lg font-semibold text-primary">{item.title}</h4>
-                        <span className="text-md font-bold text-[#F34A23]">{item.price}€</span>
-                      </div>
-                      {item.description && (
-                        <p className="text-sm text-gray-600">{item.description}</p>
+      {/* Items List Modal */}
+      {
+        showItemsModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => { setShowItemsModal(false); setEditingItem(null); }}>
+            <div className="bg-white rounded-2xl w-full max-w-lg max-h-[80vh] flex flex-col shadow-xl" onClick={e => e.stopPropagation()}>
+              <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-100">
+                <h3 className="text-xl font-bold text-primary font-plus-jakarta-sans">Your Menu Items</h3>
+                <button
+                  onClick={() => { setShowItemsModal(false); setEditingItem(null); }}
+                  className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="p-4 md:p-6 overflow-y-auto">
+                <div className="space-y-3">
+                  {menuItems.map((item) => (
+                    <div key={item.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      {editingItem?.id === item.id ? (
+                        <div className="flex flex-col gap-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-lg font-bold text-primary">Editing Item</h4>
+                            <button onClick={() => setEditingItem(null)} className="text-sm text-gray-500 hover:text-gray-700 underline">Cancel</button>
+                          </div>
+                          <MenuEditorForm
+                            initialValues={{
+                              title: item.title,
+                              description: item.description,
+                              price: item.price.toString(),
+                              category: (item as any).category,
+                              subcategory: (item as any).subcategory,
+                              model3dGlbUrl: item.model_3d_url || '',
+                              model3dUsdzUrl: item.redirect_3d_url || '',
+                              previewImage: item.image_path ? [item.image_path] : [],
+                              selectedImages: item.additional_image_url ? JSON.parse(item.additional_image_url) : []
+                            }}
+                            onSubmit={(data) => handleFormSubmit(data, item)} // View: Update logic
+                            onCancel={() => setEditingItem(null)}
+                            submitLabel="Update Item"
+                            isEditing={true}
+                            showDetailedImageUpload={true}
+                            existingCategories={categories}
+                            existingSubcategories={subcategories}
+                            creditsLeft={restaurant.credits_left ?? 0}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex justify-between items-start">
+                          {/* ... standard list item view ... */}
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="text-lg font-semibold text-primary">{item.title}</h4>
+                              <span className="text-md font-bold text-[#F34A23]">{item.price}€</span>
+                            </div>
+                            {item.description && (
+                              <p className="text-sm text-gray-600">{item.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-start gap-2 ml-4">
+                            <button
+                              onClick={() => handleEdit(item)}
+                              className="text-red-600 hover:text-red-800 transition-colors"
+                              title="Edit item"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDelete(item.id);
+                                if (menuItems.length <= 1) setShowItemsModal(false);
+                              }}
+                              className="text-red-600 hover:text-red-800"
+                              title="Delete item"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
-                    <button
-                      onClick={() => {
-                        handleDelete(item.id);
-                        if (menuItems.length <= 1) setShowItemsModal(false);
-                      }}
-                      className="ml-3 text-red-600 hover:text-red-800"
-                      title="Delete item"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-
-            <div className="p-4 md:p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl">
-              <button
-                onClick={async () => {
-                  try {
-                    // Mark onboarding as completed in the database
-                    await supabase
-                      .from('restaurants')
-                      .update({ has_completed_onboarding: true })
-                      .eq('id', restaurant.id);
-
-                    // Navigate to menu management tab
-                    router.push(`/${restaurant.slug}/admin?tab=menu`);
-                  } catch (error) {
-                    console.error('Error completing onboarding:', error);
-                    // Still navigate even if update fails
-                    router.push(`/${restaurant.slug}/admin?skip_onboarding=true&tab=menu`);
-                  }
-                }}
-                className="w-full py-3 bg-[#F34A23] hover:bg-[#d63e1b] text-white font-semibold rounded-xl transition-colors"
-              >
-                Gérer mon menu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+            </div >
+          </div >
+        )
+      }
+    </div >
   );
 }

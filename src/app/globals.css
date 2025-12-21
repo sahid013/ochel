@@ -295,47 +295,6 @@ input[type="radio"]:checked {
   }
 }
 
-/* In-view animations */
-@keyframes fade-in {
-  from {
-    visibility: hidden;
-    opacity: 0.01;
-  }
-
-  to {
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
-
-@keyframes slide-in-from-bottom {
-  from {
-    transform: translateY(20px);
-    opacity: 0.01;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes blur-in {
-  from {
-    filter: blur(10px);
-    opacity: 0.01;
-  }
-
-  to {
-    filter: blur(0);
-    opacity: 1;
-  }
-}
-
 @keyframes slide-down-reveal {
   from {
     transform: translateY(-100%);

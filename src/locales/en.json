@@ -8,6 +8,114 @@
     "signup": "Sign Up"
   },
   "home": {
+    "platformFeatures": {
+      "title": "All features to <span class=\"text-[#F34A23]\">revolutionize</span> your menu",
+      "subtitle": "Discover all the features that make reliefs the reference solution for restaurant menu management with 3D visualization.",
+      "tabs": {
+        "visualisation": "3D Visualization and Augmented Reality",
+        "analytics": "Client Analytics and Insights",
+        "management": "Flexible Menu Management",
+        "integration": "Integration and Compatibility",
+        "support": "Autonomy and Support"
+      },
+      "cards": {
+        "visualisation": {
+          "card1": {
+            "title": "Photo-realistic 3D Restaurant Menu",
+            "description": "Your customers discover each dish in high definition 3D directly on their table. 360° rotation, zoom on details, augmented reality projection."
+          },
+          "card2": {
+            "title": "Compatible with all smartphones",
+            "description": "Works on all mobiles, iPhone, Android, tablets... Our technology automatically adapts to all devices."
+          },
+          "card3": {
+            "title": "Instant Loading",
+            "description": "No more menus that don't load! Optimized architecture for display in less than 2 seconds, even on 4G."
+          },
+          "card4": {
+            "title": "No App Required for Customers",
+            "description": "A simple scan of the QR code and your customers instantly access the 3D menu. Zero friction, maximum adoption."
+          }
+        },
+        "analytics": {
+          "card1": {
+            "title": "Dish Performance",
+            "description": "Identify your best-sellers and dishes to optimize with detailed view tracking per item."
+          },
+          "card2": {
+            "title": "Customer Behavior",
+            "description": "Analyze time spent on each page and understand your customers' journey."
+          },
+          "card3": {
+            "title": "Weekly Reports",
+            "description": "Receive a clear summary of your digital menu activity every week."
+          },
+          "card4": {
+            "title": "Data Export",
+            "description": "Download your raw data for your own analysis or accounting."
+          }
+        },
+        "management": {
+          "card1": {
+            "title": "Real-time Editing",
+            "description": "Change a price, hide an out-of-stock dish, or add a new item instantly."
+          },
+          "card2": {
+            "title": "Scheduled Menus",
+            "description": "Automatically switch between lunch, dinner, or weekend menus according to your schedule."
+          },
+          "card3": {
+            "title": "Multi-location Management",
+            "description": "Manage all your branches from a single account and synchronize your menus."
+          },
+          "card4": {
+            "title": "Collaboration",
+            "description": "Invite your team and define roles (editor, admin) for secure management."
+          }
+        },
+        "integration": {
+          "card1": {
+            "title": "POS Integration",
+            "description": "Connect your menu to your POS system for automatic order synchronization."
+          },
+          "card2": {
+            "title": "Social Sharing",
+            "description": "Generate visual links for Instagram and Facebook that launch the 3D menu directly."
+          },
+          "card3": {
+            "title": "Custom QR Codes",
+            "description": "Create unique QR codes with your brand colors and logo."
+          },
+          "card4": {
+            "title": "Developer API",
+            "description": "Access our API to integrate the 3D menu into your own mobile app or website."
+          }
+        },
+        "support": {
+          "card1": {
+            "title": "7/7 Chat Support",
+            "description": "A team of experts available every day to answer your questions in less than 5 minutes."
+          },
+          "card2": {
+            "title": "Complete Help Center",
+            "description": "Access video tutorials and step-by-step guides to master all features."
+          },
+          "card3": {
+            "title": "Personalized Onboarding",
+            "description": "A complimentary welcome call with an expert to set up your first menu."
+          },
+          "card4": {
+            "title": "Regular Updates",
+            "description": "Enjoy new features automatically without installing anything."
+          }
+        }
+      },
+      "cta": {
+        "title": "Ready to transform your restaurant?",
+        "subtitle": "Request a personalized demo of all our features",
+        "button": "See a Demo"
+      }
+    },
     "hero": {
       "title": "BIENVENUE CHEZ\n MAGNIFIKO"
     },
