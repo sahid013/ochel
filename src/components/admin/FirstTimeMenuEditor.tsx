@@ -122,7 +122,7 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
       console.log('[fetchMenuItems] Fetched items:', data?.length || 0, 'items');
 
       // Manual join for taxonomy
-      // This is safer than relying on Supabase relations which might be missing or named differently
+      // Menu items only have subcategory_id, we need to get category through subcategory
       const { data: catData } = await supabase
         .from('categories')
         .select('id, title')
@@ -130,17 +130,20 @@ export function FirstTimeMenuEditor({ restaurant, onTemplateChange, className }:
 
       const { data: subData } = await supabase
         .from('subcategories')
-        .select('id, title')
+        .select('id, title, category_id')
         .eq('restaurant_id', restaurant.id);
 
       const catMap = new Map(catData?.map(c => [c.id, c.title]) || []);
-      const subMap = new Map(subData?.map(s => [s.id, s.title]) || []);
+      const subMap = new Map(subData?.map(s => [s.id, { title: s.title, category_id: s.category_id }]) || []);
 
-      const mappedItems: any[] = data?.map(item => ({
-        ...item,
-        category: catMap.get(item.category_id) || '',
-        subcategory: subMap.get(item.subcategory_id) || ''
-      })) || [];
+      const mappedItems: any[] = data?.map(item => {
+        const subcategory = subMap.get(item.subcategory_id);
+        return {
+          ...item,
+          category: subcategory ? catMap.get(subcategory.category_id) || '' : '',
+          subcategory: subcategory?.title || ''
+        };
+      }) || [];
 
       setMenuItems(mappedItems);
     } catch (err) {
