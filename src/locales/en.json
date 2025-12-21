@@ -498,6 +498,12 @@
         "description": "Manage your subscription, billing information, or cancel your plan.",
         "button": "Manage Subscription"
       },
+      "errors": {
+        "testModeData": "Your subscription data is from test mode. Please subscribe again with a live payment method.",
+        "noCustomer": "No Stripe customer found for this restaurant",
+        "noRestaurant": "Restaurant not found",
+        "generic": "An error occurred. Please try again."
+      },
       "save": "Save Changes",
       "saving": "Saving..."
     },
@@ -767,6 +773,14 @@
         "selectPlan": "Select Plan",
         "loading": "Loading...",
         "processing": "Processing..."
+      }
+    },
+    "subscribe": {
+      "errors": {
+        "loginRequired": "Please log in to subscribe.",
+        "restaurantNotFound": "Restaurant not found.",
+        "networkError": "An error occurred. Please try again.",
+        "noCheckoutUrl": "No checkout URL returned"
       }
     }
   }

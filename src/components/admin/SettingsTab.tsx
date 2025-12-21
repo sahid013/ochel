@@ -99,7 +99,17 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || t('admin.settings.error'));
+                const errorCode = errorData.errorCode;
+
+                // Map error codes to translations
+                const errorMap: Record<string, string> = {
+                    'TEST_MODE_DATA': t('admin.settings.errors.testModeData'),
+                    'NO_CUSTOMER': t('admin.settings.errors.noCustomer'),
+                    'NO_RESTAURANT': t('admin.settings.errors.noRestaurant'),
+                    'GENERIC_ERROR': t('admin.settings.errors.generic'),
+                };
+
+                throw new Error(errorMap[errorCode] || t('admin.settings.errors.generic'));
             }
 
             const { url } = await response.json();
@@ -107,7 +117,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
 
         } catch (err: any) {
             console.error('Portal error:', err);
-            setError(err.message || t('admin.settings.error'));
+            setError(err.message || t('admin.settings.errors.generic'));
         } finally {
             setCancelLoading(false);
         }

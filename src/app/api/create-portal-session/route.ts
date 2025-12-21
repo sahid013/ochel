@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         const { slug } = await req.json();
 
         if (!slug) {
-            return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
+            return NextResponse.json({ errorCode: 'MISSING_SLUG' }, { status: 400 });
         }
 
         // 1. Fetch restaurant to get stripe_customer_id
@@ -23,11 +23,11 @@ export async function POST(req: Request) {
 
         if (dbError || !restaurant) {
             console.error('Error fetching restaurant for portal:', dbError);
-            return NextResponse.json({ error: 'Restaurant not found' }, { status: 404 });
+            return NextResponse.json({ errorCode: 'NO_RESTAURANT' }, { status: 404 });
         }
 
         if (!restaurant.stripe_customer_id) {
-            return NextResponse.json({ error: 'No Stripe customer found for this restaurant' }, { status: 400 });
+            return NextResponse.json({ errorCode: 'NO_CUSTOMER' }, { status: 400 });
         }
 
         // 2. Verify customer exists in Stripe (handle test/live mode mismatch)
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
                     .eq('slug', slug);
 
                 return NextResponse.json({
-                    error: 'Your subscription data is from test mode. Please subscribe again with a live payment method.'
+                    errorCode: 'TEST_MODE_DATA'
                 }, { status: 400 });
             }
             throw customerError;
@@ -74,6 +74,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ url: session.url });
     } catch (err: any) {
         console.error('Error creating portal session:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json({ errorCode: 'GENERIC_ERROR', message: err.message }, { status: 500 });
     }
 }

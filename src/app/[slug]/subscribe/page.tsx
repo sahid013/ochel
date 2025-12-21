@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 import { PrimaryButton } from '@/components/ui';
 import { Button } from '@/components/ui/Button';
+import { Alert } from '@/components/ui/Alert';
 import { AdminHeader, AdminTabs } from '@/components/admin';
 import { supabase } from '@/lib/supabase';
 import AnimateIn from '@/components/ui/AnimateIn';
@@ -103,7 +104,7 @@ export default function SubscribePage() {
             const { data: { user } } = await supabase.auth.getUser();
 
             if (!user) {
-                throw new Error('Please log in to subscribe.');
+                throw new Error(t('subscribe.errors.loginRequired'));
             }
 
             // 2. Get restaurant details
@@ -114,7 +115,7 @@ export default function SubscribePage() {
                 .single();
 
             if (!restaurant) {
-                throw new Error('Restaurant not found.');
+                throw new Error(t('subscribe.errors.restaurantNotFound'));
             }
 
             // 3. Create Checkout Session
@@ -134,7 +135,7 @@ export default function SubscribePage() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Network response was not ok');
+                throw new Error(errorData.error || t('subscribe.errors.networkError'));
             }
 
             const { url } = await response.json();
@@ -142,12 +143,12 @@ export default function SubscribePage() {
             if (url) {
                 window.location.href = url;
             } else {
-                throw new Error('No checkout URL returned');
+                throw new Error(t('subscribe.errors.noCheckoutUrl'));
             }
 
         } catch (err: any) {
             console.error('Subscription error:', err);
-            setError(err.message || 'An error occurred. Please try again.');
+            setError(err.message || t('subscribe.errors.networkError'));
         } finally {
             setLoading(null);
         }
@@ -211,8 +212,10 @@ export default function SubscribePage() {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="max-w-md mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-                        <p className="text-red-600 font-inter">{error}</p>
+                    <div className="max-w-2xl mx-auto mb-8">
+                        <Alert variant="destructive" onClose={() => setError('')}>
+                            {error}
+                        </Alert>
                     </div>
                 )}
 

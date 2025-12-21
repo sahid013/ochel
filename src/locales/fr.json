@@ -502,6 +502,12 @@
         "description": "Gérez votre abonnement, vos informations de facturation ou annulez votre forfait.",
         "button": "Gérer l'abonnement"
       },
+      "errors": {
+        "testModeData": "Vos données d'abonnement proviennent du mode test. Veuillez vous réabonner avec un moyen de paiement réel.",
+        "noCustomer": "Aucun client Stripe trouvé pour ce restaurant",
+        "noRestaurant": "Restaurant introuvable",
+        "generic": "Une erreur s'est produite. Veuillez réessayer."
+      },
       "save": "Enregistrer",
       "saving": "Enregistrement..."
     },
@@ -831,6 +837,14 @@
         "selectPlan": "Choisir ce plan",
         "loading": "Chargement...",
         "processing": "Traitement..."
+      }
+    },
+    "subscribe": {
+      "errors": {
+        "loginRequired": "Veuillez vous connecter pour souscrire.",
+        "restaurantNotFound": "Restaurant introuvable.",
+        "networkError": "Une erreur s'est produite. Veuillez réessayer.",
+        "noCheckoutUrl": "Aucune URL de paiement retournée"
       }
     }
   }
