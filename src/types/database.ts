@@ -49,6 +49,7 @@ export interface Database {
           credits_left?: number
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          subscription_addons?: string[]
           created_at: string
           updated_at: string
         }
@@ -63,6 +64,7 @@ export interface Database {
           primary_color?: string
           is_active?: boolean
           credits_left?: number
+          subscription_addons?: string[]
           created_at?: string
           updated_at?: string
         }
@@ -77,6 +79,7 @@ export interface Database {
           primary_color?: string
           is_active?: boolean
           credits_left?: number
+          subscription_addons?: string[]
           created_at?: string
           updated_at?: string
         }

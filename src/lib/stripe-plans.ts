@@ -10,19 +10,24 @@ export interface PlanDetails {
 
 /**
  * Mapping of Stripe product IDs to plan details
+ * Updated with LIVE production Product IDs
  */
 export const STRIPE_PLANS: Record<string, PlanDetails> = {
-  'prod_Tbyu0kjYbAO1GU': {
+  'prod_TeC1BPj8drCWmA': {
     name: 'Standard',
     credits: 5,
   },
-  'prod_Tbyv6lbtixiI8D': {
+  'prod_TeC4RBVp4NJNPy': {
     name: 'Essentielle',
     credits: 15,
   },
-  'prod_TbyvP5fQfg2Dbh': {
+  'prod_TeC6qYUFRekEzT': {
     name: 'Avancée',
     credits: 25,
+  },
+  'prod_TeCHj5wFSShp6w': {
+    name: 'Menu multilingue',
+    credits: 0,
   },
 } as const;
 

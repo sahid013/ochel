@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(req: Request) {
     try {
-        const { priceId, restaurantId, email, slug, interval = 'month' } = await req.json();
+        const { priceId, restaurantId, email, slug, interval = 'month', addons = [] } = await req.json();
 
         if (!priceId || !restaurantId || !email) {
             return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
@@ -77,22 +77,55 @@ export async function POST(req: Request) {
 
         const existingCustomerId = restaurant?.stripe_customer_id;
 
+        // Build line items array starting with the main subscription
+        const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+            {
+                price: targetPriceId,
+                quantity: 1,
+            },
+        ];
+
+        // Add any cross-sell addons (e.g., Menu multilingue)
+        // addons should be an array of objects: [{ productId: 'prod_xxx', interval: 'month' }]
+        if (addons && Array.isArray(addons) && addons.length > 0) {
+            for (const addon of addons) {
+                const addonProductId = addon.productId;
+                const addonInterval = addon.interval || interval; // Use same interval as main plan by default
+
+                // Find the price for this addon
+                if (addonProductId.startsWith('prod_')) {
+                    const addonPrices = await stripe.prices.list({
+                        product: addonProductId,
+                        active: true,
+                        limit: 20,
+                        expand: ['data.recurring']
+                    });
+
+                    const matchedAddonPrice = addonPrices.data.find(p => p.recurring?.interval === addonInterval);
+
+                    if (matchedAddonPrice) {
+                        lineItems.push({
+                            price: matchedAddonPrice.id,
+                            quantity: 1,
+                        });
+                    }
+                }
+            }
+        }
+
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             customer: existingCustomerId || undefined, // Use existing if available
             customer_email: existingCustomerId ? undefined : email, // Only set email if creating new customer
-            line_items: [
-                {
-                    price: targetPriceId,
-                    quantity: 1,
-                },
-            ],
+            line_items: lineItems,
             mode: 'subscription',
+            allow_promotion_codes: true, // Enable promo codes for discounts
             success_url: `${baseUrl}/${slug}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${baseUrl}/${slug}/subscribe`,
             metadata: {
                 restaurantId,
                 planId: priceId, // Store the Product ID (or Price ID) passed from client
+                addons: addons && addons.length > 0 ? JSON.stringify(addons) : undefined, // Store addons in metadata
             },
         });
 

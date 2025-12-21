@@ -70,6 +70,21 @@ export async function POST(req: Request) {
 
                 logDebug(`Final credits to add: ${creditsToAdd}`);
 
+                // Parse addons from metadata if present
+                const addonsMetadata = session.metadata?.addons;
+                let subscriptionAddons: string[] = [];
+
+                if (addonsMetadata) {
+                    try {
+                        const parsedAddons = JSON.parse(addonsMetadata);
+                        // Extract product IDs from addons array
+                        subscriptionAddons = parsedAddons.map((addon: any) => addon.productId).filter(Boolean);
+                        logDebug(`Parsed addons: ${JSON.stringify(subscriptionAddons)}`);
+                    } catch (e) {
+                        logError('Error parsing addons metadata:', e);
+                    }
+                }
+
                 // Update restaurant with subscription details and credits
                 const { error } = await supabaseAdmin
                     .from('restaurants')
@@ -79,6 +94,7 @@ export async function POST(req: Request) {
                         subscription_status: 'active',
                         subscription_plan: subscriptionPlan,
                         credits_left: creditsToAdd,
+                        subscription_addons: subscriptionAddons,
                     })
                     .eq('id', restaurantId);
 
