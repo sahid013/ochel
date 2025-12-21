@@ -25,6 +25,7 @@ export default function SubscribePage() {
     const [error, setError] = useState('');
     const [currentPlan, setCurrentPlan] = useState<{ status: string; plan: string } | null>(null);
     const [billingCycle, setBillingCycle] = useState<'month' | 'year'>('month');
+    const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
 
     const plans = [
         {
@@ -119,6 +120,11 @@ export default function SubscribePage() {
             }
 
             // 3. Create Checkout Session
+            // Prepare addons array if Menu multilingue is selected
+            const addons = selectedAddons.includes('prod_TeCHj5wFSShp6w')
+                ? [{ productId: 'prod_TeCHj5wFSShp6w', interval: billingCycle }]
+                : [];
+
             const response = await fetch('/api/create-checkout-session', {
                 method: 'POST',
                 headers: {
@@ -129,7 +135,8 @@ export default function SubscribePage() {
                     restaurantId: restaurant.id,
                     email: restaurant.email,
                     slug: slug,
-                    interval: billingCycle // Pass the interval to the API
+                    interval: billingCycle, // Pass the interval to the API
+                    addons: addons // Pass addons array
                 }),
             });
 
@@ -208,6 +215,42 @@ export default function SubscribePage() {
                             2 mois gratuits
                         </span>
                     </span>
+                </AnimateIn>
+
+                {/* Add-ons Section */}
+                <AnimateIn animation="fade" delay={400} className="max-w-2xl mx-auto mb-12">
+                    <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4 font-plus-jakarta-sans">Options supplémentaires</h3>
+                        <label className="flex items-start gap-4 cursor-pointer group">
+                            <div className="flex items-center h-6">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedAddons.includes('prod_TeCHj5wFSShp6w')}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSelectedAddons([...selectedAddons, 'prod_TeCHj5wFSShp6w']);
+                                        } else {
+                                            setSelectedAddons(selectedAddons.filter(id => id !== 'prod_TeCHj5wFSShp6w'));
+                                        }
+                                    }}
+                                    className="w-5 h-5 text-[#F34A23] border-gray-300 rounded focus:ring-[#F34A23] focus:ring-2"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-base font-semibold text-gray-900 font-plus-jakarta-sans group-hover:text-[#F34A23] transition-colors">
+                                        Menu multilingue
+                                    </span>
+                                    <span className="text-base font-bold text-[#F34A23]">
+                                        +{billingCycle === 'month' ? '9 €/mois' : '90 €/an'}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-600 font-plus-jakarta-sans">
+                                    Proposez votre menu en plusieurs langues (FR, EN, IT, ES) pour toucher une clientèle internationale
+                                </p>
+                            </div>
+                        </label>
+                    </div>
                 </AnimateIn>
 
                 {/* Error Message */}
