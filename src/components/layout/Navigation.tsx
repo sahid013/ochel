@@ -19,8 +19,8 @@ export default function Navigation({ restaurant, demoLogo }: NavigationProps) {
   // Use the demo logo if provided, otherwise fallback to restaurant logo
   const logoSrc = demoLogo || restaurant.logo_url;
 
-  // Contact email fallback
-  const contactEmail = restaurant.email;
+  // Contact phone fallback
+  const contactPhone = restaurant.phone;
 
   return (
     <nav className="relative z-50 bg-white border-b border-gray-100 shadow-sm h-14 md:h-16">
@@ -45,7 +45,7 @@ export default function Navigation({ restaurant, demoLogo }: NavigationProps) {
           <div className="flex items-center gap-3 ml-4">
             <LandingLanguageSwitcher />
             <a
-              href={`mailto:${contactEmail}`}
+              href={`tel:${contactPhone}`}
               className={cn(
                 "inline-flex items-center justify-center px-4 py-2 md:px-6 md:py-2.5 text-xs md:text-sm font-semibold transition-colors",
                 // Dynamic border radius matching template styles

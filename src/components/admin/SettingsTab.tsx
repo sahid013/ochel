@@ -25,7 +25,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
     const [formData, setFormData] = useState({
         name: restaurant.name || '',
         slug: restaurant.slug || '',
-        email: restaurant.email || '',
+        phone: restaurant.phone || '',
         primary_color: restaurant.primary_color || '',
         accent_color: restaurant.accent_color || '',
     });
@@ -135,7 +135,7 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                 .update({
                     name: formData.name,
                     slug: formData.slug,
-                    email: formData.email,
+                    phone: formData.phone,
                     primary_color: formData.primary_color,
                     accent_color: formData.accent_color,
                 })
@@ -241,17 +241,17 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                                        {t('admin.settings.basicInfo.email')}
+                                    <label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                                        {t('admin.settings.basicInfo.phone')}
                                     </label>
                                     <input
-                                        id="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        id="phone"
+                                        type="tel"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                         className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-[#F34A23] text-primary placeholder:text-gray-400"
                                         style={{ borderColor: 'rgba(71, 67, 67, 0.1)' }}
-                                        placeholder="contact@restaurant.com"
+                                        placeholder="+33 1 23 45 67 89"
                                     />
                                 </div>
 

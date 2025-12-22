@@ -493,7 +493,7 @@
         "title": "Informations de base",
         "name": "Nom du Restaurant",
         "slug": "Slug URL",
-        "email": "Email de Contact",
+        "phone": "Numéro de téléphone",
         "primaryColor": "Couleur Principale",
         "accentColor": "Couleur d'Accent"
       },

@@ -489,7 +489,7 @@
         "title": "Basic Information",
         "name": "Restaurant Name",
         "slug": "URL Slug",
-        "email": "Contact Email",
+        "phone": "Phone Number",
         "primaryColor": "Primary Color",
         "accentColor": "Accent Color"
       },
