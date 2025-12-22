@@ -36,7 +36,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const getInitialSession = async () => {
       try {
         console.log('Getting initial session...');
-        
+
         // Set a timeout to prevent infinite loading
         timeoutId = setTimeout(() => {
           console.log('Session check timed out, setting loading to false');
@@ -44,9 +44,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }, 3000); // 3 second timeout
 
         const { data: { session }, error } = await supabase.auth.getSession();
-        
+
         console.log('Initial session result:', { session: !!session, error });
-        
+
         if (error) {
           console.error('Error getting session:', error);
           clearTimeout(timeoutId);
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } else {
           console.log('No session found');
         }
-        
+
         clearTimeout(timeoutId);
         setIsLoading(false);
       } catch (error) {
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state change:', event, !!session);
-      
+
       try {
         if (event === 'SIGNED_IN' && session?.user) {
           await setUserFromSession(session.user);
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } catch (error) {
         console.error('Error in auth state change:', error);
       }
-      
+
       setIsLoading(false);
     });
 
@@ -162,9 +162,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const timeoutPromise = new Promise<any>((_, reject) =>
         setTimeout(() => {
-          console.warn('[AuthContext] Restaurant query timed out after 2 seconds');
+          console.warn('[AuthContext] Restaurant query timed out after 5 seconds');
           reject(new Error('Restaurant query timed out'));
-        }, 2000) // Reduced to 2 seconds
+        }, 5000) // Increased to 5 seconds to prevent premature timeouts
       );
 
       const { data: restaurant, error } = await Promise.race([
@@ -223,7 +223,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-    
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -241,7 +241,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setIsLoading(false);
         return true;
       }
-      
+
       setIsLoading(false);
       return false;
     } catch (error) {

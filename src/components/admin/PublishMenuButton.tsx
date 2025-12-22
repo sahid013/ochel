@@ -67,7 +67,9 @@ export function PublishMenuButton({ restaurantId, restaurantSlug, currentTemplat
         router.push(`/${restaurantSlug}`);
       } else {
         // Redirect to subscription page (Membership Tab in Admin)
-        router.push(`/${restaurantSlug}/admin?tab=membership`);
+        // Add skip_onboarding=true to force the admin page to render the tabs instead of the onboarding view
+        // in case the state hasn't updated immediately.
+        router.push(`/${restaurantSlug}/admin?tab=membership&skip_onboarding=true`);
       }
 
     } catch (err) {
