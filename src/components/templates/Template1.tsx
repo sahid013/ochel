@@ -240,16 +240,16 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                             >
                               <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
                                 {/* Image */}
-                                <div className="relative w-full bg-gray-200 flex-shrink-0">
-                                  <div className="h-[150px] md:aspect-[4/3] md:h-auto">
-                                    {item.image && (
-                                      <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover"
-                                      />
-                                    )}
-                                  </div>
+                                <div className="relative w-full flex-shrink-0 bg-gray-200">
+                                  {item.image ? (
+                                    <img
+                                      src={item.image}
+                                      alt={item.title}
+                                      className="w-full h-[150px] md:h-auto md:aspect-[4/3] object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-[150px] md:aspect-[4/3]" />
+                                  )}
                                   {/* Price Badge */}
                                   {item.price && (
                                     <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 bg-white rounded-lg p-1 md:px-4 md:py-2 shadow-md">
