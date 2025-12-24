@@ -84,21 +84,21 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
             {t('admin.templateSelector.subtitle')}
           </p>
         </div>
-        <div className="flex-shrink-0 flex gap-3">
+        <div className="flex-shrink-0 flex flex-col md:flex-row gap-3 w-full md:w-auto">
           {/* View Public Menu Button - Disabled without active subscription */}
           {restaurant.is_active && (restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing') ? (
             <a
               href={`/${restaurant.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors shadow-sm"
+              className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors shadow-sm text-center flex justify-center"
             >
               {t('admin.templateSelector.viewPublic')}
             </a>
           ) : (
             <button
               disabled
-              className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60 pointer-events-none"
+              className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60 pointer-events-none text-center flex justify-center"
               title={t('admin.templateSelector.subscribeTooltip')}
             >
               {t('admin.templateSelector.viewPublic')}
@@ -108,7 +108,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
           {/* Publish Menu Button - Goes to restaurant's subscribe page */}
           <a
             href={`/${restaurant.slug}/admin?tab=membership`}
-            className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm"
+            className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm text-center flex justify-center"
           >
             {t('admin.templateSelector.publish')}
           </a>
@@ -155,7 +155,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col md:flex-row gap-3">
                 {/* Preview Button */}
                 <PrimaryButton
                   href={`/${restaurant.slug}?preview=${template.id}`}

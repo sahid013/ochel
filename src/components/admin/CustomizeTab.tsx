@@ -446,7 +446,7 @@ export function CustomizeTab({ restaurant }: CustomizeTabProps) {
       </div>
 
       {/* Action Buttons */}
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex flex-col md:flex-row gap-4">
         <button
           onClick={handleSave}
           disabled={saving}
