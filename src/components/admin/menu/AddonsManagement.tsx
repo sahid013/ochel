@@ -9,8 +9,6 @@ import { Alert } from '@/components/ui/Alert';
 import { addonService, categoryService, subcategoryService, Addon, Category, Subcategory } from '@/services';
 import { ImageUpload } from './ImageUpload';
 import { ConfirmationModal } from './ConfirmationModal';
-import { LanguageTabs } from './translation/LanguageTabs';
-import { TranslationField } from './translation/TranslationField';
 import {
   DndContext,
   closestCenter,
@@ -39,43 +37,9 @@ interface AddonModalProps {
 }
 
 function AddonModal({ addon, categories, subcategories, restaurantId, onSave, onClose }: AddonModalProps) {
-  // French (source)
+  // State for fields
   const [title, setTitle] = useState(addon?.title || '');
   const [description, setDescription] = useState(addon?.description || '');
-
-  // English
-  const [titleEn, setTitleEn] = useState(addon?.title_en || '');
-  const [descriptionEn, setDescriptionEn] = useState(addon?.description_en || '');
-
-  // Italian
-  const [titleIt, setTitleIt] = useState(addon?.title_it || '');
-  const [descriptionIt, setDescriptionIt] = useState(addon?.description_it || '');
-
-  // Spanish
-  const [titleEs, setTitleEs] = useState(addon?.title_es || '');
-  const [descriptionEs, setDescriptionEs] = useState(addon?.description_es || '');
-
-  // Active language tab
-  const [activeTab, setActiveTab] = useState<'fr' | 'en' | 'it' | 'es'>('fr');
-
-  // Handle global translation
-  const handleGlobalTranslate = (translations: {
-    en: { [key: string]: string };
-    it: { [key: string]: string };
-    es: { [key: string]: string };
-  }) => {
-    // Update English fields
-    if (translations.en.title) setTitleEn(translations.en.title);
-    if (translations.en.description) setDescriptionEn(translations.en.description);
-
-    // Update Italian fields
-    if (translations.it.title) setTitleIt(translations.it.title);
-    if (translations.it.description) setDescriptionIt(translations.it.description);
-
-    // Update Spanish fields
-    if (translations.es.title) setTitleEs(translations.es.title);
-    if (translations.es.description) setDescriptionEs(translations.es.description);
-  };
 
   const [price, setPrice] = useState(addon?.price?.toString() || '');
   const [imagePath, setImagePath] = useState(addon?.image_path || '');
@@ -175,12 +139,12 @@ function AddonModal({ addon, categories, subcategories, restaurantId, onSave, on
       await onSave({
         title: title.trim(),
         description: description.trim() || null,
-        title_en: titleEn.trim() || null,
-        description_en: descriptionEn.trim() || null,
-        title_it: titleIt.trim() || null,
-        description_it: descriptionIt.trim() || null,
-        title_es: titleEs.trim() || null,
-        description_es: descriptionEs.trim() || null,
+        title_en: addon?.title_en || null,
+        description_en: addon?.description_en || null,
+        title_it: addon?.title_it || null,
+        description_it: addon?.description_it || null,
+        title_es: addon?.title_es || null,
+        description_es: addon?.description_es || null,
         price: parseFloat(price),
         image_path: imagePath.trim() || null,
         category_id: null, // We only link to subcategory now
@@ -218,7 +182,7 @@ function AddonModal({ addon, categories, subcategories, restaurantId, onSave, on
           </svg>
         </button>
 
-        <h3 className="text-base md:text-lg font-semibold mb-4">
+        <h3 className="text-base md:text-lg font-semibold mb-4 text-gray-900">
           {addon ? 'Modifier l\'add-on' : 'Nouvel add-on'}
         </h3>
 
@@ -229,110 +193,31 @@ function AddonModal({ addon, categories, subcategories, restaurantId, onSave, on
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Language Tabs */}
-          <LanguageTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            sourceFields={{ title, description }}
-            onGlobalTranslate={handleGlobalTranslate}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Titre <span className="text-red-500">*</span>
+            </label>
+            <Input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex: Fromage supplémentaire, Sauce piquante..."
+              required
+            />
+          </div>
 
-          {/* French Fields */}
-          {activeTab === 'fr' && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Titre <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Ex: Fromage supplémentaire, Sauce piquante..."
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Description optionnelle..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
-                  rows={3}
-                />
-              </div>
-            </>
-          )}
-
-          {/* English Fields */}
-          {activeTab === 'en' && (
-            <>
-              <TranslationField
-                label="Titre (EN)"
-                sourceText={title}
-                value={titleEn}
-                onChange={setTitleEn}
-                targetLang="en"
-              />
-              <TranslationField
-                label="Description (EN)"
-                sourceText={description}
-                value={descriptionEn}
-                onChange={setDescriptionEn}
-                targetLang="en"
-                multiline
-                rows={3}
-              />
-            </>
-          )}
-
-          {/* Italian Fields */}
-          {activeTab === 'it' && (
-            <>
-              <TranslationField
-                label="Titre (IT)"
-                sourceText={title}
-                value={titleIt}
-                onChange={setTitleIt}
-                targetLang="it"
-              />
-              <TranslationField
-                label="Description (IT)"
-                sourceText={description}
-                value={descriptionIt}
-                onChange={setDescriptionIt}
-                targetLang="it"
-                multiline
-                rows={3}
-              />
-            </>
-          )}
-
-          {/* Spanish Fields */}
-          {activeTab === 'es' && (
-            <>
-              <TranslationField
-                label="Titre (ES)"
-                sourceText={title}
-                value={titleEs}
-                onChange={setTitleEs}
-                targetLang="es"
-              />
-              <TranslationField
-                label="Description (ES)"
-                sourceText={description}
-                value={descriptionEs}
-                onChange={setDescriptionEs}
-                targetLang="es"
-                multiline
-                rows={3}
-              />
-            </>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Description optionnelle..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
+              rows={3}
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
