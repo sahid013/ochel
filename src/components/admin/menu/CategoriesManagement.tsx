@@ -566,7 +566,7 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
     // Update order values for all affected items
     const updatedCategories = reorderedCategories.map((cat, index) => ({
       ...cat,
-      order: categories[index].order, // Swap order values to match new positions
+      order: index, // Use index as the new order to ensure sequential integrity
     }));
 
     // Update local state immediately for instant UX
