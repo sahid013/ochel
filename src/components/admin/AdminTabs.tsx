@@ -22,7 +22,7 @@ export function AdminTabs({ activeTab, slug, onTabChange }: AdminTabsProps) {
     return (
         <div className="border-b border-gray-200 bg-white">
             <div className="max-w-[1460px] mx-auto px-4 sm:px-6 lg:px-8">
-                <nav className="flex flex-wrap gap-x-8 gap-y-2">
+                <nav className="flex flex-wrap gap-4">
                     <button
                         onClick={() => handleNavigation('menu')}
                         className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${activeTab === 'menu'
