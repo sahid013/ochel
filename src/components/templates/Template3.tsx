@@ -42,6 +42,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
 
   const [selected3DItem, setSelected3DItem] = useState<{ glb: string | undefined, usdz: string | undefined, title: string } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const handle3DClick = (e: React.MouseEvent, item: any) => {
     e.stopPropagation();
@@ -74,6 +75,26 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
       window.location.href = intent;
     }
   };
+
+  // Scroll to top handler - scrolls to content area (after hero)
+  const scrollToTop = () => {
+    const contentSection = document.querySelector('.content-section-start');
+    if (contentSection) {
+      contentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Track scroll position to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button when scrolled past the hero section (276px height + some buffer)
+      const shouldShow = window.scrollY > 400;
+      setShowScrollTop(shouldShow);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
@@ -108,7 +129,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
         </div>
 
         {/* Content Container - Spacious */}
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-6 content-section-start">
           {/* Category Pills - Elegant Style */}
           <div className="mb-12">
             <div className="flex flex-wrap justify-center gap-3">
@@ -117,7 +138,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
                   key={category.id}
                   onClick={() => setActiveTab(index)}
                   className={cn(
-                    "text-sm font-medium rounded-full py-3 px-6 transition-all duration-300",
+                    "text-xs md:text-sm font-medium rounded-full py-2 px-4 md:px-6 md:py-2.5 transition-all duration-300",
                     "border-2 uppercase tracking-wider",
                     activeTab === index
                       ? "text-white shadow-lg"
@@ -247,6 +268,30 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
           }
         </div >
       </div >
+
+      {/* Scroll to Top Button - Mobile Only */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="lg:hidden fixed bottom-6 right-6 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-40"
+          style={{ backgroundColor: 'var(--pixel-primary, #D4AF37)' }}
+          aria-label="Scroll to top"
+        >
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* 3D Model Modal */}
       {selected3DItem && (

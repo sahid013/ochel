@@ -38,6 +38,7 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
   const [allCategoriesData, setAllCategoriesData] = useState<Map<number, any>>(new Map());
   const [selected3DItem, setSelected3DItem] = useState<{ glb: string | undefined, usdz: string | undefined, title: string } | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const handle3DClick = (e: React.MouseEvent, item: any) => {
     e.stopPropagation();
@@ -70,6 +71,26 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
       window.location.href = intent;
     }
   };
+
+  // Scroll to top handler - scrolls to content area (after hero)
+  const scrollToTop = () => {
+    const contentSection = document.querySelector('.content-section-start');
+    if (contentSection) {
+      contentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Track scroll position to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button when scrolled past the hero section (240px height + some buffer)
+      const shouldShow = window.scrollY > 350;
+      setShowScrollTop(shouldShow);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Load all menu data for all categories
   useEffect(() => {
@@ -186,8 +207,38 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
         </div>
 
         {/* Two Column Layout - Tabs Left, Content Right */}
-        <div className="relative lg:flex">
-          {/* Left Sidebar - Vertical Tabs (Sticky on Desktop) - Only show if there are categories */}
+        <div className="relative lg:flex content-section-start">
+          {/* Mobile Horizontal Tab Bar - Only visible on mobile */}
+          {categories.length > 0 && (
+            <div className="lg:hidden px-4 py-4" style={{ backgroundColor: 'var(--pixel-bg, #000000)' }}>
+              <div className="flex flex-wrap gap-3">
+                {categories.map((category, index) => (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setActiveTab(index);
+                      scrollToCategory(category.id);
+                    }}
+                    className={cn(
+                      "text-xs font-semibold rounded-xl py-2 px-4 transition-all duration-200",
+                      "flex items-center justify-center whitespace-nowrap",
+                      activeTab === index
+                        ? "text-white shadow-lg"
+                        : "bg-white/10 hover:bg-white/20"
+                    )}
+                    style={{
+                      backgroundColor: activeTab === index ? 'var(--pixel-primary, #F34A23)' : undefined,
+                      color: activeTab === index ? 'white' : 'var(--pixel-text, white)'
+                    }}
+                  >
+                    {getTranslatedField(category, 'title')}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Left Sidebar - Vertical Tabs (Sticky on Desktop) - Only show on desktop */}
           {categories.length > 0 && (
             <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen lg:w-64 border-r border-white/20 z-20 lg:overflow-y-auto flex-shrink-0" style={{ backgroundColor: 'var(--pixel-bg, #000000)' }}>
               <div className="p-4 lg:pt-8">
@@ -356,11 +407,11 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
                       <div key={category.id} id={`category-${category.id}`} className="mb-16 scroll-mt-24">
                         {/* Category Title */}
                         <div className="mb-8">
-                          <h2 className={cn("text-[22px] font-bold mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #FFF2CC)' }}>
+                          <h2 className={cn("text-[22px] font-bold mb-2", headerFontClass)} style={{ color: 'var(--pixel-primary, #F34A23)' }}>
                             {getTranslatedField(category, 'title')}
                           </h2>
                           {getTranslatedField(category, 'text') && (
-                            <p className="text-lg opacity-80" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>
+                            <p className="text-lg opacity-80" style={{ color: 'var(--pixel-text, white)' }}>
                               {getTranslatedField(category, 'text')}
                             </p>
                           )}
@@ -372,26 +423,65 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
                             {/* Section Title */}
                             {section.title && (
                               <div className="mb-6">
-                                <h3 className={cn("text-[18px] font-bold capitalize", headerFontClass)} style={{ color: 'var(--pixel-text, #FFF2CC)' }}>
+                                <h3 className={cn("text-[18px] font-bold capitalize", headerFontClass)} style={{ color: 'var(--pixel-primary, #F34A23)' }}>
                                   {section.title}
                                 </h3>
                                 {section.subtitle && (
-                                  <p className="text-md mt-1" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>
+                                  <p className="text-md mt-1" style={{ color: 'var(--pixel-text, white)' }}>
                                     {section.subtitle}
                                   </p>
                                 )}
                               </div>
                             )}
 
-                            {/* Menu Items - Vertical List */}
-                            <div className="space-y-6">
+                            {/* Menu Items - Two Column Grid on Mobile, Vertical List on Desktop */}
+                            <div className="grid grid-cols-2 md:block gap-4 md:space-y-6">
                               {section.items.map((item: any) => (
                                 <div
                                   key={item.id}
-                                  className="border border-white/20 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-                                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} // Light background for cards works well on dark or light
+                                  className="border border-white/20 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden md:p-6 p-0"
+                                  style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
                                 >
-                                  <div className="flex flex-col md:flex-row gap-4">
+                                  {/* Mobile Layout */}
+                                  <div className="md:hidden flex flex-col">
+                                    {item.image && (
+                                      <img
+                                        src={item.image}
+                                        alt={item.title}
+                                        className="w-full aspect-square object-cover"
+                                      />
+                                    )}
+                                    <div className="p-3">
+                                      <h4 className={cn("text-[16px] font-semibold mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
+                                        {item.title}
+                                      </h4>
+                                      <span className="text-base font-bold block mb-2" style={{ color: 'var(--pixel-primary, #F34A23)' }}>
+                                        {item.price}
+                                      </span>
+                                      {item.subtitle && (
+                                        <p className="text-xs opacity-70 mb-2" style={{ color: 'var(--pixel-text, white)' }}>
+                                          {item.subtitle}
+                                        </p>
+                                      )}
+                                      {item.has3D && (
+                                        <button
+                                          onClick={(e) => handle3DClick(e, item)}
+                                          className="w-6 h-6 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                          title="View in 3D"
+                                          style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
+                                        >
+                                          <img
+                                            src="/icons/3d.svg"
+                                            alt="3D View"
+                                            className="w-full h-full invert brightness-0"
+                                          />
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Desktop Layout */}
+                                  <div className="hidden md:flex flex-row gap-4">
                                     {item.image && (
                                       <img
                                         src={item.image}
@@ -402,7 +492,9 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
                                     <div className="flex-1">
                                       <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
-                                          <h4 className={cn("text-xl font-semibold", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>{item.title}</h4>
+                                          <h4 className={cn("text-xl font-semibold", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
+                                            {item.title}
+                                          </h4>
                                           {item.has3D && (
                                             <button
                                               onClick={(e) => handle3DClick(e, item)}
@@ -418,10 +510,14 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
                                             </button>
                                           )}
                                         </div>
-                                        <span className="text-lg font-bold ml-4 whitespace-nowrap" style={{ color: 'var(--pixel-accent, #FFD65A)' }}>{item.price}</span>
+                                        <span className="text-lg font-bold ml-4 whitespace-nowrap" style={{ color: 'var(--pixel-primary, #F34A23)' }}>
+                                          {item.price}
+                                        </span>
                                       </div>
                                       {item.subtitle && (
-                                        <p className="text-sm opacity-70" style={{ color: 'var(--pixel-text, white)' }}>{item.subtitle}</p>
+                                        <p className="text-sm opacity-70" style={{ color: 'var(--pixel-text, white)' }}>
+                                          {item.subtitle}
+                                        </p>
                                       )}
                                     </div>
                                   </div>
@@ -439,6 +535,30 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
           </div>
         </div>
       </div>
+
+      {/* Scroll to Top Button - Mobile Only */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="lg:hidden fixed bottom-6 right-6 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-40"
+          style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
+          aria-label="Scroll to top"
+        >
+          <svg
+            className="w-[18px] h-[18px] text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* 3D Model Modal */}
       {selected3DItem && (
