@@ -444,12 +444,14 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
                                 >
                                   {/* Mobile Layout */}
                                   <div className="md:hidden flex flex-col">
-                                    {item.image && (
+                                    {item.image ? (
                                       <img
                                         src={item.image}
                                         alt={item.title}
-                                        className="w-full aspect-square object-cover"
+                                        className="w-full h-[150px] object-cover"
                                       />
+                                    ) : (
+                                      <div className="w-full h-[150px] bg-gray-800" />
                                     )}
                                     <div className="p-3">
                                       <h4 className={cn("text-[16px] font-semibold mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, white)' }}>
