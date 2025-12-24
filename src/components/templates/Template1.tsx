@@ -238,9 +238,9 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                               duration={600}
                               delay={100 + (itemIndex * 100)}
                             >
-                              <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                              <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
                                 {/* Image */}
-                                <div className="relative w-full aspect-[4/3] bg-gray-200">
+                                <div className="relative w-full aspect-[4/3] bg-gray-200 flex-shrink-0">
                                   {item.image && (
                                     <img
                                       src={item.image}
@@ -257,21 +257,21 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-3 md:p-5">
+                                <div className="p-3 md:p-5 flex-1 flex flex-col">
                                   {/* Mobile Layout - 3D icon below description */}
-                                  <div className="md:hidden">
+                                  <div className="md:hidden flex flex-col h-full">
                                     <h4 className={cn("text-[16px] font-bold uppercase leading-tight mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                                       {item.title}
                                     </h4>
                                     {item.subtitle && (
-                                      <p className="text-[14px] line-clamp-2 opacity-70 mb-2" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                                      <p className="text-[14px] line-clamp-2 opacity-70 mb-2 flex-1" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                                         {item.subtitle}
                                       </p>
                                     )}
                                     {item.has3D && (
                                       <button
                                         onClick={(e) => handle3DClick(e, item)}
-                                        className="w-6 h-6 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                        className="w-6 h-6 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px] mt-auto"
                                         title="View in 3D"
                                         style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
                                       >
