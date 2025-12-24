@@ -95,13 +95,13 @@ export function MenuManagementTab({ restaurant }: MenuManagementTabProps) {
             </nav>
 
             {/* Mobile Tabs */}
-            <div className="md:hidden flex overflow-x-auto scrollbar-hide gap-3 pb-4 px-1">
+            <div className="md:hidden flex flex-wrap gap-3 pb-4 px-1">
               {menuTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'flex-shrink-0 flex items-center justify-center py-3 px-4 transition-all min-w-[100px] cursor-pointer text-[13px]',
+                    'flex items-center justify-center py-3 px-4 transition-all min-w-[100px] cursor-pointer text-[13px]',
                     activeTab === tab.id
                       ? 'bg-[#F34A23] text-white'
                       : 'bg-gray-100 text-gray-700'
