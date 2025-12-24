@@ -240,35 +240,67 @@ export default function Template4({ restaurant, demoItem, hideNavigation }: Temp
                             <div className="w-full h-[150px] md:h-48 bg-gray-200" />
                           )}
                           <div className="p-5">
-                            <div className="flex justify-between items-start mb-2">
-                              <div className="flex items-center gap-2 flex-1">
-                                <h4 className={cn("text-xl font-bold", headerFontClass)} style={{ color: 'var(--pixel-text, #111827)' }}>
-                                  {item.title}
-                                </h4>
-                                {item.has3D && (
-                                  <button
-                                    onClick={(e) => handle3DClick(e, item)}
-                                    className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
-                                    title="View in 3D"
-                                    style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
-                                  >
-                                    <img
-                                      src="/icons/3d.svg"
-                                      alt="3D View"
-                                      className="w-full h-full invert brightness-0"
-                                    />
-                                  </button>
-                                )}
-                              </div>
-                              <span className="text-xl font-bold ml-3 whitespace-nowrap" style={{ color: 'var(--pixel-primary, #F34A23)' }}>
+                            {/* Mobile Layout - Price below title, 3D icon after description */}
+                            <div className="md:hidden">
+                              <h4 className={cn("text-xl font-bold mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #111827)' }}>
+                                {item.title}
+                              </h4>
+                              <span className="text-xl font-bold block mb-2" style={{ color: 'var(--pixel-primary, #F34A23)' }}>
                                 {item.price}
                               </span>
+                              {item.subtitle && (
+                                <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                                  {item.subtitle}
+                                </p>
+                              )}
+                              {item.has3D && (
+                                <button
+                                  onClick={(e) => handle3DClick(e, item)}
+                                  className="w-6 h-6 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                  title="View in 3D"
+                                  style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
+                                >
+                                  <img
+                                    src="/icons/3d.svg"
+                                    alt="3D View"
+                                    className="w-full h-full invert brightness-0"
+                                  />
+                                </button>
+                              )}
                             </div>
-                            {item.subtitle && (
-                              <p className="text-sm text-gray-600 line-clamp-2">
-                                {item.subtitle}
-                              </p>
-                            )}
+
+                            {/* Desktop Layout - Original layout */}
+                            <div className="hidden md:block">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-center gap-2 flex-1">
+                                  <h4 className={cn("text-xl font-bold", headerFontClass)} style={{ color: 'var(--pixel-text, #111827)' }}>
+                                    {item.title}
+                                  </h4>
+                                  {item.has3D && (
+                                    <button
+                                      onClick={(e) => handle3DClick(e, item)}
+                                      className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                      title="View in 3D"
+                                      style={{ backgroundColor: 'var(--pixel-primary, #F34A23)' }}
+                                    >
+                                      <img
+                                        src="/icons/3d.svg"
+                                        alt="3D View"
+                                        className="w-full h-full invert brightness-0"
+                                      />
+                                    </button>
+                                  )}
+                                </div>
+                                <span className="text-xl font-bold ml-3 whitespace-nowrap" style={{ color: 'var(--pixel-primary, #F34A23)' }}>
+                                  {item.price}
+                                </span>
+                              </div>
+                              {item.subtitle && (
+                                <p className="text-sm text-gray-600 line-clamp-2">
+                                  {item.subtitle}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </div>
                       ))}
