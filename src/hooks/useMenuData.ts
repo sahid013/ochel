@@ -10,6 +10,7 @@ import {
   type Addon,
   type Subcategory
 } from '@/services';
+import { supabase } from '@/lib/supabase';
 
 export interface MenuSection {
   title: string;
@@ -185,11 +186,16 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
 
     loadAllMenuData();
 
+    loadAllMenuData();
+
+    // Setup Realtime and BroadcastChannel subscriptions
+    // We combine the cleanup logic into a single returned function
+    let realtimeChannel: ReturnType<typeof supabase.channel> | null = null;
+    const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
+
     // Subscribe to realtime changes from Supabase (only in development for performance)
     if (process.env.NODE_ENV === 'development') {
-      const { supabase } = require('@/lib/supabase');
-
-      const menuChannel = supabase
+      realtimeChannel = supabase
         .channel('menu-data-changes')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
           console.log('Categories changed, refreshing...');
@@ -212,14 +218,10 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
           loadAllMenuData();
         })
         .subscribe();
-
-      // Cleanup on unmount
-      return () => {
-        supabase.removeChannel(menuChannel);
-      };
     }
+
     // Subscribe to BroadcastChannel for local cross-tab/component updates
-    const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
+    // This runs in BOTH dev and prod to ensure robust cross-tab sync
     menuUpdateChannel.onmessage = (event) => {
       // If we receive an invalidation signal, it typically means some other tab updated data
       // So we should update our local version to match "now" to prevent using stale cache
@@ -234,11 +236,11 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
       }
     };
 
+    // Cleanup function
     return () => {
       menuUpdateChannel.close();
-      if (process.env.NODE_ENV === 'development') {
-        const { supabase } = require('@/lib/supabase');
-        // supabase.removeChannel(menuChannel); // menuChannel is not accessible here easily without refactoring, but it's dev only
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
       }
     };
   }, [restaurantId, demoItem]);
