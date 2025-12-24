@@ -240,7 +240,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                             >
                               <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
                                 {/* Image */}
-                                <div className="relative w-full aspect-[4/3] bg-gray-200 flex-shrink-0">
+                                <div className="relative w-full h-[170px] md:aspect-[4/3] md:h-auto bg-gray-200 flex-shrink-0">
                                   {item.image && (
                                     <img
                                       src={item.image}
