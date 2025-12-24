@@ -77,7 +77,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start gap-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
         <div className="flex-1">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('admin.templateSelector.title')}</h2>
           <p className="text-gray-600">
