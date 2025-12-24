@@ -248,7 +248,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
                               </span>
                             </div>
                             {item.subtitle && (
-                              <p className="text-gray-600 leading-relaxed">{item.subtitle}</p>
+                              <p className="text-[14px] md:text-base text-gray-600 leading-relaxed">{item.subtitle}</p>
                             )}
                             {item.image && (
                               <img
