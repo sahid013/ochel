@@ -217,7 +217,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
                       )}
 
                       {/* Menu Items - Clean List */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                         {section.items.map((item) => (
                           <div
                             key={item.id}
@@ -225,7 +225,7 @@ export default function Template3({ restaurant, demoItem, hideNavigation }: Temp
                           >
                             <div className="mb-3">
                               <div className="flex items-center gap-2 mb-1">
-                                <h4 className={cn("text-2xl tracking-wide", headerFontClass)} style={{ color: 'var(--pixel-text, #2C2416)' }}>
+                                <h4 className={cn("text-[16px] md:text-2xl tracking-wide", headerFontClass)} style={{ color: 'var(--pixel-text, #2C2416)' }}>
                                   {item.title}
                                 </h4>
                                 {item.has3D && (
