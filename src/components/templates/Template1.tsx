@@ -230,7 +230,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                         )}
 
                         {/* Menu Items Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {section.items.map((item, itemIndex) => (
                             <AnimateIn
                               key={item.id}
@@ -258,14 +258,20 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
 
                                 {/* Content */}
                                 <div className="p-5">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <h4 className={cn("text-[20px] md:text-[22px] font-bold uppercase leading-tight", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                                  {/* Mobile Layout - 3D icon below description */}
+                                  <div className="md:hidden">
+                                    <h4 className={cn("text-[20px] font-bold uppercase leading-tight mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                                       {item.title}
                                     </h4>
+                                    {item.subtitle && (
+                                      <p className="text-[14px] line-clamp-2 opacity-70 mb-2" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                                        {item.subtitle}
+                                      </p>
+                                    )}
                                     {item.has3D && (
                                       <button
                                         onClick={(e) => handle3DClick(e, item)}
-                                        className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                        className="w-6 h-6 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
                                         title="View in 3D"
                                         style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
                                       >
@@ -277,11 +283,34 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                                       </button>
                                     )}
                                   </div>
-                                  {item.subtitle && (
-                                    <p className="text-[14px] line-clamp-2 opacity-70" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
-                                      {item.subtitle}
-                                    </p>
-                                  )}
+
+                                  {/* Desktop Layout - 3D icon next to title */}
+                                  <div className="hidden md:block">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <h4 className={cn("text-[22px] font-bold uppercase leading-tight", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                                        {item.title}
+                                      </h4>
+                                      {item.has3D && (
+                                        <button
+                                          onClick={(e) => handle3DClick(e, item)}
+                                          className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
+                                          title="View in 3D"
+                                          style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
+                                        >
+                                          <img
+                                            src="/icons/3d.svg"
+                                            alt="3D View"
+                                            className="w-full h-full invert brightness-0"
+                                          />
+                                        </button>
+                                      )}
+                                    </div>
+                                    {item.subtitle && (
+                                      <p className="text-[14px] line-clamp-2 opacity-70" style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                                        {item.subtitle}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             </AnimateIn>
