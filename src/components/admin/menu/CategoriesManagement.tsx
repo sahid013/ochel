@@ -475,6 +475,9 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       }
     }
     // Notify all tabs that menu data has changed
+    // Update version first so tabs know the new truth
+    localStorage.setItem('menu_data_version', Date.now().toString());
+
     const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
     menuUpdateChannel.postMessage('invalidate');
     menuUpdateChannel.close();
@@ -494,6 +497,9 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       setError(null);
       await categoryService.delete(categoryToDelete.id, restaurantId);
       // Notify all tabs that menu data has changed
+      // Update version first so tabs know the new truth
+      localStorage.setItem('menu_data_version', Date.now().toString());
+
       const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
       menuUpdateChannel.postMessage('invalidate');
       menuUpdateChannel.close();
@@ -517,6 +523,9 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       setError(null);
       await categoryService.reorder(id, direction, restaurantId);
       // Notify all tabs that menu data has changed
+      // Update version first so tabs know the new truth
+      localStorage.setItem('menu_data_version', Date.now().toString());
+
       const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
       menuUpdateChannel.postMessage('invalidate');
       menuUpdateChannel.close();
@@ -577,6 +586,9 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
       await categoryService.updateBulkOrder(updates);
 
       // Notify all tabs that menu data has changed
+      // Update version first so tabs know the new truth
+      localStorage.setItem('menu_data_version', Date.now().toString());
+
       const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
       menuUpdateChannel.postMessage('invalidate');
       menuUpdateChannel.close();

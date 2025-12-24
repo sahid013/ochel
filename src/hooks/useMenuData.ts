@@ -119,15 +119,19 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
           return;
         }
 
-        // Try browser cache first for faster loading
+        // Check global data version
+        const globalVersion = localStorage.getItem('menu_data_version');
         const cacheKey = `menu_data_${restaurantId || 'default'}`;
         const cachedMenu = sessionStorage.getItem(cacheKey);
 
         if (cachedMenu) {
           try {
             const parsed = JSON.parse(cachedMenu);
-            // Cache for 5 minutes
-            if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+            // Check if cache is stale based on version or time
+            const isVersionValid = !globalVersion || (parsed.version && parsed.version >= parseInt(globalVersion));
+            const isTimeValid = Date.now() - parsed.timestamp < 5 * 60 * 1000;
+
+            if (isVersionValid && isTimeValid) {
               // Reconstruct Map from cached array
               const cachedMap = new Map(parsed.data) as Map<number, MenuData>;
               setMenuDataCache(cachedMap);
@@ -141,6 +145,9 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
 
               setLoading(false);
               return;
+            } else {
+              console.log('Cache invalidated:', { isVersionValid, isTimeValid });
+              sessionStorage.removeItem(cacheKey);
             }
           } catch {
             // Invalid cache, continue to fetch
@@ -151,10 +158,11 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
         // Fetch fresh data from Supabase
         const allMenuData = await menuService.getAllMenuData(restaurantId);
 
-        // Cache the result
+        // Cache the result with current global version (or now if none)
         sessionStorage.setItem(cacheKey, JSON.stringify({
           data: Array.from(allMenuData.entries()),
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          version: globalVersion ? parseInt(globalVersion) : Date.now()
         }));
 
         setMenuDataCache(allMenuData);
@@ -210,6 +218,29 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
         supabase.removeChannel(menuChannel);
       };
     }
+    // Subscribe to BroadcastChannel for local cross-tab/component updates
+    const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
+    menuUpdateChannel.onmessage = (event) => {
+      // If we receive an invalidation signal, it typically means some other tab updated data
+      // So we should update our local version to match "now" to prevent using stale cache
+      if (event.data === 'invalidate') {
+        const newVersion = Date.now();
+        localStorage.setItem('menu_data_version', newVersion.toString());
+
+        const cacheKey = `menu_data_${restaurantId || 'default'}`;
+        sessionStorage.removeItem(cacheKey);
+        setMenuDataCache(new Map());
+        loadAllMenuData();
+      }
+    };
+
+    return () => {
+      menuUpdateChannel.close();
+      if (process.env.NODE_ENV === 'development') {
+        const { supabase } = require('@/lib/supabase');
+        // supabase.removeChannel(menuChannel); // menuChannel is not accessible here easily without refactoring, but it's dev only
+      }
+    };
   }, [restaurantId, demoItem]);
 
   // Build sections when active tab changes
