@@ -228,14 +228,16 @@ export default function Template4({ restaurant, demoItem, hideNavigation }: Temp
                           key={item.id}
                           className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                         >
-                          {item.image && (
-                            <div className="relative h-48 overflow-hidden">
+                          {item.image ? (
+                            <div className="relative overflow-hidden">
                               <img
                                 src={item.image}
                                 alt={item.title}
-                                className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                className="w-full h-[150px] md:h-48 object-cover hover:scale-110 transition-transform duration-300"
                               />
                             </div>
+                          ) : (
+                            <div className="w-full h-[150px] md:h-48 bg-gray-200" />
                           )}
                           <div className="p-5">
                             <div className="flex justify-between items-start mb-2">
