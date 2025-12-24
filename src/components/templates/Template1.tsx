@@ -230,7 +230,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                         )}
 
                         {/* Menu Items Grid */}
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                           {section.items.map((item, itemIndex) => (
                             <AnimateIn
                               key={item.id}
@@ -250,17 +250,17 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                                   )}
                                   {/* Price Badge */}
                                   {item.price && (
-                                    <div className="absolute bottom-4 left-4 bg-white rounded-lg px-4 py-2 shadow-md">
-                                      <p className="font-bold text-[16px]" style={{ color: 'var(--pixel-primary, #C8102E)' }}>{item.price}</p>
+                                    <div className="absolute bottom-2 left-2 md:bottom-4 md:left-4 bg-white rounded-lg p-1 md:px-4 md:py-2 shadow-md">
+                                      <p className="font-bold text-[12px] md:text-[16px]" style={{ color: 'var(--pixel-primary, #C8102E)' }}>{item.price}</p>
                                     </div>
                                   )}
                                 </div>
 
                                 {/* Content */}
-                                <div className="p-5">
+                                <div className="p-3 md:p-5">
                                   {/* Mobile Layout - 3D icon below description */}
                                   <div className="md:hidden">
-                                    <h4 className={cn("text-[20px] font-bold uppercase leading-tight mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
+                                    <h4 className={cn("text-[16px] font-bold uppercase leading-tight mb-2", headerFontClass)} style={{ color: 'var(--pixel-text, #3D1F00)' }}>
                                       {item.title}
                                     </h4>
                                     {item.subtitle && (
