@@ -222,7 +222,7 @@ export default function Template4({ restaurant, demoItem, hideNavigation }: Temp
                     )}
 
                     {/* Menu Items - Card Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
                       {section.items.map((item) => (
                         <div
                           key={item.id}
