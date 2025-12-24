@@ -438,6 +438,35 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
     setCurrentPage(1);
   }, [searchQuery]);
 
+  // Auto-heal order if we detect duplicates (like all 0s)
+  useEffect(() => {
+    if (loading || categories.length < 2) return;
+
+    const uniqueOrders = new Set(categories.map(c => c.order));
+    // If we have fewer unique order values than categories, we have duplicates/collisions
+    if (uniqueOrders.size < categories.length) {
+      console.log('Detected duplicate order values (e.g. all zeros). Auto-healing...');
+
+      const healedUpdates = categories.map((cat, index) => ({
+        id: cat.id,
+        order: index // Assign sequential order based on current list position
+      }));
+
+      // Perform bulk update
+      categoryService.updateBulkOrder(healedUpdates)
+        .then(() => {
+          console.log('Auto-healing complete. Refreshing...');
+          // Notify all tabs that menu data has changed
+          localStorage.setItem('menu_data_version', Date.now().toString());
+          const menuUpdateChannel = new BroadcastChannel('menu-data-updates');
+          menuUpdateChannel.postMessage('invalidate');
+          menuUpdateChannel.close();
+          loadCategories(); // Reload to show correct state
+        })
+        .catch(err => console.error('Failed to auto-heal categories:', err));
+    }
+  }, [loading, categories.length]); // Run once when size changes or loading finishes
+
   const handleCreate = () => {
     setEditingCategory(null);
     setShowModal(true);
@@ -573,8 +602,14 @@ export function CategoriesManagement({ restaurantId }: CategoriesManagementProps
     setCategories(updatedCategories);
 
     // Calculate updates for backend
+    // Calculate updates for backend
     const updates = updatedCategories
-      .filter((cat, index) => cat.id !== categories[index].id) // Only send changed items
+      .filter(cat => {
+        const original = categories.find(c => c.id === cat.id);
+        // Update if the order has changed from what it was in the DB
+        // This handles cases where items didn't move index but need a new order number (e.g. healing 0s)
+        return original && original.order !== cat.order;
+      })
       .map(cat => ({
         id: cat.id,
         order: cat.order,
