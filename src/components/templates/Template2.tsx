@@ -32,7 +32,7 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
     loading,
     error,
     getTranslatedField,
-  } = useMenuData(restaurant.id, demoItem);
+  } = useMenuData(restaurant.id, demoItem, restaurant.name);
 
   // State for all categories data
   const [allCategoriesData, setAllCategoriesData] = useState<Map<number, any>>(new Map());
@@ -364,7 +364,7 @@ export default function Template2({ restaurant, demoItem, hideNavigation }: Temp
 
                     if (specialItems.length > 0) {
                       categorySections.push({
-                        title: t('menu.specials'),
+                        title: `${restaurant.name} ${t('menu.specials')}`,
                         subtitle: null,
                         items: specialItems.map((item: any) => ({
                           id: item.id,

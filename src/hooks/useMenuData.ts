@@ -52,8 +52,9 @@ export interface DemoItem {
  * Shared across all templates to ensure consistent data access
  * @param restaurantId - The restaurant ID to fetch data for
  * @param demoItem - Optional demo item for preview mode
+ * @param restaurantName - The restaurant name for dynamic specials title
  */
-export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
+export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null, restaurantName?: string) {
   const { t, locale } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeTab, setActiveTab] = useState(0);
@@ -330,7 +331,7 @@ export function useMenuData(restaurantId?: string, demoItem?: DemoItem | null) {
 
       if (specialItems.length > 0) {
         newSections.push({
-          title: t('menu.specials'),
+          title: restaurantName ? `${restaurantName} ${t('menu.specials')}` : t('menu.specials'),
           subtitle: null,
           isSpecial: true,
           items: specialItems.map(item => ({

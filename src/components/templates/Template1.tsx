@@ -34,7 +34,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
     error,
     isFading,
     getTranslatedField,
-  } = useMenuData(restaurant.id, demoItem);
+  } = useMenuData(restaurant.id, demoItem, restaurant.name);
 
   const { header, body } = parseFontConfig(restaurant.font_family);
   const headerFontClass = getFontClass(header);
