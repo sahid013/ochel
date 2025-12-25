@@ -21,28 +21,28 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
       name: t('admin.templateSelector.templates.template1.name'),
       description: t('admin.templateSelector.templates.template1.description'),
       features: t('admin.templateSelector.templates.template1.features') as string[],
-      preview: '/images/template1_preview.png',
+      preview: '/images/template1_preview.jpg',
     },
     {
       id: 'template2',
       name: t('admin.templateSelector.templates.template2.name'),
       description: t('admin.templateSelector.templates.template2.description'),
       features: t('admin.templateSelector.templates.template2.features') as string[],
-      preview: '/images/template2_preview.png',
+      preview: '/images/template2_preview.jpg',
     },
     {
       id: 'template3',
       name: t('admin.templateSelector.templates.template3.name'),
       description: t('admin.templateSelector.templates.template3.description'),
       features: t('admin.templateSelector.templates.template3.features') as string[],
-      preview: '/images/template3_preview.png',
+      preview: '/images/template3_preview.jpg',
     },
     {
       id: 'template4',
       name: t('admin.templateSelector.templates.template4.name'),
       description: t('admin.templateSelector.templates.template4.description'),
       features: t('admin.templateSelector.templates.template4.features') as string[],
-      preview: '/images/template4_preview.png',
+      preview: '/images/template4_preview.jpg',
     },
   ];
 
