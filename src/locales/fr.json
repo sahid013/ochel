@@ -9,7 +9,8 @@
     "backToTop": "Retour en haut",
     "location": "Localisation",
     "login": "Connexion",
-    "signup": "S'inscrire"
+    "signup": "S'inscrire",
+    "contact": "Contact"
   },
   "home": {
     "platformFeatures": {
@@ -364,7 +365,9 @@
     "noItems": "Aucun article disponible dans cette catégorie.",
     "specials": "Spécialités",
     "supplements": "Supplements",
-    "viewOnTable": "Voir sur la table (AR)"
+    "viewOnTable": "Voir sur la table (AR)",
+    "viewIn3D": "Voir en 3D",
+    "scrollToTop": "Retour en haut"
   },
   "footer": {
     "description": "Restaurant gastronomique situé au cœur d'Ivry-sur-Seine, proposant une cuisine d'exception dans un cadre élégant et raffiné.",
@@ -539,6 +542,7 @@
       "previewLive": "Aperçu en direct",
       "activate": "Activer",
       "saving": "Enregistrement...",
+      "active": "Actif",
       "viewPublic": "Voir le menu public",
       "publish": "Publier le menu",
       "subscribeTooltip": "Abonnez-vous et publiez votre menu pour activer cette fonction",

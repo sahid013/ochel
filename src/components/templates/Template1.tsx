@@ -274,12 +274,12 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                                       <button
                                         onClick={(e) => handle3DClick(e, item)}
                                         className="w-6 h-6 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px] mt-auto"
-                                        title="View in 3D"
+                                        title={t('menu.viewIn3D')}
                                         style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
                                       >
                                         <img
                                           src="/icons/3d.svg"
-                                          alt="3D View"
+                                          alt={t('menu.viewIn3D')}
                                           className="w-full h-full invert brightness-0"
                                         />
                                       </button>
@@ -296,7 +296,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
                                         <button
                                           onClick={(e) => handle3DClick(e, item)}
                                           className="w-6 h-6 flex-shrink-0 opacity-80 hover:opacity-100 transition-opacity cursor-pointer rounded-[4px] p-[3px]"
-                                          title="View in 3D"
+                                          title={t('menu.viewIn3D')}
                                           style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
                                         >
                                           <img
@@ -338,7 +338,7 @@ export default function Template1({ restaurant, demoItem, hideNavigation }: Temp
           onClick={scrollToTop}
           className="lg:hidden fixed bottom-6 right-6 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-40"
           style={{ backgroundColor: 'var(--pixel-primary, #C8102E)' }}
-          aria-label="Scroll to top"
+          aria-label={t('menu.scrollToTop')}
         >
           <svg
             className="w-6 h-6 text-white"

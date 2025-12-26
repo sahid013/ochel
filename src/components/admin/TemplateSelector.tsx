@@ -85,33 +85,24 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
           </p>
         </div>
         <div className="flex-shrink-0 flex flex-col md:flex-row gap-3 w-full md:w-auto">
-          {/* View Public Menu Button - Disabled without active subscription */}
+          {/* Show View Public Menu button if subscription is active, otherwise show Publish Menu button */}
           {restaurant.is_active && (restaurant.subscription_status === 'active' || restaurant.subscription_status === 'trialing') ? (
             <a
               href={`/${restaurant.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors shadow-sm text-center flex justify-center"
+              className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm text-center flex justify-center"
             >
               {t('admin.templateSelector.viewPublic')}
             </a>
           ) : (
-            <button
-              disabled
-              className="px-6 py-3 bg-gray-200 text-gray-400 font-medium rounded-lg cursor-not-allowed shadow-sm opacity-60 pointer-events-none text-center flex justify-center"
-              title={t('admin.templateSelector.subscribeTooltip')}
+            <a
+              href={`/${restaurant.slug}/admin?tab=membership`}
+              className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm text-center flex justify-center"
             >
-              {t('admin.templateSelector.viewPublic')}
-            </button>
+              {t('admin.templateSelector.publish')}
+            </a>
           )}
-
-          {/* Publish Menu Button - Goes to restaurant's subscribe page */}
-          <a
-            href={`/${restaurant.slug}/admin?tab=membership`}
-            className="px-6 py-3 bg-[#F34A23] text-white font-medium rounded-lg hover:bg-[#d63d1a] transition-colors shadow-sm text-center flex justify-center"
-          >
-            {t('admin.templateSelector.publish')}
-          </a>
         </div>
       </div>
 
@@ -142,7 +133,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
               {/* Selected Badge */}
               {selectedTemplate === template.id && (
                 <div className="absolute top-3 right-3 bg-[#F34A23] text-white px-3 py-1 rounded-full text-sm font-medium shadow-sm">
-                  ✓ Actif
+                  ✓ {t('admin.templateSelector.active')}
                 </div>
               )}
             </div>
@@ -165,7 +156,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
                   onClick={(e) => e && e.stopPropagation()}
                   className="flex-1 justify-center"
                 >
-                  Aperçu en direct
+                  {t('admin.templateSelector.previewLive')}
                 </PrimaryButton>
 
                 {/* Select Button */}
@@ -179,7 +170,7 @@ export function TemplateSelector({ restaurant, onTemplateChange }: TemplateSelec
                   className={`flex-1 justify-center ${selectedTemplate === template.id ? 'disabled:bg-[#F34A23] disabled:opacity-50 disabled:text-white' : ''
                     }`}
                 >
-                  {saving && selectedTemplate === template.id ? 'Enregistrement...' : 'Activer'}
+                  {saving && selectedTemplate === template.id ? t('admin.templateSelector.saving') : t('admin.templateSelector.activate')}
                 </PrimaryButton>
               </div>
             </div>

@@ -11,6 +11,7 @@ import { ImageUpload } from './ImageUpload';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 import { uploadImage } from '@/lib/storage';
 import { ConfirmationModal } from './ConfirmationModal';
+import { translateText } from '@/lib/translate';
 
 import {
   DndContext,
@@ -40,25 +41,10 @@ interface MenuItemModalProps {
 }
 
 function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSave, onClose }: MenuItemModalProps) {
-  // French (source)
+  // French (source) - only fields user sees
   const [title, setTitle] = useState(menuItem?.title || '');
   const [text, setText] = useState(menuItem?.text || '');
   const [description, setDescription] = useState(menuItem?.description || '');
-
-  // English
-  const [titleEn, setTitleEn] = useState(menuItem?.title_en || '');
-  const [textEn, setTextEn] = useState(menuItem?.text_en || '');
-  const [descriptionEn, setDescriptionEn] = useState(menuItem?.description_en || '');
-
-  // Italian
-  const [titleIt, setTitleIt] = useState(menuItem?.title_it || '');
-  const [textIt, setTextIt] = useState(menuItem?.text_it || '');
-  const [descriptionIt, setDescriptionIt] = useState(menuItem?.description_it || '');
-
-  // Spanish
-  const [titleEs, setTitleEs] = useState(menuItem?.title_es || '');
-  const [textEs, setTextEs] = useState(menuItem?.text_es || '');
-  const [descriptionEs, setDescriptionEs] = useState(menuItem?.description_es || '');
 
 
 
@@ -197,19 +183,36 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         }
       }
 
+      // Auto-translate to English
+      let titleEn = '';
+      let textEn = '';
+      let descriptionEn = '';
+
+      try {
+        // Translate all fields to English automatically
+        [titleEn, textEn, descriptionEn] = await Promise.all([
+          translateText(title.trim(), 'en'),
+          text.trim() ? translateText(text.trim(), 'en') : Promise.resolve(''),
+          description.trim() ? translateText(description.trim(), 'en') : Promise.resolve('')
+        ]);
+      } catch (translateError) {
+        console.error('Auto-translation failed:', translateError);
+        // Continue without translations if API fails
+      }
+
       await onSave({
         title: title.trim(),
         text: text.trim() || null,
         description: description.trim() || '',
-        title_en: titleEn.trim() || null,
-        text_en: textEn.trim() || null,
-        description_en: descriptionEn.trim() || null,
-        title_it: titleIt.trim() || null,
-        text_it: textIt.trim() || null,
-        description_it: descriptionIt.trim() || null,
-        title_es: titleEs.trim() || null,
-        text_es: textEs.trim() || null,
-        description_es: descriptionEs.trim() || null,
+        title_en: titleEn || null,
+        text_en: textEn || null,
+        description_en: descriptionEn || null,
+        title_it: null,
+        text_it: null,
+        description_it: null,
+        title_es: null,
+        text_es: null,
+        description_es: null,
         price: parseFloat(price),
         image_path: imagePath.trim() || null,
         model_3d_url: null,
@@ -261,21 +264,32 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* French Fields - Now unconditional */}
+          {/* French Fields (Default) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
+              Titre <span className="text-red-500">*</span>
             </label>
             <Input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Caesar Salad, Steak Frites..."
+              placeholder="Ex: Salade César, Steak Frites..."
               required
             />
           </div>
 
-
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Texte court
+            </label>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Courte description..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
+              rows={2}
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -284,10 +298,22 @@ function MenuItemModal({ menuItem, categories, subcategories, restaurantId, onSa
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Full description of the dish..."
+              placeholder="Description complète du plat..."
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-[#F34A23] text-gray-900 placeholder:text-gray-400"
               rows={3}
             />
+          </div>
+
+          {/* Info about auto-translation */}
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+            <div className="flex items-start gap-2">
+              <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm text-blue-800">
+                La traduction anglaise sera générée automatiquement lors de l'enregistrement.
+              </p>
+            </div>
           </div>
 
           <div>

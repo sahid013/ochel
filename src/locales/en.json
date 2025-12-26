@@ -5,7 +5,8 @@
     "delivery": "Delivery",
     "certifications": "Halal Certifications",
     "login": "Login",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "contact": "Contact"
   },
   "home": {
     "platformFeatures": {
@@ -360,7 +361,9 @@
     "noItems": "No items available in this category.",
     "specials": "Specials",
     "supplements": "Extras",
-    "viewOnTable": "View on Table (AR)"
+    "viewOnTable": "View on Table (AR)",
+    "viewIn3D": "View in 3D",
+    "scrollToTop": "Scroll to top"
   },
   "footer": {
     "description": "Gourmet restaurant located in the heart of Ivry-sur-Seine, offering exceptional cuisine in an elegant and refined setting.",
@@ -535,6 +538,7 @@
       "previewLive": "Preview Live",
       "activate": "Activate",
       "saving": "Saving...",
+      "active": "Active",
       "viewPublic": "View Public Menu",
       "publish": "Publish Menu",
       "subscribeTooltip": "Subscribe and publish your menu to enable this",

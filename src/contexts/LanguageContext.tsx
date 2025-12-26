@@ -27,22 +27,19 @@ const translations: Record<Locale, Record<string, any>> = {
 // Force rebuild of translations
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Initialize with a function to avoid hydration issues
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    // Only access localStorage on client-side
+  // Always default to French for both server and initial client render
+  const [locale, setLocaleState] = useState<Locale>('fr');
+  const [mounted, setMounted] = useState(false);
+
+  // Load saved locale from localStorage after mount
+  useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       const savedLocale = localStorage.getItem('locale') as Locale;
       if (savedLocale && ['fr', 'en', 'it', 'es'].includes(savedLocale)) {
-        return savedLocale;
+        setLocaleState(savedLocale);
       }
     }
-    return 'fr'; // Default to French
-  });
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  // Mark as loaded after client-side mount
-  useEffect(() => {
-    setIsLoaded(true);
   }, []);
 
   const setLocale = (newLocale: Locale) => {
@@ -72,10 +69,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     return value !== undefined ? value : key;
   };
-
-  if (!isLoaded) {
-    return null; // Prevent hydration mismatch
-  }
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, t }}>

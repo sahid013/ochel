@@ -65,7 +65,7 @@ export default function Navigation({ restaurant, demoLogo }: NavigationProps) {
                 ...variableStyles
               }}
             >
-              Contact
+              {t('nav.contact')}
             </a>
           </div>
         </div>
