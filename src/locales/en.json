@@ -420,6 +420,26 @@
       "logout": "Logout",
       "credits": "3d credit left:"
     },
+    "qrCode": {
+      "title": "Menu QR Code",
+      "description": "Share your menu easily with this QR code. Your customers can scan it to access your online menu directly.",
+      "scanText": "Scan to access the menu of",
+      "download": "Download",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "saving": "Saving...",
+      "customize": {
+        "colors": "Colors",
+        "qrColor": "QR Code Color",
+        "bgColor": "Background Color",
+        "logoSize": "Logo Size",
+        "logoSizeLabel": "Logo size"
+      },
+      "actions": {
+        "title": "Actions",
+        "reset": "Reset"
+      }
+    },
     "customize": {
       "title": "Template Customization",
       "subtitle": "Customize the colors and fonts for your menu templates. Changes will apply to all templates.",

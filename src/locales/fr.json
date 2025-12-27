@@ -424,6 +424,26 @@
       "logout": "Déconnexion",
       "credits": "Crédits 3D restants :"
     },
+    "qrCode": {
+      "title": "QR Code du Menu",
+      "description": "Partagez votre menu facilement avec ce QR code. Vos clients peuvent le scanner pour accéder directement à votre menu en ligne.",
+      "scanText": "Scannez pour accéder au menu de",
+      "download": "Télécharger",
+      "copy": "Copier",
+      "copied": "Copié!",
+      "saving": "Enregistrement...",
+      "customize": {
+        "colors": "Couleurs",
+        "qrColor": "Couleur du QR Code",
+        "bgColor": "Couleur de fond",
+        "logoSize": "Taille du Logo",
+        "logoSizeLabel": "Taille du logo"
+      },
+      "actions": {
+        "title": "Actions",
+        "reset": "Réinitialiser"
+      }
+    },
     "customize": {
       "title": "Personnalisation du modèle",
       "subtitle": "Personnalisez les couleurs et les polices de vos modèles de menu. Les modifications s'appliqueront à tous les modèles.",

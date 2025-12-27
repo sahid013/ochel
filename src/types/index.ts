@@ -23,6 +23,9 @@ export interface Restaurant {
   credits_left?: number;
   stripe_customer_id?: string | null;
   stripe_subscription_id?: string | null;
+  qr_code_color?: string | null;
+  qr_code_bg_color?: string | null;
+  qr_code_logo_size?: number | null;
   created_at: string;
   updated_at: string;
 }

@@ -7,6 +7,7 @@ import { Restaurant } from '@/types';
 import { PrimaryButton, Button } from '@/components/ui';
 import { ImageUploader } from '@/components/demo/ImageUploader';
 import { Alert } from '@/components/ui/Alert';
+import { QRCodeSection } from '@/components/qr';
 
 interface SettingsTabProps {
     restaurant: Restaurant;
@@ -324,6 +325,13 @@ export function SettingsTab({ restaurant, slug }: SettingsTabProps) {
                             </form>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {/* QR Code Section */}
+            <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-8">
+                    <QRCodeSection restaurant={restaurant} />
                 </div>
             </div>
         </div>
